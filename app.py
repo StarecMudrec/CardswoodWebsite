@@ -76,14 +76,14 @@ def ico():
     return send_file('static/favicon.ico')
 
 # при запросе главной страницы возвращаем html файл с фронтендом как файл (без шаблонизатора)
-@app.route("/assets/index-Bo1e8cOY.js")
-def js():
-    return send_file('static/assets/index-Bo1e8cOY.js')
+@app.route("/assets/<filename>")
+def assets(filename):
+    return send_file('static/assets/' + filename)
 
-# при запросе главной страницы возвращаем html файл с фронтендом как файл (без шаблонизатора)
-@app.route("/assets/index-DnVUw_vK.css")
-def css():
-    return send_file('static/assets/index-DnVUw_vK.css')
+# # при запросе главной страницы возвращаем html файл с фронтендом как файл (без шаблонизатора)
+# @app.route("/assets/index-DnVUw_vK.css")
+# def css():
+#     return send_file('static/assets/index-DnVUw_vK.css')
 
 if __name__ == '__main__':
     app.run(debug=True, port=5174, host="0.0.0.0")
