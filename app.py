@@ -2,6 +2,10 @@ from flask import Flask, request, jsonify, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+import jwt
+import hashlib
+import uuid
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
@@ -9,11 +13,15 @@ db = SQLAlchemy(app)
 Migrate(app, db)
 CORS(app)
 
+def generate_password_hash(password):
+    password_hashed = hashlib.md5(password.encode()).hexdigest()
+    return password_hashed
+
 # модель для хранения задачи
-class Task(db.Model):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    is_done = db.Column(db.Boolean, nullable=False, default=False)
+    username = db.Column(db.String(100), nullable=False)
+    password_hash = db.Column(db.Strring, nullable=False)
 
 # презентер для задачи
 def present_task(task):
@@ -24,46 +32,62 @@ def present_task(task):
     }
 
 # получаем все задачи
-@app.route('/api/tasks', methods=['GET'])
-def get_tasks():
-    tasks = Task.query.all()
-    return [present_task(task) for task in tasks]
+@app.route('/api/sign_up', methods=['GET'])
+def sign_up():
+    data = request.json
+    name = data.get("name")
+    password = data.get("password")
+    
+    if not name or not password : 
+        return jsonify({"status": "error", "message": "Имя и пароль - обязательные поля"}), 400
+    
+    special_symbols = '\"()*/+-,.:;>=<[\\]^_`{|}!?&$#%@"'
+    if len(password) < 8 : 
+        return jsonify({"status": "error", "message": "Пароль слишком короткий."}), 400
+    elif (not any(bukva.isdigit() for bukva in password)):
+        return jsonify({"status": "error", "message": "Пароль не содержит цифр"}), 400
+    
+    contains_ss = False
+    for i in special_symbols : 
+        if password.find(i) != -1 : 
+            contains_ss = True
+    if not contains_ss : 
+        return jsonify({"status": "error", "message": "Пароль не содержит спец символы"}), 400
 
-# добавляем новую задачу
-@app.route('/api/tasks', methods=['POST'])
-def add_task():
-    data = request.get_json()
+    existing_name = User.query.filter_by(name=data.get("name")).first()
 
-    # если нет названия - возвращаем ошибку
-    print(data)
-    if not data.get('title'):
-        return jsonify({'error': 'no title'}), 400
-
-    task = Task(title=data['title'])
-    db.session.add(task)
+    if existing_name : 
+        return jsonify({"status": "error", "message": "Такое имя уже занято"}), 409
+    
+    hashed_password = generate_password_hash(data["password"])
+    new_user_id = str(uuid.uuid4())
+    token = jwt.encode({"user_uuid": new_user_id}, RANDOM_SECRET, algorithm="HS256")
+    new_user = User( 
+        uuid = new_user_id,
+        name = data.get("name"),
+        password = hashed_password
+    )
+    db.session.add(new_user)
     db.session.commit()
+    return jsonify({"token": token, "user_id": new_user_id}), 200
 
-    return present_task(task), 200
 
-@app.route('/api/tasks/<int:task_id>', methods=['DELETE'])
-def delete_task(task_id):
-    task = Task.query.get(task_id)
-    if task:
-        db.session.delete(task)
-        db.session.commit()
-        return jsonify({'message': 'Задача удалена'}), 200
-    return jsonify({'message': 'Задача не найдена'}, 404)
-
-@app.route('/api/tasks/<int:task_id>', methods=['PUT'])
-def update_task(task_id):
-    task = Task.query.get(task_id)
-    if not task:
-        return jsonify({'message': 'Задача не найдена'}, 404)
-    data = request.get_json()
-    task.title = data.get('title', task.title)
-    task.is_done = data.get('is_done', task.is_done)
-    db.session.commit()
-    return jsonify(present_task(task))
+@app.route("/api/sign-in", methods=["POST"])
+def sign_in():
+    data = request.json
+    if not data:
+        return jsonify({"msg": "Missing Json"}), 400
+    
+    password = data.get("password")
+    name = data.get("name")
+    if not password or not name : 
+        return jsonify({"status": "error", "message": "Имя и пароль - обязательные поля"}), 400
+    user_info = User.query.filter_by(name=name).first()
+    if not business_info or not business_info.password or not (business_info.password == generate_password_hash(password)) : 
+        return jsonify({"status": "error", "message": "Неверный email или пароль"}), 401
+    
+    token = jwt.encode({"bis_uuid": business_info.uuid}, RANDOM_SECRET, algorithm="HS256")
+    return jsonify({"token": token}), 200
 
 # при запросе главной страницы возвращаем html файл с фронтендом как файл (без шаблонизатора)
 @app.route('/')
