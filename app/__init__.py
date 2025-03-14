@@ -16,7 +16,7 @@ templates = Jinja2Templates('app/templates')
 static_files = HTMLStaticFiles(directory='site/')
 
 app.mount('/auth', auth_router)
-app.mount('/', static_files, name='static')
+app.mount('/', static_files, name='site')
 
 
 @app.middleware('http')
