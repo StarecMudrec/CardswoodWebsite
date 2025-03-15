@@ -4,35 +4,23 @@ from hashlib import sha256
 import uuid  # For generating unique tokens
 
 from flask import Flask, render_template, request, redirect, url_for, make_response
+from flask_migrate import Migrate
 import jwt
 from joserfc.errors import JoseError
 import logging
 from flask_sqlalchemy import SQLAlchemy  # Database integration
-
-# Configuration
-JWT_SECRET_KEY = "COOL"  # Replace with your actual secret key
-BOT_TOKEN_HASH = sha256("7505659847:AAF3AoBU0HFInjsPPOqz4KaPmX3M15l9f1U".encode())  # Replace with your actual token
-DATABASE_URI = 'sqlite:///tokens.db'  # SQLite database
+from models import db, AuthToken, Card, Season, Comment
+from config import Config
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
+app.config.from_object(Config)
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
+db.init_app(app)
 
-# Database Model
-class AuthToken(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    token = db.Column(db.String(255), unique=True, nullable=False)
-    user_id = db.Column(db.Integer, nullable=False)
-
-    def __repr__(self):
-        return f'<AuthToken token={self.token} user_id={self.user_id}>'
-
+migrate = Migrate(app, db)
 
 # Create the database tables
 with app.app_context():
@@ -41,7 +29,7 @@ with app.app_context():
 
 # Authentication Helper Function
 def is_authenticated(request):
-    token = request.args.get('token') or request.cookies.get('token')
+    token = request.args.get("token") or request.cookies.get("token")
     if not token:
         logging.debug("No token found in request")
         return False, None
@@ -61,11 +49,11 @@ def is_authenticated(request):
 
 
 # Telegram OAuth Callback Route
-@app.route('/auth/telegram-callback')
+@app.route("/auth/telegram-callback")
 def telegram_callback():
-    user_id = request.args.get('id', type=int)
-    auth_date = request.args.get('auth_date')
-    query_hash = request.args.get('hash')
+    user_id = request.args.get("id", type=int)
+    auth_date = request.args.get("auth_date")
+    query_hash = request.args.get("hash")
     print(query_hash)
 
     if user_id is None or query_hash is None:
@@ -73,10 +61,10 @@ def telegram_callback():
 
     # Extract parameters and sort them
     params = request.args.to_dict()
-    data_check_string = '\n'.join(sorted(f'{x}={y}' for x, y in params.items() if x not in ('hash', 'next')))
+    data_check_string = "\n".join(sorted(f"{x}={y}" for x, y in params.items() if x not in ("hash", "next")))
 
     # Compute HMAC hash using BOT_TOKEN_HASH
-    computed_hash = hmac.new(BOT_TOKEN_HASH.digest(), data_check_string.encode(), sha256).hexdigest()
+    computed_hash = hmac.new(Config.BOT_TOKEN_HASH.digest(), data_check_string.encode(), sha256).hexdigest()
 
     if not hmac.compare_digest(computed_hash, query_hash):
         return "Authorization failed. Please try again", 401
@@ -96,15 +84,15 @@ def telegram_callback():
         return "Database error", 500
 
     # Redirect to home, setting the token in a cookie
-    response = make_response(redirect(url_for('home')))
-    response.set_cookie('token', db_token, httponly=True, secure=True)
+    response = make_response(redirect(url_for("home")))
+    response.set_cookie("token", db_token, httponly=True, secure=True)
     return response
 
 
 # Logout Route (Clears the Token)
-@app.route('/auth/logout')
+@app.route("/auth/logout")
 def logout():
-    token = request.cookies.get('token')
+    token = request.cookies.get("token")
 
     if token:
         try:
@@ -119,30 +107,30 @@ def logout():
             logging.exception(f"Database error deleting token: {e}")
             return "Database error", 500
 
-    response = redirect(url_for('index'))
-    response.delete_cookie('token')
+    response = redirect(url_for("index"))
+    response.delete_cookie("token")
     return response
 
 
 # Main Route (Checks for Authentication)
-@app.route('/')
+@app.route("/")
 def index():
     is_auth, _ = is_authenticated(request)
     if is_auth:
-        return redirect(url_for('home'))
+        return redirect(url_for("home"))
     else:
-        return render_template('login.html')
+        return render_template("login.html")
 
 
 # Home Route (Protected Page)
-@app.route('/home')
+@app.route("/home")
 def home():
     is_auth, _ = is_authenticated(request)
     if is_auth:
-        return render_template('page.html')
+        return render_template("page.html")
     else:
-        return redirect(url_for('index'))
+        return redirect(url_for("index"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True, port=80)
