@@ -1,5 +1,5 @@
 cardswood site
-site with guide for all cards and termins in cardswood bot ? best bot in card industry
+site with guide for all cards and termins in cardswood bot , best bot in card industry
 2 pages, 1 - with all cards 2 - with all termins
 page for card have:
  photo
