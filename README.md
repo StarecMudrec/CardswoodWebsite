@@ -1,29 +1,13 @@
-# TaskList
-
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+cardswood site
+site with guide for all cards and termins in cardswood bot ? best bot in card industry
+2 pages, 1 - with all cards 2 - with all termins
+page for card have:
+ photo
+ name
+ caption
+ likes
+ comments
+page for termins have
+ all termins (termin-caption)
+ place for aaplications
+pages for entering for adding card, season and accepting applicates, site concept and beatiful girl  you can see in https://www.figma.com/design/fga9VjgCKAcTaMyMKcJara/Untitled?node-id=1-27&m=dev&t=rL11b3klJWjPi3xC-
