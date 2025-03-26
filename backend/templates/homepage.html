@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Example site</title>
+</head>
+<body>
+    <p>Menu: 
+        <a href="/home">CARDS</a> | 
+        <a href="/termins">TERMINS</a> | 
+        {% if is_auth %}
+            <a href="/auth/logout">LOGOUT</a>
+        {% else %}
+            <a href="/login">LOGIN</a>
+        {% endif %}
+    </p>
+    <p>Hi!</p>
+</body>
+</html>
