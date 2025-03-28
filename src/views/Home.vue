@@ -1,10 +1,10 @@
 <template>
     <div class="home">
       <div class="menu">
-        <a href="/">CARDS</a> | 
-        <a href="/termins">TERMINS</a> | 
-        <a v-if="isAuth" href="/auth/logout">LOGOUT</a>
-        <a v-else href="/login">LOGIN</a>
+        <router-link href="/home">CARDS</router-link> | 
+        <router-link href="/termins">TERMINS</router-link> | 
+        <router-link v-if="isAuth" to="/auth/logout">LOGOUT</router-link>
+        <router-link v-else to="/login">LOGIN</router-link>
       </div>
   
       <div v-for="season in seasons" :key="season.uuid" class="season">

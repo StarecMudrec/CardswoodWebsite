@@ -15,4 +15,10 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  server: {
+    allowedHosts: [
+      'fine-rivers-work.loca.lt', // Ваш локальный домен
+      '.loca.lt' // Разрешить все поддомены loca.lt (опционально)
+    ]
+  }
 })

@@ -5,7 +5,7 @@ import uuid  # For generating unique tokens
 
 from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify
 from flask_migrate import Migrate
-import jwt
+# import jwt
 from joserfc.errors import JoseError
 import logging
 from flask_sqlalchemy import SQLAlchemy  # Database integration
@@ -86,6 +86,11 @@ def telegram_callback():
     # Redirect to home, setting the token in a cookie
     response = make_response(redirect(url_for("home")))
     response.set_cookie("token", db_token, httponly=True, secure=True)
+    response.set_data(f"""
+      <script>
+        window.parent.postMessage('auth-success', 'http://localhost:5173');
+      </script>
+    """)
     return response
 
 
@@ -111,6 +116,13 @@ def logout():
     response.delete_cookie("token")
     return response
 
+@app.after_request
+def apply_csp(response):
+    response.headers['Content-Security-Policy'] = (
+        "frame-ancestors 'self' https://cardswood.ru; "
+        "frame-src 'self' https://oauth.telegram.org;"
+    )
+    return response
 
 # Main Route (Checks for Authentication)
 @app.route("/")
@@ -120,10 +132,18 @@ def return_home():
 # Main Route (Checks for Authentication)
 @app.route("/login")
 def login():
-    is_auth, _ = is_authenticated(request)
+    is_auth, user_id = is_authenticated(request)
     if is_auth:
         return redirect(url_for("home"))
     else:
+        if request.args.get('check_auth'):
+            is_auth, user_id = is_authenticated(request)
+            return jsonify({
+                'type': 'auth-status',
+                'isAuthenticated': is_auth,
+                'userId': user_id
+            })
+    
         return render_template("login.html")
 
 
