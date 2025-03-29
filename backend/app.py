@@ -177,4 +177,4 @@ def get_card_info(card_id):
     return jsonify(card.present()), 200
 
 if __name__ == "__main__":
-    app.run(debug=True, port=80)
+    app.run(debug=True, port=8000)
