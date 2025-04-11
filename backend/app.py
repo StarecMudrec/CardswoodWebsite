@@ -3,7 +3,7 @@ import hmac
 from hashlib import sha256
 import uuid  # For generating unique tokens
 
-from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify
+from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify, send_from_directory 
 from flask_migrate import Migrate
 # import jwt
 from joserfc.errors import JoseError
@@ -35,6 +35,7 @@ def is_authenticated(request):
         return False, None
 
     try:
+        print(token)
         auth_token = AuthToken.query.filter_by(token=token).first()
         if auth_token is None:
             logging.debug("Token not found in database")
@@ -156,6 +157,13 @@ def home():
 
 
 #API ROUTES
+
+@app.route('/card_imgs/<filename>')
+def serve_card_image(filename):
+    # Создаем папку если ее нет
+    os.makedirs('card_imgs', exist_ok=True)
+    return send_from_directory('card_imgs', filename)
+
 @app.route("/api/seasons")
 def get_seasons():
     seasons = Season.query.all()
@@ -176,5 +184,11 @@ def get_card_info(card_id):
     card = Card.query.filter_by(uuid=card_id).first_or_404()
     return jsonify(card.present()), 200
 
+@app.route("/api/season_info/<season_id>")
+def get_season_info(season_id):  
+    season = Season.query.filter_by(uuid=season_id).first_or_404()
+    return jsonify(season.present()), 200
+
 if __name__ == "__main__":
-    app.run(debug=True, port=80)
+    app.run(debug=True, port=8000)
+
