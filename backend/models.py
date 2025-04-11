@@ -4,7 +4,7 @@ db = SQLAlchemy()
 
 # Token Model
 class AuthToken(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     token = db.Column(db.String(255), unique=True, nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
 
@@ -19,7 +19,7 @@ class Card(db.Model):
     category = db.Column(db.String(20))
     name = db.Column(db.String(20))
     description = db.Column(db.String(1000))
-    season_id = db.Column(db.String, db.ForeignKey('season.id', ondelete='CASCADE'), nullable=False)
+    season_id = db.Column(db.Integer, db.ForeignKey('season.id', ondelete='CASCADE'), nullable=False)
 
     season = db.relationship("Season", backref=db.backref("cards"))
 
@@ -49,7 +49,7 @@ class Comment(db.Model):
     uuid = db.Column(db.String, nullable=False, unique=True)
     user_id = db.Column(db.Integer, nullable=False)
     text = db.Column(db.Text)
-    card_id = db.Column(db.String, db.ForeignKey('card.id', ondelete='CASCADE'), nullable=False)
+    card_id = db.Column(db.Integer, db.ForeignKey('card.id', ondelete='CASCADE'), nullable=False)
 
     card = db.relationship("Card", backref=db.backref("comments"))
 

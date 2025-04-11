@@ -4,6 +4,6 @@ joserfc
 logging
 flask_sqlalchemy
 uuid
-
-
-
+flask_cors
+datetime
+psycopg2-binary
