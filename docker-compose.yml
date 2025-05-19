@@ -26,8 +26,7 @@ services:
       - /app/node_modules
     environment:
       NODE_ENV: development
-    command: >
-      sh -c "chown -R node.node /app"
+    command: tail -f /dev/null
 
   web:
     build: ./backend
