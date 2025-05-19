@@ -21,8 +21,9 @@ services:
     build: ../frontend
     ports:
       - "5173:5173"
-    volumes:
-      - ../frontend:/app
+    volumes: 
+      - ../frontend:/app:rw
+      - /app/node_modules
     environment:
       NODE_ENV: development
 
