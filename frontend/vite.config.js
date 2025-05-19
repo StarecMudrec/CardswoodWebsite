@@ -14,17 +14,17 @@ export default defineConfig({
     allowedHosts: ['cardswood.ru'],
     proxy: {
       '/api': {
-        target: 'http://backend:8000',
+        target: 'http://web:8000',
         changeOrigin: true,
         secure: false
       },
       '/auth': {
-        target: 'http://backend:8000',
+        target: 'http://web:8000',
         changeOrigin: true,
         secure: false
       },
       '/card_imgs': {
-        target: 'http://backend:8000',
+        target: 'http://web:8000',
         changeOrigin: true,
         secure: false
       }
