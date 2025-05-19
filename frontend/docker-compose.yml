@@ -7,3 +7,7 @@ services:
       - "5173:5173"
     environment:
       NODE_ENV: development
+  backend:
+    build: ../backend
+    ports:
+      - "8000:8000"
