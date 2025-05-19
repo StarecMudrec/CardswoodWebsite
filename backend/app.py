@@ -253,7 +253,8 @@ def get_user_info():
             "first_name": session.get('telegram_first_name'),
             "last_name": session.get('telegram_last_name'),
             # Use the local avatar path to construct the URL
-            "photo_url": url_for('serve_avatar', user_id=user_id) if session.get('local_avatar_path') else session.get('telegram_photo_url') # Fallback to original URL if local file not found
+            # Check if a local avatar path exists and if the file exists, otherwise set to None
+            "photo_url": url_for('serve_avatar', user_id=user_id) if session.get('local_avatar_path') and os.path.exists(session.get('local_avatar_path')) else None
         }
         return jsonify(user_data), 200
     return jsonify({'error': 'User not authenticated'}), 401
