@@ -75,6 +75,16 @@ def telegram_callback():
     if not hmac.compare_digest(computed_hash, query_hash):
         return "Authorization failed. Please try again", 401
 
+    # Extract user data from Telegram
+    telegram_id = request.args.get("id", type=int)
+    first_name = request.args.get("first_name")
+    last_name = request.args.get("last_name")
+    username = request.args.get("username")
+    photo_url = request.args.get("photo_url")
+
+    # Store Telegram data in session
+    session.update(telegram_id=telegram_id, telegram_first_name=first_name, telegram_last_name=last_name, telegram_username=username, telegram_photo_url=photo_url)
+
     # Generate a unique token and store it in the database
     db_token = str(uuid.uuid4())
     auth_token = AuthToken(token=db_token, user_id=user_id)
@@ -211,16 +221,15 @@ def check_auth():
 @app.route("/api/user", methods=['GET'])
 def get_user_info():
     user_id = session.get('user_id')
-
     if user_id:
-        # In a real application, you would fetch user details from your database
-        # based on user_id. For now, let's return placeholder or mock data.
-        # Assuming you might have stored telegram user info during auth.
-        # You'll need to adapt this based on how you store user info.
-        # Example placeholder:
-        user_data = {"first_name": "Telegram", "last_name": "User", "photo_url": "https://via.placeholder.com/40"} # Replace with actual logic to fetch user data
+        # Retrieve Telegram user info directly from the session, using keys set in telegram_callback
+        user_data = {
+            "id": session.get('telegram_id'),
+            "first_name": session.get('telegram_first_name'),
+            "last_name": session.get('telegram_last_name'),
+            "photo_url": session.get('telegram_photo_url')}
         return jsonify(user_data), 200
-    return jsonify({"message": "Not authenticated"}), 401
+    return jsonify({'error': 'User not authenticated'}), 401
 
 
 if __name__ == "__main__":
