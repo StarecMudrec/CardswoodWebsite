@@ -18,17 +18,17 @@ services:
       - "127.0.0.1:5432:5432"
 
   frontend:
-    build: ../frontend
+    build: ./frontend
     ports:
       - "5173:5173"
     volumes: 
-      - ../frontend:/app:rw
+      - ./frontend:/app:rw
       - /app/node_modules
     environment:
       NODE_ENV: development
 
   web:
-    build: .
+    build: ./backend
     ports:
       - "8000:8000"
     volumes:
@@ -46,5 +46,5 @@ services:
       gunicorn --bind 0.0.0.0:8000 wsgi:app"
 
 volumes:
-  postgres_data:
-  card_images:
+  postgres_data: {}
+  card_images: {}
