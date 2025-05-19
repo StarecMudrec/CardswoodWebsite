@@ -37,13 +37,13 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    environment:
+    environment:      
       SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:postgres@db:5432/cards
       BOT_TOKEN_HASH: 7505659847:AAF3AoBU0HFInjsPPOqz4KaPmX3M15l9f1U
       FLASK_APP: wsgi:app
     command: >
-      sh -c "flask db migrate -m 'Initial migration' &&
-      flask db upgrade &&
+      sh -c "flask --app wsgi db migrate -m 'Initial migration' &&
+      flask --app wsgi db upgrade &&
       gunicorn --bind 0.0.0.0:8000 wsgi:app"
 
 volumes:
