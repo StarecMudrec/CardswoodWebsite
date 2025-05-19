@@ -24,6 +24,7 @@ services:
     volumes: 
       - ./frontend:/app:rw
       - /app/node_modules
+    user: "1000:1000"
     environment:
       NODE_ENV: development
 
