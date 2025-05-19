@@ -48,6 +48,9 @@ html, body {
   background-color: var(--bg-color);
   min-height: 100vh;
   padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin: 0;
 }
 
