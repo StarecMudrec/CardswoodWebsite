@@ -11,7 +11,6 @@ import logging
 from flask_sqlalchemy import SQLAlchemy  # Database integration
 from models import db, AuthToken, Card, Season, Comment
 from config import Config
-#from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config.from_object(Config)
