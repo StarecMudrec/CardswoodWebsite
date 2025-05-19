@@ -29,10 +29,11 @@ services:
 
   web:
     build: ./backend
+    working_dir: /app
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
+      - ./backend:/app
       - card_images:/app/card_imgs
     depends_on:
       db:
