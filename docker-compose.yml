@@ -27,6 +27,8 @@ services:
     user: "1000:1000"
     environment:
       NODE_ENV: development
+    command: >
+      sh -c "chown -R node:node /app/node_modules && vite"
 
   web:
     build: ./backend
