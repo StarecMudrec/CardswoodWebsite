@@ -39,7 +39,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    environment:      
+    environment:
       SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:7YD8£73vIo@db:5432/cards
       BOT_TOKEN_HASH: 7505659847:AAF3AoBU0HFInjsPPOqz4KaPmX3M15l9f1U
       FLASK_APP: wsgi:app
