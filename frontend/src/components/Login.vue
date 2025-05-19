@@ -53,6 +53,7 @@ export default {
   background-color: var(--card-bg);
   border-radius: 8px;
   border: 1px solid var(--border-color);
+  margin: 40px auto;
   text-align: center;
 }
 
