@@ -24,6 +24,7 @@ services:
     volumes:
       - /app/node_modules
       - ./frontend:/app:rw
+    user: "node"
     environment:
       NODE_ENV: development
     command: npm run dev
