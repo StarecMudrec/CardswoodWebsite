@@ -2,6 +2,7 @@ import os
 import hmac
 from hashlib import sha256
 import uuid  # For generating unique tokens
+import requests # Import the requests library
 
 from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify, send_from_directory, session
 from flask_migrate import Migrate
@@ -83,8 +84,34 @@ def telegram_callback():
     photo_url = request.args.get("photo_url")
 
     # Store Telegram data in session
-    session.update(telegram_id=telegram_id, telegram_first_name=first_name, telegram_last_name=last_name, telegram_username=username, telegram_photo_url=photo_url)
+    session.update(telegram_id=telegram_id, telegram_first_name=first_name, telegram_last_name=last_name, telegram_username=username)
 
+    local_photo_url = None
+    if photo_url:
+        try:
+            # Download the image from Telegram
+            response = requests.get(photo_url, stream=True)
+            response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)
+
+            # Define the local path to save the image
+            avatar_dir = '/app/card_imgs/user_avatars' # Use the mounted volume path
+            os.makedirs(avatar_dir, exist_ok=True) # Create directory if it doesn't exist
+            # Use telegram_id as filename, preserving original extension if possible (simple approach)
+            filename = f"{telegram_id}.jpg" # Assuming JPG for simplicity, can parse extension if needed
+            local_path = os.path.join(avatar_dir, filename)
+            with open(local_path, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            local_photo_url = f"/{avatar_dir}/{filename}" # Store the local URL path
+            logging.debug(f"Downloaded avatar for user {telegram_id} to {local_path}, URL: {local_photo_url}")
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Error downloading Telegram photo for user {telegram_id}: {e}")
+        except Exception as e:
+            logging.exception(f"Error saving downloaded photo for user {telegram_id}: {e}")
+
+    # Store the local photo URL (or None if download failed/no photo) in the session
+    session['telegram_photo_url'] = local_photo_url
+    
     # Generate a unique token and store it in the database
     db_token = str(uuid.uuid4())
     auth_token = AuthToken(token=db_token, user_id=user_id)
@@ -172,6 +199,16 @@ def home():
 
 
 #API ROUTES
+
+@app.route('/user_avatars/<filename>')
+def serve_user_avatar(filename):
+    # Serve user avatars from the directory within the mounted volume
+    # This endpoint is likely not needed if Nginx is serving static files
+    # But keeping it here for direct access if needed for debugging or alternative setup
+    avatar_volume_dir = '/app/card_imgs/user_avatars'
+    # os.makedirs(avatar_volume_dir, exist_ok=True) # Ensure directory exists - should be handled by download
+    logging.debug(f"Attempting to serve avatar: {filename} from {avatar_volume_dir}")
+    return send_from_directory(avatar_volume_dir, filename)
 
 @app.route('/card_imgs/<filename>')
 def serve_card_image(filename):
