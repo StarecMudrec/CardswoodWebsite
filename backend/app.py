@@ -3,7 +3,7 @@ import hmac
 from hashlib import sha256
 import uuid  # For generating unique tokens
 
-from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify, send_from_directory 
+from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify, send_from_directory, session
 from flask_migrate import Migrate
 # import jwt
 from joserfc.errors import JoseError
@@ -28,7 +28,7 @@ with app.app_context():
 
 
 # Authentication Helper Function
-def is_authenticated(request):
+def is_authenticated(request, session):
     token = request.args.get("token") or request.cookies.get("token")
     if not token:
         logging.debug("No token found in request")
@@ -41,7 +41,12 @@ def is_authenticated(request):
             logging.debug("Token not found in database")
             return False, None
 
+        # Optionally store user_id in session for easier access later
+        session['user_id'] = auth_token.user_id
+
         logging.debug("Token is valid (database check)")
+        # In a real app, you might fetch more user info here
+        # For now, we just return the user_id from the token
         return True, auth_token.user_id
 
     except Exception as e:
@@ -133,25 +138,25 @@ def return_home():
 # Main Route (Checks for Authentication)
 @app.route("/login")
 def login():
-    is_auth, user_id = is_authenticated(request)
+    is_auth, user_id = is_authenticated(request, session)
     if is_auth:
         return redirect(url_for("home"))
     else:
         if request.args.get('check_auth'):
-            is_auth, user_id = is_authenticated(request)
+            is_auth, user_id = is_authenticated(request, session)
             return jsonify({
                 'type': 'auth-status',
                 'isAuthenticated': is_auth,
                 'userId': user_id
             }), 200
-    
+
         #return render_template("login.html")
 
 
 # Home Route (Protected Page)
 @app.route("/home")
 def home():
-    is_auth, _ = is_authenticated(request)
+    is_auth, _ = is_authenticated(request, session)
     return render_template("homepage.html", is_auth=is_auth)
 
 
@@ -197,11 +202,25 @@ def get_comments(card_id):
 
 @app.route("/api/check_auth")
 def check_auth():
-    is_auth, user_id = is_authenticated(request)
+    is_auth, user_id = is_authenticated(request, session)
     return jsonify({
         'isAuthenticated': is_auth,
         'userId': user_id
     }), 200
+
+@app.route("/api/user", methods=['GET'])
+def get_user_info():
+    user_id = session.get('user_id')
+
+    if user_id:
+        # In a real application, you would fetch user details from your database
+        # based on user_id. For now, let's return placeholder or mock data.
+        # Assuming you might have stored telegram user info during auth.
+        # You'll need to adapt this based on how you store user info.
+        # Example placeholder:
+        user_data = {"first_name": "Telegram", "last_name": "User", "photo_url": "https://via.placeholder.com/40"} # Replace with actual logic to fetch user data
+        return jsonify(user_data), 200
+    return jsonify({"message": "Not authenticated"}), 401
 
 
 if __name__ == "__main__":

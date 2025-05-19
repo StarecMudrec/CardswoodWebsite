@@ -6,7 +6,7 @@
         <component :is="Component" />
       </transition>
     </router-view>
-    <div class="user-info">
+    <div class="user-info">  
       <img src="@/assets/default-avatar.png" alt="User Avatar" class="avatar">
       <span class="username">Username</span>
     </div>
