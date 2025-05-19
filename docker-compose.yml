@@ -22,12 +22,12 @@ services:
     ports:
       - "5173:5173"
     volumes:
-      - /app/node_modules
       - ./frontend:/app:rw
-    user: "node"
+      - /app/node_modules
     environment:
       NODE_ENV: development
-    command: npm run dev
+    command: >
+      sh -c "chown -R node.node /app"
 
   web:
     build: ./backend
@@ -51,5 +51,5 @@ services:
 
 volumes:
   postgres_data: {}
-  card_images: {}
   frontend_node_modules: {}
+  card_images: {}
