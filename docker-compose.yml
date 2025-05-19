@@ -22,6 +22,7 @@ services:
     ports:
       - "5173:5173"
     volumes:
+      - /app/node_modules
       - ./frontend:/app:rw
     environment:
       NODE_ENV: development
@@ -50,3 +51,4 @@ services:
 volumes:
   postgres_data: {}
   card_images: {}
+  frontend_node_modules: {}
