@@ -7,7 +7,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 7YD8£73vIo
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: cards  # Главная база данных
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d cards"]
@@ -39,8 +39,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:7YD8£73vIo@db:5432/cards
+    environment:      
+      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:postgres@db:5432/cards
       BOT_TOKEN_HASH: 7505659847:AAF3AoBU0HFInjsPPOqz4KaPmX3M15l9f1U
       FLASK_APP: wsgi:app
     command: >
