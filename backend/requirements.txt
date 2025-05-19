@@ -6,4 +6,4 @@ uuid
 flask_cors
 datetime
 psycopg2-binary
-
+requests
