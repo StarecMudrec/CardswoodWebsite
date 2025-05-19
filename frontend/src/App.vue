@@ -6,6 +6,10 @@
         <component :is="Component" />
       </transition>
     </router-view>
+    <div class="user-info">
+      <img src="@/assets/default-avatar.png" alt="User Avatar" class="avatar">
+      <span class="username">Username</span>
+    </router-view>
   </div>
 </template>
 
@@ -63,4 +67,24 @@ body {
 .fade-leave-to {
   opacity: 0;
 }
+
+.user-info {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+.user-info .avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+  border: 1px solid var(--border-color);
+  object-fit: cover; /* Ensure the image covers the area without distortion */
+}
+
 </style>
