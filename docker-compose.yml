@@ -23,8 +23,6 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app:rw
-      - /app/node_modules
-    user: "1000:1000"
     environment:
       NODE_ENV: development
     command: npm run dev
@@ -51,5 +49,4 @@ services:
 
 volumes:
   postgres_data: {}
-  frontend_node_modules: {}
   card_images: {}
