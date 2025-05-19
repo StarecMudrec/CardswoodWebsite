@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cards  # Главная база данных
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cards"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "127.0.0.1:5432:5432"
+
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - card_images:/app/card_imgs
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:postgres@db:5432/cards
+      BOT_TOKEN_HASH: 7505659847:AAF3AoBU0HFInjsPPOqz4KaPmX3M15l9f1U
+    command: >
+      sh -c "flask db migrate -m 'Initial migration' &&
+      flask db upgrade &&
+      gunicorn --bind 0.0.0.0:8000 wsgi:app"
+
+volumes:
+  postgres_data:
+  card_images:
