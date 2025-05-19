@@ -5,6 +5,7 @@ import uuid  # For generating unique tokens
 
 from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify, send_from_directory, session
 from flask_migrate import Migrate
+import requests  # Import the requests library
 # import jwt
 from joserfc.errors import JoseError
 import logging
@@ -54,6 +55,24 @@ def is_authenticated(request, session):
         return False, None
 
 
+# Function to download avatar image
+def download_avatar(url, user_id):
+    if not url:
+        return None
+    avatar_dir = 'backend/avatars'
+    os.makedirs(avatar_dir, exist_ok=True)
+    filename = os.path.join(avatar_dir, f"{user_id}.jpg")  # Assuming avatars are JPEGs, adjust if needed
+    try:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()  # Raise an exception for bad status codes
+        with open(filename, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+        return filename
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error downloading avatar from {url}: {e}")
+        return None
+
 # Telegram OAuth Callback Route
 @app.route("/auth/telegram-callback")
 def telegram_callback():
@@ -82,8 +101,14 @@ def telegram_callback():
     username = request.args.get("username")
     photo_url = request.args.get("photo_url")
 
+    # Download and save the avatar image
+    local_avatar_path = download_avatar(photo_url, user_id)
+
     # Store Telegram data in session
-    session.update(telegram_id=telegram_id, telegram_first_name=first_name, telegram_last_name=last_name, telegram_username=username, telegram_photo_url=photo_url)
+    session.update(telegram_id=telegram_id,
+                   telegram_first_name=first_name,
+                   telegram_last_name=last_name,
+                   telegram_username=username, local_avatar_path=local_avatar_path) # Store local path instead of original URL
 
     # Generate a unique token and store it in the database
     db_token = str(uuid.uuid4())
@@ -227,7 +252,9 @@ def get_user_info():
             "id": session.get('telegram_id'),
             "first_name": session.get('telegram_first_name'),
             "last_name": session.get('telegram_last_name'),
-            "photo_url": session.get('telegram_photo_url')}
+            # Use the local avatar path to construct the URL
+            "photo_url": url_for('serve_avatar', user_id=user_id) if session.get('local_avatar_path') else session.get('telegram_photo_url') # Fallback to original URL if local file not found
+        }
         return jsonify(user_data), 200
     return jsonify({'error': 'User not authenticated'}), 401
 
@@ -235,3 +262,12 @@ def get_user_info():
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
 
+@app.route('/avatars/<int:user_id>')
+def serve_avatar(user_id):
+    avatar_dir = 'backend/avatars'
+    filename = f"{user_id}.jpg" # Assuming JPG extension
+
+    try:
+        return send_from_directory(avatar_dir, filename)
+    except FileNotFoundError:
+        return "Avatar not found", 404
