@@ -1,0 +1,46 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import Home from '@/views/Home.vue'
+import Login from '@/components/Login.vue'
+import CardDetail from '@/views/CardDetail.vue'
+
+const routes = [
+  {
+    path: '/',
+    name: 'Cards',
+    component: Home
+  },
+  {
+    path: '/home',
+    redirect: '/' // Перенаправление с /home на /
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
+  },
+  {
+    path: '/card/:uuid',
+    name: 'CardDetail',
+    component: CardDetail,
+    props: true
+  },
+  {
+    path: '/logout',
+    beforeEnter: (to, from, next) => {
+      // Логика выхода
+      next('/') // Перенаправление на главную после выхода
+    }
+  },
+  {
+    path: '/termins',
+    name: 'Termins',
+    component: () => import('@/views/Termins.vue')
+  }
+]
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+export default router
