@@ -1,25 +1,48 @@
 <template>
   <div id="app">
-    <Navbar />
+    <Navbar :user="user"/>
     <router-view v-slot="{ Component }">
       <transition name="fade" mode="out-in">
         <component :is="Component" />
       </transition>
     </router-view>
-    <div class="user-info">  
-      <img src="@/assets/default-avatar.png" alt="User Avatar" class="avatar">
-      <span class="username">Username</span>
+    <div class="user-info" v-if="user">
+      <img :src="user.photo_url" alt="User Avatar" class="avatar">
+      <span class="username">
+        {{ user.first_name }} {{ user.last_name }}
+      </span>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'; // Import axios
 import Navbar from '@/components/Navbar.vue'
+import router from './router'; // Import router
 
 export default {
-  components: {
-    Navbar
-  }
+  name: 'App',
+  components: { Navbar },
+  data() {
+    return {
+      user: null // Initialize user data to null
+    };
+  },
+  mounted() {
+    // Make a GET request to the user endpoint on component mount
+    axios.get('/api/user')
+      .then(response => {
+        if (response.status === 200 && response.data) {
+          this.user = response.data; // Set the user data if authenticated
+        } else {
+          this.user = null; // Ensure user is null if not authenticated
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+        this.user = null; // Ensure user is null on error
+      });
+  },
 }
 </script>
 
@@ -81,7 +104,7 @@ body {
 .user-info .avatar {
   width: 30px;
   height: 30px;
-  border-radius: 50%;
+  border-radius: 50%; /* Make the avatar round */
   margin-right: 10px;
   border: 1px solid var(--border-color);
   object-fit: cover; /* Ensure the image covers the area without distortion */
