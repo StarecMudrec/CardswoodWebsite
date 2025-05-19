@@ -9,7 +9,7 @@
     <div class="user-info">
       <img src="@/assets/default-avatar.png" alt="User Avatar" class="avatar">
       <span class="username">Username</span>
-    </router-view>
+    </div>
   </div>
 </template>
 
