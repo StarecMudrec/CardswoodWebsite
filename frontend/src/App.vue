@@ -40,16 +40,9 @@ html, body {
   background-color: var(--bg-color);
 }
 
-#app {
+.global-container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: var(--text-color);
-  background-color: var(--bg-color);
-  min-height: 100vh;
-  padding: 0;
-  display: flex;
-  justify-content: center;
   align-items: center;
   margin: 0;
 }

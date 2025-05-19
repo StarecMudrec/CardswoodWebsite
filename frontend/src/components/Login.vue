@@ -54,6 +54,10 @@ export default {
   border-radius: 8px;
   border: 1px solid var(--border-color);
   text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 h1 {
