@@ -15,7 +15,7 @@ services:
       timeout: 5s
       retries: 10
     ports:
-      - "127.0.0.1:5433:5433"
+      - "0.0.0.0:5433:5432"
 
   frontend:
     build: ./frontend
@@ -40,7 +40,7 @@ services:
       db:
         condition: service_healthy
     environment:      
-      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:postgres@db:5432/cards
+      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:]7YD8£73vIo(@db:5432/cards
       BOT_TOKEN_HASH: 7505659847:AAF3AoBU0HFInjsPPOqz4KaPmX3M15l9f1U
       FLASK_APP: wsgi:app
     command: >
