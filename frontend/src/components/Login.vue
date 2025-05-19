@@ -2,7 +2,6 @@
   <div class="login-container">
     <h1>Please log in</h1>
     <p>Only selected users may access this site.</p>
-
     <div ref="telegramWidget"></div>
 
     <router-link to="/" class="back-link">← Back to home</router-link>
