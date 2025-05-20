@@ -264,3 +264,19 @@ def serve_avatar(user_id):
         return send_from_directory(avatar_dir, filename)
     except FileNotFoundError:
         return "Avatar not found", 404
+
+@app.route('/proxy/avatar')
+def proxy_avatar():
+    """Proxies avatar images from a given URL."""
+    image_url = request.args.get('url')
+    if not image_url:
+        return "Missing image URL", 400
+
+    try:
+        response = requests.get(image_url, stream=True)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+        # Return the image data with the appropriate content type
+        return response.content, response.status_code, {'Content-Type': response.headers.get('Content-Type', 'image/jpeg')}
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error proxying avatar from {image_url}: {e}")
+        return "Image not found or could not be downloaded.", 404
