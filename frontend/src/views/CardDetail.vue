@@ -16,6 +16,8 @@
       
       <div class="card-info">
         <h1>{{ card.name }}</h1>
+        
+        <h3>Category</h3>
         <div class="card-meta">
           <span class="card-category">{{ card.category }}</span>
         </div>
@@ -31,6 +33,7 @@
                 </div>
 
         <div class="card-info-section">
+        <h3>Description</h3>
           <p>{{ card.description }}</p>
         </div>
         
