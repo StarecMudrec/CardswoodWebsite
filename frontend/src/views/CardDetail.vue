@@ -18,11 +18,19 @@
         <h1>{{ card.name }}</h1>
         <div class="card-meta">
           <span class="card-category">{{ card.category }}</span>
-          <span class="card-season">Season: {{ seasonName }}</span>
         </div>
-        
-        <div class="card-description">
-          <h3>Description</h3>
+
+        <div class="card-info-section">
+                  <h3>Season</h3>
+        <p>{{ seasonName }}</p>
+        </div>
+
+        <div class="card-info-section">
+        <h3>Rarity</h3>
+        <p>{{ card.rarity }}</p>
+                </div>
+
+        <div class="card-info-section">
           <p>{{ card.description }}</p>
         </div>
         
@@ -148,25 +156,21 @@ export default {
   color: #aaa;
 }
 
-.card-description {
-  margin-bottom: 40px;
+.card-info-section {
+ margin-bottom: 20px;
 }
 
-.card-description h3 {
+.card-info-section h3 {
   font-size: 20px;
   margin-bottom: 15px;
   color: var(--accent-color);
 }
 
-.card-description p {
+.card-info-section p {
   line-height: 1.6;
 }
 
-.comments-section {
-  margin-top: 40px;
-}
-
-.comments-section h3 {
+ .comments-section h3 {
   font-size: 20px;
   margin-bottom: 20px;
   color: var(--accent-color);
