@@ -277,6 +277,11 @@ def proxy_avatar():
         response.raise_for_status()  # Raise an HTTPError for bad responses
         # Return the image data with the appropriate content type
         return response.content, response.status_code, {'Content-Type': response.headers.get('Content-Type', 'image/jpeg')}
+        response = make_response(response.content)
+        response.headers['Content-Type'] = response.headers.get('Content-Type', 'image/jpeg')
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        return response
     except requests.exceptions.RequestException as e:
         logging.error(f"Error proxying avatar from {image_url}: {e}")
         return "Image not found or could not be downloaded.", 404
