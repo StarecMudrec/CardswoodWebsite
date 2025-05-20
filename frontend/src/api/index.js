@@ -4,11 +4,11 @@
 export const fetchSeasons = async () => {
   const response = await fetch('/api/seasons')
   if (!response.ok) throw new Error('Failed to fetch seasons')
-  const seasonUuids = await response.json()
-  
+  const seasonIds = await response.json()
+
   const seasons = await Promise.all(
-    seasonUuids.map(async uuid => {
-      const seasonResponse = await fetch(`/api/season_info/${uuid}`)
+    seasonIds.map(async seasonId => {
+      const seasonResponse = await fetch(`/api/season_info/${seasonId}`)
       if (!seasonResponse.ok) throw new Error('Failed to fetch season info')
       return seasonResponse.json()
     })
