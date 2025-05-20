@@ -17,7 +17,7 @@ class Card(db.Model):
     uuid = db.Column(db.String, nullable=False, unique=True)
     img = db.Column(db.String)
     category = db.Column(db.String(20))
-    name = db.Column(db.String(20))
+    name = db.Column(db.String(100))
     description = db.Column(db.String(1000))
     season_id = db.Column(db.Integer, db.ForeignKey('season.id', ondelete='CASCADE'), nullable=False)
 
@@ -36,7 +36,7 @@ class Card(db.Model):
 class Season(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     uuid = db.Column(db.String, nullable=False, unique=True)
-    name = db.Column(db.String(20))
+    name = db.Column(db.String(100))
 
     def present(self):
         return {"id": self.id, 
