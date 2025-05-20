@@ -18,9 +18,10 @@
         <h1>{{ card.name }}</h1>
 
         <div class="card-info-section">
-        <h3>Category</h3>
-        <div class="card-meta">
-          <span class="card-category">{{ card.category }}</span>
+          <h3>Category</h3>
+          <div class="card-meta">
+            <span class="card-category">{{ card.category }}</span>
+          </div>
         </div>
 
         <div class="card-info-section">
