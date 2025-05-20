@@ -101,14 +101,8 @@ def telegram_callback():
     username = request.args.get("username")
     photo_url = request.args.get("photo_url")
 
-    # Download and save the avatar image
-    local_avatar_path = download_avatar(photo_url, user_id)
-
     # Store Telegram data in session
-    session.update(telegram_id=telegram_id,
-                   telegram_first_name=first_name,
-                   telegram_last_name=last_name,
-                   telegram_username=username, local_avatar_path=local_avatar_path) # Store local path instead of original URL
+    session.update(telegram_id=telegram_id, telegram_first_name=first_name, telegram_last_name=last_name, telegram_username=username, telegram_photo_url=photo_url)
 
     # Generate a unique token and store it in the database
     db_token = str(uuid.uuid4())
@@ -252,9 +246,7 @@ def get_user_info():
             "id": session.get('telegram_id'),
             "first_name": session.get('telegram_first_name'),
             "last_name": session.get('telegram_last_name'),
-            # Use the local avatar path to construct the URL
-            # Check if a local avatar path exists and if the file exists, otherwise set to None
-            "photo_url": url_for('serve_avatar', user_id=user_id) if session.get('local_avatar_path') and os.path.exists(session.get('local_avatar_path')) else None
+            "photo_url": session.get('telegram_photo_url')
         }
         return jsonify(user_data), 200
     return jsonify({'error': 'User not authenticated'}), 401
