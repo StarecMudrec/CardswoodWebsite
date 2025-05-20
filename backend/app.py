@@ -218,9 +218,9 @@ def get_card_info(card_id):
     card = Card.query.filter_by(uuid=card_id).first_or_404()
     return jsonify(card.present()), 200
 
-@app.route("/api/season_info/<season_id>")
+@app.route("/api/season_info/<int:season_id>")
 def get_season_info(season_id):  
-    season = Season.query.filter_by(uuid=season_id).first_or_404()
+    season = Season.query.filter_by(id=season_id).first_or_404()
     return jsonify(season.present()), 200
 
 @app.route("/api/comments/<card_id>")
