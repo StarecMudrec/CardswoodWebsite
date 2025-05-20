@@ -16,7 +16,8 @@
       
       <div class="card-info">
         <h1>{{ card.name }}</h1>
-        
+
+        <div class="card-info-section">
         <h3>Category</h3>
         <div class="card-meta">
           <span class="card-category">{{ card.category }}</span>
@@ -26,11 +27,6 @@
                   <h3>Season</h3>
         <p>{{ seasonName }}</p>
         </div>
-
-        <div class="card-info-section">
-        <h3>Rarity</h3>
-        <p>{{ card.rarity }}</p>
-                </div>
 
         <div class="card-info-section">
         <h3>Description</h3>
