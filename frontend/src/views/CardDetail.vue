@@ -2,7 +2,7 @@
   <div class="card-detail-container">
     <div v-if="loading" class="loading">Loading card details...</div>
     <div v-else-if="error" class="error-message">Error loading card: {{ error }}</div>
-    <div v-else-if="card.id" class="card-detail">
+    <div v-else class="card-detail">
       <div class="card-image-container">
         <img 
           v-if="card.img" 
@@ -40,9 +40,6 @@
         </div>
       </div>
     </div>
-    <div v-else class="not-found">
-      Card not found.
-    </div>
   </div>
 </template>
 
@@ -77,9 +74,6 @@ export default {
       
       // Fetch comments
       this.comments = await fetchComments(this.card.id)
-    } else {
-      // Card not found
-      this.error = 'Card not found';
     } catch (err) {
       this.error = err.message || 'Failed to load card details'
       console.error('Error loading card:', err)
@@ -90,28 +84,17 @@ export default {
 }
 </script>
 
-<style>
-/* Global styles from App.vue */
-:root {
-  --background-color: #1a1a1a;
-  --text-color: #ffffff;
-  --accent-color: #ff5555;
-  --card-background: #2a2a2a;
-  --border-color: #444;
-}
-
+<style scoped>
 .card-detail-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  color: var(--text-color);
 }
 
 .loading, .error-message {
   text-align: center;
   margin: 50px 0;
   font-size: 18px;
-  color: var(--text-color);
 }
 
 .error-message {
@@ -123,7 +106,6 @@ export default {
   grid-template-columns: 1fr 2fr;
   gap: 40px;
   margin-top: 30px;
-  background-color: var(--card-background);
 }
 
 .card-image-container {
@@ -135,7 +117,7 @@ export default {
   max-height: 600px;
   object-fit: contain;
   border-radius: 8px;
-  background-color: var(--background-color);
+  background-color: #1e1e1e;
 }
 
 .image-placeholder {
@@ -145,7 +127,7 @@ export default {
   align-items: center;
   justify-content: center;
   background-color: #1e1e1e;
-  color: var(--text-color);
+  color: #666;
   border-radius: 8px;
 }
 
@@ -163,7 +145,7 @@ export default {
   display: flex;
   gap: 20px;
   margin-bottom: 30px;
-  color: var(--text-color);
+  color: #aaa;
 }
 
 .card-description {
@@ -191,19 +173,19 @@ export default {
 }
 
 .no-comments {
-  color: var(--text-color);
+  color: #666;
   font-style: italic;
 }
 
 .comment {
-  background-color: var(--background-color);
+  background-color: #1e1e1e;
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 15px;
 }
 
 .comment-text {
-  margin-bottom: 8px;color: var(--text-color);
+  margin-bottom: 8px;
 }
 
 .comment-meta {
