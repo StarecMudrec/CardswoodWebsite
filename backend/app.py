@@ -268,12 +268,12 @@ def serve_avatar(user_id):
 @app.route('/proxy/avatar')
 def proxy_avatar():
     """Proxies avatar images from a given URL."""
-    image_url = request.args.get('url')
-    if not image_url:
+    url = request.args.get('url')
+    logging.debug(f"Proxying avatar from URL: {url}")
+    if not url:
         return "Missing image URL", 400
-
     try:
-        response = requests.get(image_url, stream=True)
+        response = requests.get(url, stream=True)
         response.raise_for_status()  # Raise an HTTPError for bad responses
         # Return the image data with the appropriate content type
         return response.content, response.status_code, {'Content-Type': response.headers.get('Content-Type', 'image/jpeg')}
@@ -283,5 +283,5 @@ def proxy_avatar():
         response.headers['Pragma'] = 'no-cache'
         return response
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error proxying avatar from {image_url}: {e}")
+        logging.error(f"Error proxying avatar from {url}: {e}")
         return "Image not found or could not be downloaded.", 404
