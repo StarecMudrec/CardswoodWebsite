@@ -144,7 +144,7 @@ export default {
 }
 
 .card-info h1 {
-  font-size: 28px;
+  font-size: 36px;
   margin-bottom: 15px;
   color: var(--accent-color);
 }
