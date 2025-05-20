@@ -16,7 +16,7 @@
       
       <div class="card-info">
         <h1>{{ card.name }}</h1>
-
+        <h2></h2>
         <div class="card-info-section">
           <h3>Category</h3>
           <div class="card-meta">
