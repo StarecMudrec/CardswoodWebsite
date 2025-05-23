@@ -215,7 +215,7 @@ export default {
   color: #aaa;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .card-detail {
     grid-template-columns: 1fr;
   }

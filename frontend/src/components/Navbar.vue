@@ -69,7 +69,7 @@ export default {
   width: 100%;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .menu {
     gap: 20px;
     margin-bottom: 30px;
