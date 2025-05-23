@@ -14,8 +14,12 @@
             @error="imageError = true"
           />
           <div v-else class="image-placeholder">No image available</div>
+          <h3>Description</h3>
+          <div class="card-description-overlay">
+            <p>{{ card.description }}</p>
+          </div>
         </div>
-        
+
         <div class="card-main-content">
           <h1>{{ card.name }}</h1>
 
@@ -32,10 +36,7 @@
 
             </div>
           </div>
-          <h3>Description</h3>
-          <div class="card-description-section">
-            <p>{{ card.description }}</p>
-          </div>
+
           <div v-if="comments.length === 0" class="no-comments">
             No comments yet
           </div>
@@ -158,6 +159,23 @@ export default {
   border-color: var(--card-border-color);
 }
 
+.card-description-overlay {
+  position: absolute;
+  top: 100%; /* Position below the image */
+  left: 0;
+  width: 100%;
+  padding-top: 20px; /* Add space below the image */
+  color: var(--text-color);
+}
+
+.card-description-overlay p {
+  font-size: 18px;
+  line-height: 1.6;
+  word-wrap: break-word; /* Ensure text wraps */
+  overflow-wrap: break-word;
+  text-align: center; /* Center the description text */
+}
+
 .card-main-content {
   color: var(--text-color);
 }
@@ -194,13 +212,6 @@ export default {
   overflow-wrap: break-word;
 }
 
-.card-info-columns {
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  margin-bottom: 20px;
-  margin-top: 10%;
-}
 
 .card-info-column {
   flex: 1;
