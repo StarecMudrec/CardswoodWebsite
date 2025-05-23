@@ -156,12 +156,13 @@ export default {
   background-size: cover;
   background-position: center 57%;
   z-index: -1;
+  border-bottom: 2px solid var(--card-border-color);
 }
 
 .card-detail-container {
-  max-width: 1500px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 30px;
 }
 
 .loading, .error-message {
@@ -179,6 +180,7 @@ export default {
   grid-template-columns: 1fr 2fr;
   gap: 40px;
   margin-top: 30px;
+  position: relative;
 }
 
 .card-image-container {
@@ -229,29 +231,48 @@ export default {
   color: var(--text-color);
   width: 100%;
   overflow: hidden;
+  position: relative;
+  padding-bottom: 120px;
+  min-height: 500px;
 }
 
 .card-main-content h1 {
-  margin: 0 0 17px 0;
-  padding: 0;
+  margin: 0 0 25px 0;
+  padding: 15px;
   white-space: nowrap;
   font-size: 100px;
   line-height: 1.2;
   transition: font-size 0.2s ease;
   will-change: font-size;
+  background-color: rgba(30, 30, 30, 0.8);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  width: fit-content;
+  max-width: 100%;
 }
 
 .card-info-columns {
   display: flex;
   justify-content: space-around;
   width: 100%;
-  margin-bottom: 20px;
-  margin-top: 2%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background-color: var(--bg-color);
+  padding: 25px 0;
+  border-top: 2px solid var(--card-border-color);
+  margin: 0;
+}
+
+.card-info-column {
+  flex: 1;
+  padding: 0 20px;
+  text-align: center;
 }
 
 .card-info-column h3 {
   font-size: 25px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   color: var(--accent-color);
 }
 
@@ -260,12 +281,6 @@ export default {
   line-height: 1.6;
   word-wrap: break-word;
   overflow-wrap: break-word;
-}
-
-.card-info-column {
-  flex: 1;
-  padding: 0 10px;
-  text-align: center;
 }
 
 .description-h3 {
@@ -281,6 +296,11 @@ export default {
 .no-comments {
   color: #666;
   font-style: italic;
+  margin-bottom: 20px;
+}
+
+.comments-list {
+  margin-bottom: 140px;
 }
 
 .comment {
@@ -304,13 +324,40 @@ export default {
     grid-template-columns: 1fr;
   }
   
+  .card-main-content {
+    padding-bottom: 0;
+    min-height: auto;
+  }
+  
+  .card-info-columns {
+    position: static;
+    margin-top: 30px;
+    padding: 20px 0;
+    border-top: 2px solid var(--card-border-color);
+  }
+  
   .card-main-content h1 {
     font-size: 60px;
+    padding: 10px;
   }
   
   .card-detail-image, .image-placeholder {
     max-height: 400px;
     border-width: 10px;
+  }
+  
+  .comments-list {
+    margin-bottom: 30px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .card-detail-container {
+    max-width: 1500px;
+  }
+  
+  .card-main-content h1 {
+    font-size: 110px;
   }
 }
 </style>
