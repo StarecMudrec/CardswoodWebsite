@@ -19,9 +19,8 @@
             <p>{{ card.description }}</p>
           </div>
         </div>
-
         <div class="card-main-content">
-          <h1>{{ card.name }}</h1>
+          <h1 ref="cardNameRef">{{ card.name }}</h1>
 
           <div class="card-info-columns">
             <div class="card-info-column">
@@ -53,6 +52,7 @@
 
 <script>
 import { fetchCardInfo, fetchSeasonInfo, fetchComments } from '@/api'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'; // Make sure nextTick is imported
 
 export default {
   props: {
@@ -88,6 +88,66 @@ export default {
     } finally {
       this.loading = false
     }
+  }
+,
+  setup(props) {
+    const cardNameRef = ref(null);
+
+    const adjustFontSize = () => {
+      if (cardNameRef.value && cardNameRef.value.parentElement) {
+        const container = cardNameRef.value.parentElement;
+        const textElement = cardNameRef.value;
+
+        textElement.style.fontSize = '100px'; // Reset
+
+        const containerWidth = container.offsetWidth;
+        const textWidth = textElement.offsetWidth;
+
+        if (textWidth > containerWidth) {
+          const newFontSize = (containerWidth / textWidth) * parseFloat(getComputedStyle(textElement).fontSize);
+          textElement.style.fontSize = `${newFontSize}px`;
+        } else {
+           textElement.style.fontSize = '100px'; // Reset to base if it fits
+        }
+      }
+    };
+
+    const loadCardDetail = async (uuid) => {
+      // ... your existing data fetching logic ...
+      try {
+        const cardData = await fetchCardDetail(uuid);
+        card.value = cardData;
+        cardImageUrl.value = `/card_imgs/${cardData.image_filename}`;
+        seasonId.value = cardData.season_id;
+
+        // After data is loaded and potentially updated in the DOM
+        // Use nextTick to ensure DOM is updated before measuring
+        nextTick(() => {
+          adjustFontSize();
+        });
+
+      } catch (error) {
+        console.error('Error fetching card detail:', error);
+      }
+    };
+
+    onMounted(() => {
+      loadCardDetail(props.uuid);
+      // Also adjust font size on window resize
+      window.addEventListener('resize', adjustFontSize);
+    });
+
+    onUnmounted(() => {
+      // Clean up resize event listener
+      window.removeEventListener('resize', adjustFontSize);
+    });
+
+    watch(() => props.uuid, (newUuid) => {
+      loadCardDetail(newUuid);
+    });
+
+    onUnmounted(() => { window.removeEventListener('resize', adjustFontSize); });
+    return { cardNameRef };
   }
 }
 </script>
@@ -179,14 +239,7 @@ export default {
 
 .card-main-content h1 {
   display: flex;
-  align-items: center;
-  white-space: nowrap; /* Prevent wrapping */
-  overflow: hidden; /* Hide overflowing text */
-  text-overflow: ellipsis; /* Add ellipsis for truncated text (optional) */
-  font-size-adjust: ch-width 0.73;
-  font-size-adjust: cap-height 0.73;
   margin-bottom: 17px;
-  align-self: center;
 }
 
 .card-meta {
