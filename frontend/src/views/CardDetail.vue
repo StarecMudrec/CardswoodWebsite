@@ -138,7 +138,7 @@ export default {
   max-height: 600px;
   object-fit: contain;
   border-radius: 17px;
-  border-width: 10px;
+  border-width: 15px;
   border-color: var(--bg-color);
   border-style: solid;
   background-color: #1e1e1e;
