@@ -181,12 +181,13 @@ export default {
 }
 
 .card-info-section h3 {
-  font-size: 20px;
+  font-size: 25px;
   margin-bottom: 15px;
   color: var(--accent-color);
 }
 
 .card-info-section p {
+  font-size: 20px;
   line-height: 1.6;
 }
 
