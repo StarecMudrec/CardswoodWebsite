@@ -200,7 +200,7 @@ def serve_card_image(filename):
 
 @app.route("/api/seasons")
 def get_seasons():
-    seasons = Season.query.all()
+    seasons = Season.query.order_by(Season.id.asc()).all()
     season_ids = [season.id for season in seasons]
     # print(season_names)
     return jsonify(season_ids), 200
