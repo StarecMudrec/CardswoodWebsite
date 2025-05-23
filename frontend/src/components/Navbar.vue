@@ -55,7 +55,7 @@ export default {
   z-index: -1; /* Place behind the original text */
 }
 .nav-btn::before {
-  transform: translate(0px, 2px);
+  transform: translate(-1px, 2px);
 }
 
 .nav-btn:hover {
