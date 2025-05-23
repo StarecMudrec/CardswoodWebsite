@@ -108,6 +108,7 @@ h1 {
   .login-container {
     padding: 30px 20px;
     margin: 0 15px;
+    max-width: 300px;
   }
   
   h1 {
