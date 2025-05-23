@@ -164,7 +164,7 @@ export default {
 
 
 .card-info h1 {
-  font-size: 50px;
+  font-size: 70px;
   margin-bottom: 15px;
   color: var(--accent-color);
 }
@@ -177,7 +177,7 @@ export default {
 }
 
 .card-info-section {
- margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .card-info-column h3 {
