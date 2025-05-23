@@ -199,6 +199,14 @@ export default {
   margin-bottom: 20px;
 }
 
+.card-info-columns {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-bottom: 20px;
+  margin-top: 10%;
+}
+
 .card-info-column h3 {
   font-size: 25px;
   margin-bottom: 15px;
