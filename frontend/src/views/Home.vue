@@ -16,7 +16,6 @@
 }
 
 #seasons-container {
-  /* Add other styles for your seasons container here */
   margin-top: 600px; /* Keep existing margin-top */
   padding-bottom: 50px;
 }
