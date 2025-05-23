@@ -229,6 +229,10 @@ export default {
 .card-main-content h1 {
   display: flex;
   margin-bottom: 17px;
+  white-space: nowrap; /* Запрещаем перенос текста */
+  overflow: hidden; /* Скрываем выходящий за границы текст */
+  text-overflow: ellipsis; /* Добавляем многоточие если текст не помещается */
+  max-width: 100%; /* Ограничиваем максимальную ширину */
 }
 
 .card-meta {
