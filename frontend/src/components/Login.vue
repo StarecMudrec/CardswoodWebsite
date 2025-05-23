@@ -1,6 +1,7 @@
 <template>
-  <div class="login-container">
+  <div class="login-background">
     <h1>Please log in</h1>
+    <div class="login-container">
     <p></p>
     <div ref="telegramWidget"></div>
 
@@ -46,11 +47,14 @@ export default {
 
 <style scoped>
 .login-background {
-  background-image: url('/background.jpg');
+ background-image: url('/background.jpg');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
   min-height: 100vh;
+ display: flex; /* Add this to center the login container */
+ justify-content: center; /* Center horizontally */
+ align-items: center; /* Center vertically */
 }
 .login-container {
   width: 100%;
@@ -60,10 +64,6 @@ export default {
   border-radius: 17px;
   border: 1px solid var(--border-color);
   text-align: center;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }
 
 h1 {
