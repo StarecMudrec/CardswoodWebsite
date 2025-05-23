@@ -35,11 +35,11 @@
           <div class="card-info-section">
             <div class="card-info-columns">
               <div class="card-info-column">
-                <h3>Category</h3>
+                <h3>Category:</h3>
                 <p>{{ card.category }}</p>
               </div>
               <div class="card-info-column">
-                <h3>Season</h3>
+                <h3>Season:</h3>
                 <p>{{ seasonName }}</p>
               </div>
             </div>
@@ -228,6 +228,7 @@ export default {
 }
 
 .card-main-content {
+  color: var(--text-color);
   display: flex;
   flex-direction: column;
 }
