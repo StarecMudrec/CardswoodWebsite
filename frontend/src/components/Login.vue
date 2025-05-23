@@ -59,7 +59,10 @@ export default {
   justify-content: center; /* Center horizontally */
   align-items: center; /* Center vertically */
 }
+
 .login-container {
+  position: relative;
+  z-index: 1; /* Bring it above the background */
   width: 100%;
   max-width: 400px;
   padding: 40px;
