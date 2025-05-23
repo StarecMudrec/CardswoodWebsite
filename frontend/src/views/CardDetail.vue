@@ -76,37 +76,31 @@ export default {
       const element = cardNameRef.value
       const container = element.parentElement
       
-      // Сброс стилей для точного измерения
+      // Сброс стилей для чистого измерения
       element.style.fontSize = ''
       element.style.whiteSpace = 'nowrap'
-      element.style.textOverflow = 'clip'
+      element.style.width = 'auto'
+      element.style.display = 'inline-block'
       
       const containerWidth = container.offsetWidth
-      let minSize = 20
-      let maxSize = 100
-      let optimalSize = maxSize
+      let fontSize = parseInt(window.getComputedStyle(element).fontSize) || 100
       
       // Быстрая проверка - если текст уже помещается
-      element.style.fontSize = `${maxSize}px`
-      if (element.scrollWidth <= containerWidth) {
-        return // Оставляем максимальный размер
+      element.style.fontSize = `${fontSize}px`
+      if (element.offsetWidth <= containerWidth) {
+        return
       }
       
-      // Бинарный поиск оптимального размера
-      for (let i = 0; i < 10; i++) { // Ограничим количество итераций
-        const midSize = Math.floor((minSize + maxSize) / 2)
-        element.style.fontSize = `${midSize}px`
-        
-        if (element.scrollWidth > containerWidth) {
-          maxSize = midSize - 1
-        } else {
-          minSize = midSize + 1
-          optimalSize = midSize // Запоминаем последний подходящий размер
-        }
-      }
+      // Рассчитываем новый размер на основе соотношения ширины
+      const widthRatio = containerWidth / element.offsetWidth
+      fontSize = Math.floor(fontSize * widthRatio * 0.95) // 0.95 для небольшого запаса
       
-      // Устанавливаем оптимальный размер
-      element.style.fontSize = `${optimalSize}px`
+      // Ограничиваем минимальный и максимальный размер
+      fontSize = Math.max(20, Math.min(100, fontSize))
+      
+      // Применяем новый размер
+      element.style.fontSize = `${fontSize}px`
+      element.style.display = '' // Восстанавливаем исходное значение
     }
 
     const loadData = async () => {
@@ -119,10 +113,10 @@ export default {
         
         comments.value = await fetchComments(card.value.id)
         
+        // Двойная проверка с небольшим интервалом
         nextTick(() => {
           adjustFontSize()
-          // Дополнительная проверка после рендера
-          setTimeout(adjustFontSize, 50)
+          setTimeout(adjustFontSize, 100)
         })
       } catch (err) {
         error.value = err.message || 'Failed to load card details'
@@ -134,9 +128,7 @@ export default {
 
     onMounted(() => {
       loadData()
-      const resizeObserver = new ResizeObserver(() => {
-        adjustFontSize()
-      })
+      const resizeObserver = new ResizeObserver(adjustFontSize)
       if (cardNameRef.value?.parentElement) {
         resizeObserver.observe(cardNameRef.value.parentElement)
       }
