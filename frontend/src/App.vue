@@ -3,10 +3,12 @@
     <Navbar :user="user"/>
     <router-view v-slot="{ Component }">
       <transition name="fade" mode="out-in">
-        <component :is="Component" />
+        <div class="main-content">
+ <component :is="Component" />
+        </div>
       </transition>
     </router-view>
-    <div class="user-info" v-if="user">
+ <div class="user-info" v-if="user">
       <img :src="'/proxy/avatar?url=' + encodeURIComponent(user.photo_url)" alt="User Avatar" class="avatar">
       <span class="username">
         {{ user.first_name }} {{ user.last_name }}
@@ -108,6 +110,11 @@ body {
   margin-right: 10px;
   border: 1px solid var(--border-color);
   object-fit: cover; /* Ensure the image covers the area without distortion */
+}
+
+.main-content {
+ padding-top: 0;
+ margin-top: 0;
 }
 
 </style>
