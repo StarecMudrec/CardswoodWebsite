@@ -3,9 +3,7 @@
     <Navbar :user="user"/>
     <router-view v-slot="{ Component }">
       <transition name="fade" mode="out-in">
-        <div class="main-content">
- <component :is="Component" />
-        </div>
+        <component :is="Component" />
       </transition>
     </router-view>
  <div class="user-info" v-if="user">
@@ -110,11 +108,6 @@ body {
   margin-right: 10px;
   border: 1px solid var(--border-color);
   object-fit: cover; /* Ensure the image covers the area without distortion */
-}
-
-.main-content {
- padding-top: 0;
- margin-top: 0;
 }
 
 </style>
