@@ -111,7 +111,6 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  margin-top: 200px;
 }
 
 .loading, .error-message {
@@ -193,16 +192,17 @@ export default {
 }
 
 .card-info-columns {
- display: flex;
- justify-content: space-around;
- width: 100%;
- margin-bottom: 20px;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-bottom: 20px;
+  margin-top: 200px;
 }
 
 .card-info-column {
- flex: 1;
- padding: 0 10px;
- text-align: center;
+  flex: 1;
+  padding: 0 10px;
+  text-align: center;
 }
 
 
