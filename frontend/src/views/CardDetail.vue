@@ -22,7 +22,7 @@
           <div class="card-info-columns">
             <div class="card-info-column">
               <h3>Category</h3>
-              <p>{{ card.category }}</p>~
+              <p>{{ card.category }}</p>
             </div>
             <div class="card-info-column">
               <h3>Season</h3>
