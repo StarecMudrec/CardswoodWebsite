@@ -34,17 +34,16 @@
                 <p>{{ card.description }}</p>
               </div>
             </div>
-            <div v-if="comments.length === 0" class="no-comments">
-              No comments yet
-            </div>
-            <div v-else class="comments-list">
-              <div v-for="comment in comments" :key="comment.id" class="comment">
-                <div class="comment-text">{{ comment.text }}</div>
-                <div class="comment-meta">User #{{ comment.user_id }}</div>
-              </div>
+          </div>
+          <div v-if="comments.length === 0" class="no-comments">
+            No comments yet
+          </div>
+          <div v-else class="comments-list">
+            <div v-for="comment in comments" :key="comment.id" class="comment">
+              <div class="comment-text">{{ comment.text }}</div>
+              <div class="comment-meta">User #{{ comment.user_id }}</div>
             </div>
           </div>
-          
           <div class="comments-section">
           </div>
         </div>
