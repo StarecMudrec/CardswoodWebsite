@@ -180,13 +180,13 @@ export default {
  margin-bottom: 20px;
 }
 
-.card-info-section h3 {
+.card-info-column h3 {
   font-size: 25px;
   margin-bottom: 15px;
   color: var(--accent-color);
 }
 
-.card-info-section p {
+.card-info-column p {
   font-size: 20px;
   line-height: 1.6;
 }
