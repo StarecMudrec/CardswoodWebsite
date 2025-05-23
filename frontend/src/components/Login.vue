@@ -106,7 +106,7 @@ h1 {
 
 @media (max-width: 480px) {
   .login-container {
-    padding: 30px 20px;
+    padding: 20px 20px;
     margin: 0 15px;
     max-width: 300px;
     position: center center;
