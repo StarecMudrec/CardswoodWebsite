@@ -50,7 +50,7 @@ export default {
   max-width: 400px;
   padding: 40px;
   background-color: var(--card-bg);
-  border-radius: 8px;
+  border-radius: 17px;
   border: 1px solid var(--border-color);
   text-align: center;
   position: absolute;
