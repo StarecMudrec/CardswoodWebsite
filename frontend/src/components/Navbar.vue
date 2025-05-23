@@ -54,6 +54,9 @@ export default {
   font-size: 29px; /* Slightly larger size for the outline effect */
   z-index: -1; /* Place behind the original text */
 }
+.nav-btn::before {
+  transform: translate(1px, 2px);
+}
 
 .nav-btn:hover {
   color: var(--hover-color);
