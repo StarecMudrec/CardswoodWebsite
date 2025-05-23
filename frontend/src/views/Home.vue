@@ -40,3 +40,22 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.background-container {
+  background-image: url('/background.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 400px; /* Adjust this height as needed */
+  width: 100%;
+  position: relative; /* Or 'absolute' depending on your layout needs */
+}
+
+/* Add some margin or padding to the content below the background image
+   to prevent it from overlapping */
+#seasons-container {
+  margin-top: 20px; /* Adjust this value */
+}
+
+/* ... other styles for your Home.vue component ... */
+</style>
