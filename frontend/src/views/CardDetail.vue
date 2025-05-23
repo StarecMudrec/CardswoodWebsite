@@ -200,7 +200,7 @@ export default {
   height: 2px;
   width: 100%;
   background-color: var(--card-border-color);
-  margin: 20px 0;
+  margin: 0px 0;
 }
 
 /* Вторичная граница */
