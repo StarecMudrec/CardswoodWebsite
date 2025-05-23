@@ -32,9 +32,9 @@
 
 .background-logo {
   position: absolute;
-  top: 50%;
+  top: 30%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 0);
   max-width: 300px; /* Adjust size as needed */
   max-height: 300px; /* Adjust size as needed */
   z-index: 1; /* Ensure it's behind the content */
