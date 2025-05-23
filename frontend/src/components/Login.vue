@@ -50,7 +50,7 @@ export default {
 .login-background {
   background-image: url('/background.jpg');
   background-size: cover;
-  background-position: center center;
+  background-position: center 100%;
   background-repeat: no-repeat;
   min-height: 100vh;
   display: flex; /* Add this to center the login container */
