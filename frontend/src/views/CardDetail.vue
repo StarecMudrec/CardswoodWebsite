@@ -202,7 +202,7 @@ export default {
   justify-content: space-around;
   width: 100%;
   margin-bottom: 20px;
-  margin-top: 5%;
+  margin-top: 2%;
 }
 
 .card-info-column h3 {
