@@ -30,6 +30,8 @@ export default {
   gap: 30px;
   margin: 30px 0 50px 0;
   padding: 0;
+  position: relative;
+  z-index: 100;
 }
 
 .nav-btn {
