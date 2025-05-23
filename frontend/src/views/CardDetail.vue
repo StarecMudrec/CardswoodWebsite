@@ -222,6 +222,7 @@ export default {
   
   .card-detail-image, .image-placeholder {
     max-height: 400px;
+    border-width: 10px;
   }
 }
 </style>
