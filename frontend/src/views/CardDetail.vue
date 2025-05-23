@@ -22,15 +22,11 @@
           <div class="card-info-columns">
             <div class="card-info-column">
               <h3>Category</h3>
-              <div class="card-meta">
-                <p>{{ card.category }}</p>
-              </div>
+              <p>{{ card.category }}</p>~
             </div>
             <div class="card-info-column">
               <h3>Season</h3>
-              <div class="card-meta">
-                <p>{{ seasonName }}</p>
-              </div>
+              <p>{{ seasonName }}</p>
             </div>
             <div class="card-info-column">
               <h3>Description</h3>
