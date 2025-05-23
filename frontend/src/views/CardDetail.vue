@@ -178,8 +178,8 @@ export default {
 
 
 .card-main-content h1 {
-  font-size: 70px;
-  margin-bottom: 15px;
+  font-size: 100px;
+  margin-bottom: 17px;
   margin-top: 15%;
   color: var(--accent-color);
 }
