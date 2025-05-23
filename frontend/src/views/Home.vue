@@ -48,6 +48,5 @@ export default {
   },
   // Keep the temporary styles in the style block and template structure
   // We will remove them later once the issue is identified.
-  },
-}
+};
 </script>
