@@ -151,7 +151,9 @@ export default {
   justify-content: center;
   background-color: #1e1e1e;
   color: #666;
-  border-radius: 8px;
+  border-radius: 17px;
+  border-width: 10px;
+  border-color: var(--card-border-color);
 }
 
 .card-info {
