@@ -58,6 +58,7 @@ export default {
   background-position: center 57%; /* Position the vertical center 80% down from the top, center horizontally */
   z-index: 1; /* Ensure it's behind the content */
   justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
 }
 .login-container {
   width: 100%;
