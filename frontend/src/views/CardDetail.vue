@@ -174,6 +174,8 @@ export default {
 
 .card-main-content {
   color: var(--text-color);
+  display: flex;
+  align-items: center;
 }
 
 
