@@ -43,7 +43,7 @@ export default {
   position: relative;
   padding: 5px 0;
   transition: color 0.3s ease, box-shadow 0.3s ease; /* Add box-shadow to transition */
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Semi-transparent dark shadow */
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Semi-transparent dark shadow */
 }
 
 .nav-btn:hover {
