@@ -4,14 +4,8 @@
     <img src="/logo_noph.png" alt="Logo" class="background-logo">
     <div id="seasons-container">
       <div v-if="loading" class="loading">Loading cards...</div>
-      <div v-else-if="error" class="error-message">Error loading data: {{ error.message || error }}. Please try again later.</div>
-      <div v-else-if="seasons.length === 0" class="loading">No seasons found</div>
-      <Season 
-        v-for="season in seasons" 
-        :key="season.uuid" 
-        :season="season" 
-        @card-clicked="navigateToCard"
-      />
+      <div v-if="error" class="error-message">Error loading data: {{ error.message || error }}. Please try again later.</div>
+      <div v-if="!loading && !error && seasons.length === 0" class="loading">No seasons found</div>
     </div>
   </div>
 
@@ -63,7 +57,7 @@ export default {
     Season
   },
   computed: {
-    ...mapState(['seasons', 'loading', 'error'])
+    ...mapState(['loading', 'error', 'seasons'])
   },
   methods: {
     ...mapActions(['fetchSeasons']),
