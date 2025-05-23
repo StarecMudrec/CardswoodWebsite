@@ -14,8 +14,8 @@
             @error="imageError = true"
           />
           <div v-else class="image-placeholder">No image available</div>
+          <h3>Description</h3>
           <div class="card-description-overlay">
-            <h3>Description</h3>
             <p>{{ card.description }}</p>
           </div>
         </div>
@@ -227,8 +227,13 @@ export default {
   text-align: center;
 }
 
+h3 {
+  font-size: 25px;
+  margin-bottom: 15px;
+  color: var(--accent-color);
+}
 
- .comments-section h3 {
+.comments-section h3 {
   font-size: 20px;
   margin-bottom: 20px;
   color: var(--accent-color);
