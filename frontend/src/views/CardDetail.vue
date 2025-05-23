@@ -175,6 +175,14 @@ export default {
   z-index: -1;
 }
 
+.card-header-section {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Прижимаем содержимое к низу */
+  min-height: 150px; /* Минимальная высота для секции */
+}
+
 .title-container {
   display: flex;
   align-items: flex-end; /* Выравниваем текст по нижнему краю */
