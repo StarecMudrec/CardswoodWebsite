@@ -74,6 +74,7 @@ export default {
 h1 {
   color: var(--accent-color);
   font-weight: 500;
+  margin-bottom: 15px;
   font-size: 28px;
 }
 
