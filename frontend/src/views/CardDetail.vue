@@ -183,13 +183,9 @@ export default {
   white-space: nowrap; /* Prevent wrapping */
   overflow: hidden; /* Hide overflowing text */
   text-overflow: ellipsis; /* Add ellipsis for truncated text (optional) */
-  font-size: 100px;
+  font-size: 70px;
   margin-bottom: 17px;
   align-self: center;
-  display: -webkit-box; /* For Webkit browsers */
-  display: box; /* Older syntax */
-  -webkit-line-clamp: 2; /* Limit to 2 lines (adjust as needed) */
-  -webkit-box-orient: vertical;
 }
 
 .card-meta {
