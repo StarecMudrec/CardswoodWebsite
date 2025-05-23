@@ -29,11 +29,12 @@
               <p>{{ seasonName }}</p>
             </div>
             <div class="card-info-column">
-              <h3>Description</h3>
-              <div class="card-meta">
-                <p>{{ card.description }}</p>
-              </div>
+
             </div>
+          </div>
+          <h3>Description</h3>
+          <div class="card-description-section">
+            <p>{{ card.description }}</p>
           </div>
           <div v-if="comments.length === 0" class="no-comments">
             No comments yet
