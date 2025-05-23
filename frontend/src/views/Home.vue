@@ -37,8 +37,6 @@
 }
 </style>
 
-</template>
-
 <script>
 import Season from '@/components/Season.vue'
 import { mapActions, mapState } from 'vuex'
