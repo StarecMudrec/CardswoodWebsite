@@ -52,7 +52,7 @@
 
 <script>
 import { fetchCardInfo, fetchSeasonInfo, fetchComments } from '@/api'
-import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'; // Make sure nextTick is imported
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 
 export default {
   props: {
@@ -61,93 +61,82 @@ export default {
       required: true
     }
   },
-  data() {
-    return {
-      card: {},
-      seasonName: '',
-      comments: [],
-      loading: true,
-      error: null,
-      imageError: false
-    }
-  },
-  async created() {
-    try {
-      this.loading = true
-      this.card = await fetchCardInfo(this.uuid)
-      
-      // Fetch season name
-      const season = await fetchSeasonInfo(this.card.season_id)
-      this.seasonName = season.name
-      
-      // Fetch comments
-      this.comments = await fetchComments(this.card.id)
-    } catch (err) {
-      this.error = err.message || 'Failed to load card details'
-      console.error('Error loading card:', err)
-    } finally {
-      this.loading = false
-    }
-  }
-,
   setup(props) {
-    const cardNameRef = ref(null);
+    const card = ref({})
+    const seasonName = ref('')
+    const comments = ref([])
+    const loading = ref(true)
+    const error = ref(null)
+    const imageError = ref(false)
+    const cardNameRef = ref(null)
 
     const adjustFontSize = () => {
-      if (cardNameRef.value && cardNameRef.value.parentElement) {
-        const container = cardNameRef.value.parentElement;
-        const textElement = cardNameRef.value;
-
-        textElement.style.fontSize = '100px'; // Reset
-
-        const containerWidth = container.offsetWidth;
-        const textWidth = textElement.offsetWidth;
-
-        if (textWidth > containerWidth) {
-          const newFontSize = (containerWidth / textWidth) * parseFloat(getComputedStyle(textElement).fontSize);
-          textElement.style.fontSize = `${newFontSize}px`;
-        } else {
-           textElement.style.fontSize = '100px'; // Reset to base if it fits
+      nextTick(() => {
+        if (cardNameRef.value) {
+          const container = cardNameRef.value.parentElement
+          const textElement = cardNameRef.value
+          
+          // Reset to default size first
+          textElement.style.fontSize = '100px'
+          
+          // Get dimensions
+          const containerWidth = container.offsetWidth
+          const textWidth = textElement.scrollWidth
+          
+          // If text overflows, reduce font size
+          if (textWidth > containerWidth) {
+            const scaleFactor = containerWidth / textWidth
+            const newSize = Math.floor(100 * scaleFactor)
+            textElement.style.fontSize = `${newSize}px`
+          }
         }
-      }
-    };
+      })
+    }
 
-    const loadCardDetail = async (uuid) => {
-      // ... your existing data fetching logic ...
+    const loadData = async () => {
       try {
-        const cardData = await fetchCardDetail(uuid);
-        card.value = cardData;
-        cardImageUrl.value = `/card_imgs/${cardData.image_filename}`;
-        seasonId.value = cardData.season_id;
-
-        // After data is loaded and potentially updated in the DOM
-        // Use nextTick to ensure DOM is updated before measuring
-        nextTick(() => {
-          adjustFontSize();
-        });
-
-      } catch (error) {
-        console.error('Error fetching card detail:', error);
+        loading.value = true
+        card.value = await fetchCardInfo(props.uuid)
+        
+        // Fetch season name
+        const season = await fetchSeasonInfo(card.value.season_id)
+        seasonName.value = season.name
+        
+        // Fetch comments
+        comments.value = await fetchComments(card.value.id)
+        
+        // Adjust font size after data is loaded
+        adjustFontSize()
+      } catch (err) {
+        error.value = err.message || 'Failed to load card details'
+        console.error('Error loading card:', err)
+      } finally {
+        loading.value = false
       }
-    };
+    }
 
     onMounted(() => {
-      loadCardDetail(props.uuid);
-      // Also adjust font size on window resize
-      window.addEventListener('resize', adjustFontSize);
-    });
+      loadData()
+      window.addEventListener('resize', adjustFontSize)
+    })
 
     onUnmounted(() => {
-      // Clean up resize event listener
-      window.removeEventListener('resize', adjustFontSize);
-    });
+      window.removeEventListener('resize', adjustFontSize)
+    })
 
     watch(() => props.uuid, (newUuid) => {
-      loadCardDetail(newUuid);
-    });
+      loadData(newUuid)
+    })
 
-    onUnmounted(() => { window.removeEventListener('resize', adjustFontSize); });
-    return { cardNameRef };
+    return {
+      card,
+      seasonName,
+      comments,
+      loading,
+      error,
+      imageError,
+      cardNameRef
+    }
   }
 }
 </script>
