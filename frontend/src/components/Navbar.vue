@@ -39,7 +39,7 @@ export default {
   text-decoration: none;
   font-weight: 700;
   font-size: 27px; /* Base font size */
-  -webkit-text-stroke: 1px black; /* Apply the black stroke */
+  -webkit-text-stroke: 2px black; /* Apply the black stroke */
   letter-spacing: 1px;
   position: relative;
   padding: 5px 0;
