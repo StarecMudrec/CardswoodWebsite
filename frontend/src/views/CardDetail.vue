@@ -32,9 +32,6 @@
               <h3>Season</h3>
               <p>{{ seasonName }}</p>
             </div>
-            <div class="card-info-column">
-
-            </div>
           </div>
 
           <div v-if="comments.length === 0" class="no-comments">
