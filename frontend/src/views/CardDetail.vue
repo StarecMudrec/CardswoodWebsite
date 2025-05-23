@@ -182,6 +182,7 @@ export default {
   align-items: center;
   font-size: 100px;
   margin-bottom: 17px;
+  align-self: center;
   margin-top: 15%;
   color: var(--accent-color);
   position: relative;
