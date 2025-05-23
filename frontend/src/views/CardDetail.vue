@@ -139,7 +139,7 @@ export default {
   object-fit: contain;
   border-radius: 17px;
   border-width: 10px;
-  border-color: var(--card-border-color)
+  border-color: var(--card-border-color);
   background-color: #1e1e1e;
 }
 
