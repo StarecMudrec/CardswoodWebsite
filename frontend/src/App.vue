@@ -7,7 +7,7 @@
       </transition>
     </router-view>
     <div class="user-info" v-if="user">
-      <img :src="'/proxy/avatar?url=' + encodeURIComponent(user.photo_url)" alt="User Avatar" class="avatar">
+      <!-- <img :src="'/proxy/avatar?url=' + encodeURIComponent(user.photo_url)" alt="User Avatar" class="avatar"> -->
       <span class="username">
         {{ user.first_name }} {{ user.last_name }}
       </span>
