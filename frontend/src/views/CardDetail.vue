@@ -14,8 +14,8 @@
             @error="imageError = true"
           />
           <div v-else class="image-placeholder">No image available</div>
-          <h3>Description</h3>
           <div class="card-description-overlay">
+            <h3>Description</h3>
             <p>{{ card.description }}</p>
           </div>
         </div>
