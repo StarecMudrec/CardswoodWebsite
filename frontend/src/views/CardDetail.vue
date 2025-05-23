@@ -163,7 +163,7 @@ export default {
 }
 
 
-.card-info h1 {
+.card-main-content h1 {
   font-size: 70px;
   margin-bottom: 15px;
   color: var(--accent-color);
