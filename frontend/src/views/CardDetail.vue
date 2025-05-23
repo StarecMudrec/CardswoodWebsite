@@ -137,7 +137,9 @@ export default {
   width: 100%;
   max-height: 600px;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 17px;
+  border-width: 10px;
+  border-color: var(--card-border-color)
   background-color: #1e1e1e;
 }
 

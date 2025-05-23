@@ -55,6 +55,7 @@ export default {
   --accent-color: #ffffff;
   --hover-color: #bb86fc;
   --hover-border-color: #9a62df;
+  --card-border-color:  #bebebe;
 }
 
 html {
