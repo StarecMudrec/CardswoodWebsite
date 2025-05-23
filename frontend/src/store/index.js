@@ -48,8 +48,13 @@ export default createStore({
       commit('SET_LOADING', true)
       commit('SET_ERROR', null)
       try {
-        const seasons = await fetchSeasons()
-        commit('SET_SEASONS', seasons)
+        const seasonIds = await fetchSeasons(); // Fetch season IDs first
+        const seasonPromises = seasonIds.map(id => fetch(`/api/season_info/${id}`).then(res => res.json()));
+        const orderedSeasonsData = await Promise.all(seasonPromises);
+
+        // Store the fetched data in the order of IDs
+        commit('SET_SEASONS', orderedSeasonsData);
+
       } catch (error) {
         commit('SET_ERROR', error)
         console.error('Error fetching seasons:', error)
