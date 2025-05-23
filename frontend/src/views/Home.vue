@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="home-container">
     <div class="background-container">
       <!-- The background image will be applied here -->
     </div>
@@ -41,19 +41,26 @@ export default {
 }
 </script>
 
+
 <style scoped>
+.home-container {
+  position: relative; /* Needed for absolute positioning of the background */
+}
+
 .background-container {
   background-image: url('/background.jpg');
   background-size: cover;
   background-position: center;
   height: 400px; /* Adjust this height as needed */
   width: 100%;
-  position: relative; /* Or 'absolute' depending on your layout needs */
+  position: absolute; /* Position over other content */
+  top: 0;
+  left: 0;
+  z-index: 1; /* Ensure it's behind the content */
 }
 
-/* Add some margin or padding to the content below the background image
-   to prevent it from overlapping */
-.seasons-container {
-  margin-top: 20px; /* Adjust this value */
+ #seasons-container {
+  margin-top: 400px; /* Adjust this value to be at least the height of the background */
+  z-index: 2; /* Ensure it's above the background */
 }
 </style>
