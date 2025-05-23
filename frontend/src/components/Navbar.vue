@@ -48,7 +48,7 @@ export default {
 
 .nav-btn:hover {
   color: var(--hover-color);
-  -webkit-text-stroke: 1px var(--hover-border-color);
+  -webkit-text-stroke: 0px var(--hover-border-color);
   transition: color 0.3s ease, box-shadow 0.3s ease; /* Add box-shadow to transition */
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Semi-transparent dark shadow */
 }
