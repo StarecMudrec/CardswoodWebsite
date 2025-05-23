@@ -54,7 +54,7 @@ export default {
   --text-color: #e0e0e0;
   --accent-color: #ffffff;
   --hover-color: #bb86fc;
-  --hover-border-color: #bb86fc;
+  --hover-border-color: #9a62df;
 }
 
 * {
