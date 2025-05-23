@@ -10,8 +10,14 @@
 </template>
 
 <style scoped>
- #seasons-container {
+.home-container {
+  border: 5px solid red; /* Temporary style for debugging */
+  background-color: #eee; /* Temporary style for debugging */
+}
+
+#seasons-container {
   /* Add other styles for your seasons container here */
+  margin-top: 600px; /* Keep existing margin-top */
   padding-bottom: 50px;
 }
 .error-message {
@@ -39,7 +45,10 @@ export default {
     }
   },
   mounted() {
-    this.fetchSeasons()
+ this.fetchSeasons();
+  },
+  // Keep the temporary styles in the style block and template structure
+  // We will remove them later once the issue is identified.
   },
 }
 </script>
