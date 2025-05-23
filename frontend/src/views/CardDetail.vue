@@ -180,10 +180,12 @@ export default {
 .card-main-content h1 {
   display: flex;
   align-items: center;
+  white-space: nowrap; /* Prevent wrapping */
+  overflow: hidden; /* Hide overflowing text */
+  text-overflow: ellipsis; /* Add ellipsis for truncated text (optional) */
   font-size: 100px;
   margin-bottom: 17px;
   align-self: center;
-  margin-top: 15%;
   color: var(--accent-color);
 }
 
