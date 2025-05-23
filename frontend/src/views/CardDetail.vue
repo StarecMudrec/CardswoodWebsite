@@ -14,7 +14,7 @@
             @error="imageError = true"
           />
           <div v-else class="image-placeholder">No image available</div>
-          <h3>Description:</h3>
+          <h3 class=description-h3>Description:</h3>
           <div class="card-description-overlay">
             <p>{{ card.description }}</p>
           </div>
@@ -226,7 +226,7 @@ export default {
   text-align: center;
 }
 
-h3 {
+.description-h3 {
   position: absolute;
   top: 95%; /* Position below the image */
   left: 0;
