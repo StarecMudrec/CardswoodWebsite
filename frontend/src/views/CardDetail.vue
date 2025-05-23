@@ -174,12 +174,12 @@ export default {
 
 .card-main-content {
   color: var(--text-color);
-  display: flex;
-  align-items: center;
 }
 
 
 .card-main-content h1 {
+  display: flex;
+  align-items: center;
   font-size: 100px;
   margin-bottom: 17px;
   margin-top: 15%;
