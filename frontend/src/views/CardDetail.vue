@@ -175,6 +175,13 @@ export default {
   z-index: -1;
 }
 
+.title-container {
+  display: flex;
+  align-items: flex-end; /* Выравниваем текст по нижнему краю */
+  flex-grow: 1;
+  margin-bottom: 10px;
+}
+
 /* Основная граница разделения */
 .main-divider {
   height: 2px;
