@@ -109,7 +109,10 @@ h1 {
     padding: 30px 20px;
     margin: 0 15px;
     max-width: 300px;
-    left: calc(width // 2);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    ransform: translate(-50%, -50%);
   }
   
   h1 {
