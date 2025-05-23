@@ -59,15 +59,19 @@ export default {
   z-index: 1; /* Ensure it's behind the content */
 }
 .login-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 100%;
   max-width: 400px;
+  width: 300px; /* Added width */
   padding: 40px;
   background-color: var(--card-bg);
   border-radius: 17px;
   border: 1px solid var(--border-color);
   text-align: center;
 }
-
 h1 {
   color: var(--accent-color);
   font-weight: 500;
