@@ -45,6 +45,13 @@ export default {
 </script>
 
 <style scoped>
+.login-background {
+  background-image: url('/background.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
 .login-container {
   width: 100%;
   max-width: 400px;
