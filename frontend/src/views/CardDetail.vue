@@ -228,7 +228,7 @@ export default {
 
 h3 {
   position: absolute;
-  top: 90%; /* Position below the image */
+  top: 95%; /* Position below the image */
   left: 0;
   width: 100%;
   font-size: 25px;
