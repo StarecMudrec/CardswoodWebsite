@@ -180,7 +180,6 @@ export default {
   grid-template-columns: 1fr 2fr;
   gap: 40px;
   margin-top: 30px;
-  position: relative;
 }
 
 .card-image-container {
@@ -192,9 +191,7 @@ export default {
   max-height: 600px;
   object-fit: contain;
   border-radius: 17px;
-  border-width: 15px;
-  border-color: var(--bg-color);
-  border-style: solid;
+  border: 15px solid var(--bg-color);
   background-color: #1e1e1e;
 }
 
@@ -207,61 +204,49 @@ export default {
   background-color: #1e1e1e;
   color: #666;
   border-radius: 17px;
-  border-width: 10px;
-  border-color: var(--card-border-color);
-}
-
-.card-description-overlay {
-  position: absolute;
-  top: 105%;
-  left: 0;
-  width: 100%;
-  color: var(--text-color);
-}
-
-.card-description-overlay p {
-  font-size: 18px;
-  line-height: 1.6;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  text-align: center;
+  border: 10px solid var(--card-border-color);
 }
 
 .card-main-content {
-  color: var(--text-color);
-  width: 100%;
-  overflow: hidden;
-  position: relative;
-  padding-bottom: 120px;
-  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.card-header {
+  margin-bottom: 30px;
 }
 
 .card-main-content h1 {
-  margin: 0 0 25px 0;
-  padding: 15px;
+  margin: 0 0 15px 0;
+  padding: 0;
   white-space: nowrap;
   font-size: 100px;
   line-height: 1.2;
+  color: var(--text-color);
   transition: font-size 0.2s ease;
-  will-change: font-size;
-  background-color: rgba(30, 30, 30, 0.8);
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  width: fit-content;
-  max-width: 100%;
+}
+
+.card-description {
+  padding: 20px 0;
+  margin-bottom: 30px;
+  border-bottom: 2px solid var(--card-border-color);
+}
+
+.card-description p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--text-color);
 }
 
 .card-info-columns {
   display: flex;
   justify-content: space-around;
   width: 100%;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  background-color: var(--bg-color);
-  padding: 25px 0;
-  border-top: 2px solid var(--card-border-color);
-  margin: 0;
+  padding: 20px 0;
+  margin: 20px 0;
+  border-top: 1px solid var(--card-border-color);
+  border-bottom: 1px solid var(--card-border-color);
 }
 
 .card-info-column {
@@ -279,28 +264,24 @@ export default {
 .card-info-column p {
   font-size: 20px;
   line-height: 1.6;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  color: var(--text-color);
 }
 
-.description-h3 {
-  position: absolute;
-  top: 95%;
-  left: 0;
-  width: 100%;
-  font-size: 25px;
+.comments-section {
+  margin-top: auto;
+  padding-top: 40px;
   text-align: center;
-  color: var(--accent-color);
 }
 
 .no-comments {
   color: #666;
   font-style: italic;
-  margin-bottom: 20px;
 }
 
 .comments-list {
-  margin-bottom: 140px;
+  display: inline-block;
+  max-width: 800px;
+  width: 100%;
 }
 
 .comment {
@@ -308,10 +289,12 @@ export default {
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 15px;
+  text-align: left;
 }
 
 .comment-text {
   margin-bottom: 8px;
+  color: var(--text-color);
 }
 
 .comment-meta {
@@ -319,45 +302,48 @@ export default {
   color: #aaa;
 }
 
+@media (max-width: 1200px) {
+  .card-main-content h1 {
+    font-size: 80px;
+  }
+}
+
+@media (max-width: 992px) {
+  .card-main-content h1 {
+    font-size: 70px;
+  }
+}
+
 @media (max-width: 768px) {
   .card-detail {
     grid-template-columns: 1fr;
   }
   
-  .card-main-content {
-    padding-bottom: 0;
-    min-height: auto;
-  }
-  
-  .card-info-columns {
-    position: static;
-    margin-top: 30px;
-    padding: 20px 0;
-    border-top: 2px solid var(--card-border-color);
-  }
-  
   .card-main-content h1 {
     font-size: 60px;
-    padding: 10px;
   }
   
   .card-detail-image, .image-placeholder {
     max-height: 400px;
-    border-width: 10px;
   }
   
-  .comments-list {
-    margin-bottom: 30px;
+  .comments-section {
+    padding-top: 30px;
   }
 }
 
-@media (min-width: 1600px) {
-  .card-detail-container {
-    max-width: 1500px;
+@media (max-width: 576px) {
+  .card-main-content h1 {
+    font-size: 50px;
   }
   
-  .card-main-content h1 {
-    font-size: 110px;
+  .card-info-columns {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .card-info-column {
+    padding: 10px 0;
   }
 }
 </style>
