@@ -1,3 +1,7 @@
+body {
+  overflow-x: hidden;
+}
+
 @import './base.css';
 
 #app {
