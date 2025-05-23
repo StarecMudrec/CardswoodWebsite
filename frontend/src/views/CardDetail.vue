@@ -228,7 +228,6 @@ export default {
 }
 
 .card-main-content {
-  color: var(--text-color);
   display: flex;
   flex-direction: column;
 }
@@ -245,6 +244,7 @@ export default {
   font-size: 100px;
   line-height: 1.2;
   color: var(--text-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Тень для объема */
 }
 
 /* Секция с описанием под главной границей */
