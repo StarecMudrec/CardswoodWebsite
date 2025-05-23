@@ -109,6 +109,7 @@ h1 {
     padding: 30px 20px;
     margin: 0 15px;
     max-width: 300px;
+    position: center;
   }
   
   h1 {
