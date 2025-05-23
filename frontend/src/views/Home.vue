@@ -4,7 +4,7 @@
     <img src="/logo_noph.png" alt="Logo" class="background-logo">
     <div id="seasons-container">
       <div v-if="loading" class="loading">Loading cards...</div>
-      <div v-else-if="error" class="loading" style="color: #ff5555;">Error loading data. Please try again later.</div>
+      <div v-else-if="error" class="error-message">Error loading data: {{ error.message || error }}. Please try again later.</div>
       <div v-else-if="seasons.length === 0" class="loading">No seasons found</div>
       <Season 
         v-for="season in seasons" 
@@ -46,6 +46,11 @@
   z-index: 2; /* Ensure content is above the background */
   /* Add other styles for your seasons container here */
   padding-bottom: 50px;
+}
+.error-message {
+  text-align: center;
+  margin: 50px 0;
+  color: #ff5555; /* Red color for errors */
 }
 </style>
 
