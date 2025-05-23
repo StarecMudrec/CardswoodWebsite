@@ -1,9 +1,9 @@
 <template>
   <div class="menu">
-    <router-link to="/" class="nav-btn" data-text="CARDS">CARDS</router-link>
-    <router-link to="/termins" class="nav-btn" data-text="TERMINS">TERMINS</router-link>
-    <a v-if="isAuthenticated" href="/auth/logout" class="nav-btn" data-text="LOGOUT" @click.prevent="logout">LOGOUT</a>
-    <router-link v-else to="/login" class="nav-btn" data-text="LOGIN">LOGIN</router-link>
+    <router-link to="/" class="nav-btn">CARDS</router-link>
+    <router-link to="/termins" class="nav-btn">TERMINS</router-link>
+    <a v-if="isAuthenticated" href="/auth/logout" class="nav-btn" @click.prevent="logout">LOGOUT</a>
+    <router-link v-else to="/login" class="nav-btn">LOGIN</router-link>
   </div>
 </template>
 
@@ -37,10 +37,9 @@ export default {
 .nav-btn {
   color: var(--accent-color);
   text-decoration: none;
-  font-weight: 400;
-  font-size: 27px; /* Base font size */
-  /* -webkit-text-stroke: 1.25px black; Apply the black stroke */
-  letter-spacing: 1px;
+  font-weight: 500;
+  font-size: 27px; /* Increased font size */
+  letter-spacing: 1px; /* Slightly increased letter spacing for better readability with outline */
   position: relative;
   padding: 5px 0;
   transition: color 0.3s ease;
@@ -48,6 +47,7 @@ export default {
 
 .nav-btn:hover {
   color: var(--hover-color);
+  text-shadow: none; /* Remove outline on hover for cleaner look */
 }
 
 .nav-btn::after {
@@ -65,7 +65,7 @@ export default {
   width: 100%;
 }
 
-@media (max-width: 768px) { /* Media query for smaller screens */
+@media (max-width: 768px) {
   .menu {
     gap: 20px;
     margin-bottom: 30px;
