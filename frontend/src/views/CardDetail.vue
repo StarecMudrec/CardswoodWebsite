@@ -259,7 +259,7 @@ export default {
 
 /* Секция с категорией и сезоном */
 .card-info-section {
-  padding: 20px 0;
+  padding: 0px 0;
 }
 
 .card-info-columns {
