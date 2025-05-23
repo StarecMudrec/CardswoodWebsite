@@ -12,7 +12,7 @@
 <style scoped>
 .home-container {
   border: 5px solid red; /* Temporary style for debugging */
-  background-color: #eee; /* Temporary style for debugging */
+  background-color: #eee;
 }
 
 #seasons-container {
