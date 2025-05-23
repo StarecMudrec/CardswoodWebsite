@@ -52,17 +52,14 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  min-height: 100vh;
+  height: 700px;
   z-index: -1; /* Place it behind other content */
   background-image: url('/background.jpg');
   display: flex; /* Add this to center the login container */
   justify-content: center; /* Center horizontally */
   align-items: center; /* Center vertically */
 }
-
 .login-container {
-  position: relative;
-  z-index: 1; /* Bring it above the background */
   width: 100%;
   max-width: 400px;
   padding: 40px;
