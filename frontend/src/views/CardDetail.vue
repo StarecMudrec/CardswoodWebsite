@@ -175,42 +175,6 @@ export default {
   z-index: -1;
 }
 
-.card-header-section {
-  margin-bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end; /* Прижимаем содержимое к низу */
-  min-height: 150px; /* Минимальная высота для секции */
-}
-
-.card-header-section h1 {
-  color: var(--text-color);
-  vertical-align: bottom; /* Выравнивание по базовой линии */
-}
-
-.title-container {
-  display: flex;
-  align-items: flex-end; /* Выравниваем текст по нижнему краю */
-  flex-grow: 1;
-  margin-bottom: 10px;
-}
-
-/* Основная граница разделения */
-.main-divider {
-  height: 2px;
-  width: 100%;
-  background-color: var(--card-border-color);
-  margin: 0px 0;
-}
-
-/* Вторичная граница */
-.secondary-divider {
-  height: 1px;
-  width: 100%;
-  background-color: var(--card-border-color);
-  margin: 20px 0;
-}
-
 .card-detail-container {
   max-width: 1400px;
   margin: 0 auto;
@@ -249,29 +213,49 @@ export default {
   border: 10px solid var(--card-border-color);
 }
 
-.card-main-content {
+.card-content-wrapper {
   display: flex;
   flex-direction: column;
 }
 
-/* Секция с названием прямо над главной границей */
-.card-title-section {
-  margin-bottom: 0;
+/* Исправленная секция заголовка */
+.card-header-section {
+  position: relative;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
-.card-main-content h1 {
+.title-container {
+  position: absolute;
+  bottom: 20px; /* Расстояние до разделителя */
+  width: 100%;
+}
+
+.card-header-section h1 {
   margin: 0;
-  padding: 0 0 20px 0;
+  padding: 0;
   white-space: nowrap;
   font-size: 100px;
-  line-height: 1.2;
+  line-height: 1;
   color: var(--text-color);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Тень для объема */
+  display: inline-block;
+  vertical-align: bottom;
+  transform-origin: left bottom;
+  transition: font-size 0.2s ease;
 }
 
-/* Секция с описанием под главной границей */
+.main-divider {
+  height: 2px;
+  width: 100%;
+  background-color: var(--card-border-color);
+  margin-top: 20px;
+}
+
+/* Остальные стили без изменений */
 .card-description-section {
-  padding: 0px 0;
+  padding: 30px 0;
 }
 
 .card-description {
@@ -280,9 +264,15 @@ export default {
   color: var(--text-color);
 }
 
-/* Секция с категорией и сезоном */
+.secondary-divider {
+  height: 1px;
+  width: 100%;
+  background-color: var(--card-border-color);
+  margin: 30px 0;
+}
+
 .card-info-section {
-  padding: 0px 0;
+  padding: 20px 0;
 }
 
 .card-info-columns {
@@ -307,16 +297,15 @@ export default {
   color: var(--text-color);
 }
 
-/* Секция с комментариями в самом низу */
 .comments-section {
   margin-top: auto;
-  padding-top: 30px;
+  padding-top: 40px;
+  text-align: center;
 }
 
 .no-comments {
   color: #666;
   font-style: italic;
-  text-align: center;
 }
 
 .comments-list {
@@ -329,6 +318,7 @@ export default {
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 15px;
+  text-align: left;
 }
 
 .comment-text {
@@ -341,19 +331,38 @@ export default {
   color: #aaa;
 }
 
+/* Адаптивные стили */
+@media (max-width: 1200px) {
+  .card-header-section {
+    min-height: 130px;
+  }
+  .card-header-section h1 {
+    font-size: 80px;
+  }
+}
+
+@media (max-width: 992px) {
+  .card-header-section {
+    min-height: 110px;
+  }
+  .card-header-section h1 {
+    font-size: 70px;
+  }
+}
+
 @media (max-width: 768px) {
   .card-detail {
     grid-template-columns: 1fr;
   }
-  
-  .card-main-content h1 {
+  .card-header-section {
+    min-height: 90px;
+  }
+  .card-header-section h1 {
     font-size: 60px;
   }
-  
   .card-detail-image, .image-placeholder {
     max-height: 400px;
   }
-  
   .card-info-columns {
     flex-direction: column;
     gap: 20px;
@@ -361,12 +370,11 @@ export default {
 }
 
 @media (max-width: 576px) {
-  .card-main-content h1 {
-    font-size: 40px;
+  .card-header-section {
+    min-height: 70px;
   }
-  
-  .card-description {
-    font-size: 16px;
+  .card-header-section h1 {
+    font-size: 40px;
   }
 }
 </style>
