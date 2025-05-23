@@ -1,4 +1,5 @@
 <template>
+  <div class="background-container"></div>
   <div class="card-detail-container">
     <div v-if="loading" class="loading">Loading card details...</div>
     <div v-else-if="error" class="error-message">Error loading card: {{ error }}</div>
