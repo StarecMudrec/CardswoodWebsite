@@ -7,7 +7,10 @@ const routes = [
   {
     path: '/',
     name: 'Cards',
-    component: Home
+    component: Home,
+    meta: {
+      keepAlive: false 
+    }
   },
   {
     path: '/home',
