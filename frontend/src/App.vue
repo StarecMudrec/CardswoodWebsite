@@ -58,6 +58,8 @@ export default {
 }
 
 html, body {
+  margin: 0;
+  padding: 0;
   height: 100%;
   background-color: var(--bg-color);
 }
@@ -69,6 +71,7 @@ html, body {
   margin: 0;
 }
 /* Глобальные стили для всех элементов */
+
 * {
   box-sizing: border-box;
 }
@@ -76,6 +79,7 @@ body {
 }
 
 /* Анимации переходов */
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
@@ -87,6 +91,7 @@ body {
 }
 
 .user-info {
+
   position: absolute;
   top: 10px;
   right: 10px;
@@ -98,6 +103,7 @@ body {
 }
 
 .user-info .avatar {
+
   width: 30px;
   height: 30px;
   border-radius: 50%; /* Make the avatar round */
@@ -107,6 +113,7 @@ body {
 }
 
 button, .button {
+
   padding: 10px 15px; /* Increased padding for larger buttons */
 }
 </style>
