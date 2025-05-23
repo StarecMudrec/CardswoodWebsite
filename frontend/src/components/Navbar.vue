@@ -1,9 +1,9 @@
 <template>
   <div class="menu">
-    <router-link to="/" class="nav-btn">CARDS</router-link>
-    <router-link to="/termins" class="nav-btn">TERMINS</router-link>
-    <a v-if="isAuthenticated" href="/auth/logout" class="nav-btn" @click.prevent="logout">LOGOUT</a>
-    <router-link v-else to="/login" class="nav-btn">LOGIN</router-link>
+    <router-link to="/" class="nav-btn" data-text="CARDS">CARDS</router-link>
+    <router-link to="/termins" class="nav-btn" data-text="TERMINS">TERMINS</router-link>
+    <a v-if="isAuthenticated" href="/auth/logout" class="nav-btn" data-text="LOGOUT" @click.prevent="logout">LOGOUT</a>
+    <router-link v-else to="/login" class="nav-btn" data-text="LOGIN">LOGIN</router-link>
   </div>
 </template>
 
@@ -38,17 +38,25 @@ export default {
   color: var(--accent-color);
   text-decoration: none;
   font-weight: 500;
-  font-size: 27px; /* Increased font size */
-  letter-spacing: 1px; /* Slightly increased letter spacing for better readability with outline */
+  font-size: 27px; /* Base font size */
+  letter-spacing: 1px;
   position: relative;
   padding: 5px 0;
   transition: color 0.3s ease;
-  text-stroke: 2px black;
+}
+
+.nav-btn::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #000; /* Black color for the outline text */
+  font-size: 29px; /* Slightly larger size for the outline effect */
+  z-index: -1; /* Place behind the original text */
 }
 
 .nav-btn:hover {
   color: var(--hover-color);
-  text-shadow: none; /* Remove outline on hover for cleaner look */
 }
 
 .nav-btn::after {
