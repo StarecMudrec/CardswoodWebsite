@@ -68,13 +68,6 @@ html, body {
   background-color: var(--bg-color);
 }
 
-.global-container {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  align-items: center;
-  margin: 0;
-}
-
 /* Убираем стандартные отступы браузера */
 body {
   margin: 0;

@@ -75,7 +75,7 @@ h1 {
   color: var(--accent-color);
   font-weight: 500;
   margin-bottom: 15px;
-  font-size: 24px;
+  font-size: 28px;
 }
 
 p {
@@ -89,7 +89,7 @@ p {
   margin-top: 25px;
   color: var(--accent-color);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 17px;
   position: relative;
   padding-bottom: 2px;
 }
