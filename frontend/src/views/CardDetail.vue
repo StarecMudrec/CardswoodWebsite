@@ -28,11 +28,15 @@
             </div>
             <div class="card-info-column">
               <h3>Season</h3>
-              <p>{{ seasonName }}</p>
+              <div class="card-meta">
+                <p>{{ seasonName }}</p>
+              </div>
             </div>
             <div class="card-info-column">
               <h3>Description</h3>
-              <p>{{ card.description }}</p>
+              <div class="card-meta">
+                <p>{{ card.description }}</p>
+              </div>
             </div>
             <div v-if="comments.length === 0" class="no-comments">
               No comments yet
