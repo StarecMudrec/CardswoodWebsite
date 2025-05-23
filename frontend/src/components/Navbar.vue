@@ -37,7 +37,7 @@ export default {
 .nav-btn {
   color: var(--accent-color);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 700;
   font-size: 27px; /* Base font size */
   -webkit-text-stroke: 1px black; /* Apply the black stroke */
   letter-spacing: 1px;
