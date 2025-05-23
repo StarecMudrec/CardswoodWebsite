@@ -161,7 +161,7 @@ export default {
 
 .card-description-overlay {
   position: absolute;
-  top: 80%; /* Position below the image */
+  top: 95%; /* Position below the image */
   left: 0;
   width: 100%;
   color: var(--text-color);
