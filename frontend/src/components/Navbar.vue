@@ -39,7 +39,8 @@ export default {
   text-decoration: none;
   font-weight: 500;
   font-size: 18px;
-  letter-spacing: 0.5px;
+  font-size: 20px; /* Increased font size */
+  letter-spacing: 1px; /* Slightly increased letter spacing for better readability with outline */
   position: relative;
   padding: 5px 0;
   transition: color 0.3s ease;
@@ -47,6 +48,7 @@ export default {
 
 .nav-btn:hover {
   color: var(--hover-color);
+  text-shadow: none; /* Remove outline on hover for cleaner look */
 }
 
 .nav-btn::after {
@@ -63,6 +65,7 @@ export default {
 .nav-btn:hover::after {
   width: 100%;
 }
+.nav-btn { text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; } /* Black text outline */
 
 @media (max-width: 768px) {
   .menu {
