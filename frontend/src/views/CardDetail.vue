@@ -16,28 +16,23 @@
           <div v-else class="image-placeholder">No image available</div>
         </div>
         
-        <div class="card-info">
+        <div class="card-main-content">
           <h1>{{ card.name }}</h1>
-          <h2></h2>
-          <div class="card-info-section">
+
+          <div class="card-info-columns">
+            <div class="card-info-column">
             <h3>Category</h3>
             <div class="card-meta">
               <span class="card-category">{{ card.category }}</span>
             </div>
-          </div>
-
-          <div class="card-info-section">
+            </div>
+            <div class="card-info-column">
             <h3>Season</h3>
             <p>{{ seasonName }}</p>
-          </div>
-
-          <div class="card-info-section">
+            </div>
+            <div class="card-info-column">
             <h3>Description</h3>
             <p>{{ card.description }}</p>
-          </div>
-          
-          <div class="comments-section">
-            <h3>Comments</h3>
             <div v-if="comments.length === 0" class="no-comments">
               No comments yet
             </div>
@@ -47,6 +42,10 @@
                 <div class="comment-meta">User #{{ comment.user_id }}</div>
               </div>
             </div>
+            </div>
+          </div>
+          
+          <div class="comments-section">
           </div>
         </div>
       </div>
@@ -159,9 +158,10 @@ export default {
   border-color: var(--card-border-color);
 }
 
-.card-info {
+.card-main-content {
   color: var(--text-color);
 }
+
 
 .card-info h1 {
   font-size: 50px;
@@ -190,11 +190,26 @@ export default {
   line-height: 1.6;
 }
 
+.card-info-columns {
+ display: flex;
+ justify-content: space-around;
+ width: 100%;
+ margin-bottom: 20px;
+}
+
+.card-info-column {
+ flex: 1;
+ padding: 0 10px;
+ text-align: center;
+}
+
+
  .comments-section h3 {
   font-size: 20px;
   margin-bottom: 20px;
   color: var(--accent-color);
 }
+
 
 .no-comments {
   color: #666;
