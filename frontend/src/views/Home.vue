@@ -66,8 +66,8 @@ export default {
       this.$router.push(`/card/${cardUuid}`)
     }
   },
-  created() {
+  mounted() {
     this.fetchSeasons()
-  }
+  },
 }
 </script>
