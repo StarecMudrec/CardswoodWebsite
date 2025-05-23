@@ -21,18 +21,19 @@
 
           <div class="card-info-columns">
             <div class="card-info-column">
-            <h3>Category</h3>
-            <div class="card-meta">
-              <span class="card-category">{{ card.category }}</span>
-            </div>
-            </div>
-            <div class="card-info-column">
-            <h3>Season</h3>
-            <p>{{ seasonName }}</p>
+              <h3>Category</h3>
+              <div class="card-meta">
+                <p>{{ card.category }}</p>
+              </div>
             </div>
             <div class="card-info-column">
-            <h3>Description</h3>
-            <p>{{ card.description }}</p>
+              <h3>Season</h3>
+              <p>{{ seasonName }}</p>
+            </div>
+            <div class="card-info-column">
+              <h3>Description</h3>
+              <p>{{ card.description }}</p>
+            </div>
             <div v-if="comments.length === 0" class="no-comments">
               No comments yet
             </div>
@@ -41,7 +42,6 @@
                 <div class="comment-text">{{ comment.text }}</div>
                 <div class="comment-meta">User #{{ comment.user_id }}</div>
               </div>
-            </div>
             </div>
           </div>
           
