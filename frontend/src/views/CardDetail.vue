@@ -69,28 +69,27 @@ export default {
     const error = ref(null)
     const imageError = ref(false)
     const cardNameRef = ref(null)
+    const baseFontSize = 100 // Базовый размер шрифта
 
     const adjustFontSize = () => {
-      nextTick(() => {
-        if (cardNameRef.value) {
-          const container = cardNameRef.value.parentElement
-          const textElement = cardNameRef.value
-          
-          // Reset to default size first
-          textElement.style.fontSize = '100px'
-          
-          // Get dimensions
-          const containerWidth = container.offsetWidth
-          const textWidth = textElement.scrollWidth
-          
-          // If text overflows, reduce font size
-          if (textWidth > containerWidth) {
-            const scaleFactor = containerWidth / textWidth
-            const newSize = Math.floor(100 * scaleFactor)
-            textElement.style.fontSize = `${newSize}px`
-          }
-        }
-      })
+      if (!cardNameRef.value) return
+      
+      const container = cardNameRef.value.parentElement
+      const textElement = cardNameRef.value
+      
+      // Сброс к базовому размеру
+      textElement.style.fontSize = `${baseFontSize}px`
+      
+      // Получаем реальные размеры
+      const containerWidth = container.offsetWidth
+      const textWidth = textElement.scrollWidth
+      
+      // Если текст не помещается, уменьшаем шрифт
+      if (textWidth > containerWidth) {
+        const scaleFactor = containerWidth / textWidth
+        const newSize = Math.max(20, Math.floor(baseFontSize * scaleFactor)) // Минимальный размер 20px
+        textElement.style.fontSize = `${newSize}px`
+      }
     }
 
     const loadData = async () => {
@@ -98,15 +97,17 @@ export default {
         loading.value = true
         card.value = await fetchCardInfo(props.uuid)
         
-        // Fetch season name
         const season = await fetchSeasonInfo(card.value.season_id)
         seasonName.value = season.name
         
-        // Fetch comments
         comments.value = await fetchComments(card.value.id)
         
-        // Adjust font size after data is loaded
-        adjustFontSize()
+        // Двойной nextTick для гарантии обновления DOM
+        nextTick(() => {
+          nextTick(() => {
+            adjustFontSize()
+          })
+        })
       } catch (err) {
         error.value = err.message || 'Failed to load card details'
         console.error('Error loading card:', err)
@@ -227,12 +228,20 @@ export default {
 
 
 .card-main-content h1 {
-  display: flex;
   margin-bottom: 17px;
-  white-space: nowrap; /* Запрещаем перенос текста */
-  overflow: hidden; /* Скрываем выходящий за границы текст */
-  text-overflow: ellipsis; /* Добавляем многоточие если текст не помещается */
-  max-width: 100%; /* Ограничиваем максимальную ширину */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  transition: font-size 0.3s ease; /* Плавное изменение размера */
+  line-height: 1.2; /* Убедитесь, что line-height адекватный */
+  font-size: 100px; /* Базовый размер */
+}
+
+@media (max-width: 768px) {
+  .card-main-content h1 {
+    font-size: 60px; /* Меньший базовый размер для мобильных */
+  }
 }
 
 .card-meta {
