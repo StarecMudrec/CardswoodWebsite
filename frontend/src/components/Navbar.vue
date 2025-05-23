@@ -38,8 +38,7 @@ export default {
   color: var(--accent-color);
   text-decoration: none;
   font-weight: 500;
-  font-size: 18px;
-  font-size: 20px; /* Increased font size */
+  font-size: 27px; /* Increased font size */
   letter-spacing: 1px; /* Slightly increased letter spacing for better readability with outline */
   position: relative;
   padding: 5px 0;
@@ -65,7 +64,7 @@ export default {
 .nav-btn:hover::after {
   width: 100%;
 }
-.nav-btn { text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; } /* Black text outline */
+.nav-btn { text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; } /* Black text outline */
 
 @media (max-width: 768px) {
   .menu {
