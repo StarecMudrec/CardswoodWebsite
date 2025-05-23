@@ -35,6 +35,7 @@
   z-index: 2; /* Ensure content is above the background */
   /* Add other styles for your seasons container here */
 }
+</style>
 
 </template>
 
