@@ -164,7 +164,6 @@ export default {
   top: 100%; /* Position below the image */
   left: 0;
   width: 100%;
-  padding-top: 10px; /* Add space below the image */
   color: var(--text-color);
 }
 
