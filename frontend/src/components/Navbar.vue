@@ -48,8 +48,8 @@ export default {
 .nav-btn::before {
   content: attr(data-text);
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 50%;
+  left: 50%;
   color: #000; /* Black color for the outline text */
   font-size: 29px; /* Slightly larger size for the outline effect */
   z-index: -1; /* Place behind the original text */
@@ -74,7 +74,7 @@ export default {
   width: 100%;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* Media query for smaller screens */
   .menu {
     gap: 20px;
     margin-bottom: 30px;
