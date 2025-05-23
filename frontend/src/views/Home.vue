@@ -56,6 +56,4 @@ export default {
 #seasons-container {
   margin-top: 20px; /* Adjust this value */
 }
-
-/* ... other styles for your Home.vue component ... */
 </style>
