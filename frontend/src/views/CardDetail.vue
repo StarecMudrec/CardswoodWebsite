@@ -139,7 +139,7 @@ export default {
   object-fit: contain;
   border-radius: 17px;
   border-width: 10px;
-  border-color: #000;
+  border-color: var(--bg-color);
   border-style: solid;
   background-color: #1e1e1e;
 }
