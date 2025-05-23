@@ -53,7 +53,7 @@ export default {
 
 /* Add some margin or padding to the content below the background image
    to prevent it from overlapping */
-seasons-container {
+.seasons-container {
   margin-top: 20px; /* Adjust this value */
 }
 </style>
