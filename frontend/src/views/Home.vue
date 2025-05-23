@@ -25,7 +25,7 @@
   height: 700px; /* Adjust height as needed */
   background-image: url('/background.jpg');
   background-size: cover;
-  background-position: bottom center; /* Align bottom edge, center horizontally */
+  background-position: center 80%; /* Position the vertical center 80% down from the top, center horizontally */
   z-index: 1; /* Ensure it's behind the content */
 }
 
