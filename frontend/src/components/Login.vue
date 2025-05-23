@@ -2,10 +2,11 @@
   <div class="login-background">
     <h1>Please log in</h1>
     <div class="login-container">
-    <p></p>
-    <div ref="telegramWidget"></div>
+      <p></p>
+      <div ref="telegramWidget"></div>
 
-    <router-link to="/" class="back-link">← Back to home</router-link>
+      <router-link to="/" class="back-link">← Back to home</router-link>
+    </div>
   </div>
 </template>
 
