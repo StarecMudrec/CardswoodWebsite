@@ -48,8 +48,8 @@ export default {
 .nav-btn::before {
   content: attr(data-text);
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 0;
+  left: 0;
   color: #000; /* Black color for the outline text */
   font-size: 29px; /* Slightly larger size for the outline effect */
   z-index: -1; /* Place behind the original text */
