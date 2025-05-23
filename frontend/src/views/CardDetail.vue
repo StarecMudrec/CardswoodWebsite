@@ -183,18 +183,6 @@ export default {
   min-height: 150px; /* Минимальная высота для секции */
 }
 
-.card-header-section h1 {
-  margin: 0;
-  padding: 0;
-  white-space: nowrap;
-  font-size: 100px;
-  line-height: 1;
-  color: var(--text-color);
-  transition: font-size 0.2s ease;
-  display: inline-block;
-  vertical-align: bottom; /* Выравнивание по базовой линии */
-}
-
 .title-container {
   display: flex;
   align-items: flex-end; /* Выравниваем текст по нижнему краю */
