@@ -183,6 +183,11 @@ export default {
   min-height: 150px; /* Минимальная высота для секции */
 }
 
+.card-header-section h1 {
+  color: var(--text-color);
+  vertical-align: bottom; /* Выравнивание по базовой линии */
+}
+
 .title-container {
   display: flex;
   align-items: flex-end; /* Выравниваем текст по нижнему краю */
