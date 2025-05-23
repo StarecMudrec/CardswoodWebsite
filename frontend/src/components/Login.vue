@@ -64,6 +64,7 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 100%;
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
   max-width: 400px;
   padding: 40px;
   background-color: var(--card-bg);
