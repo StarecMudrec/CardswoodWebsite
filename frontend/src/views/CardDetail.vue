@@ -171,7 +171,7 @@ export default {
 
 .card-meta {
   display: flex;
-  gap: 20px;
+  gap: 10px;
   margin-bottom: 30px;
   color: #aaa;
 }
