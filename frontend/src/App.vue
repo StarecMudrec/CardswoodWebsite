@@ -57,7 +57,7 @@ export default {
   --hover-border-color: #9a62df;
 }
 
-html, body {
+html {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -75,9 +75,6 @@ html, body {
 * {
   box-sizing: border-box;
 }
-body {
-}
-
 /* Анимации переходов */
 
 .fade-enter-active,
