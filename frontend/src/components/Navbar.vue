@@ -32,6 +32,7 @@ export default {
   padding: 0;
   position: relative;
   z-index: 100;
+  background-color: transparent;
 }
 
 .nav-btn {

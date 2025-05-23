@@ -48,14 +48,14 @@ export default {
 
 <style scoped>
 .login-background {
- background-image: url('/background.jpg');
+  background-image: url('/background.jpg');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
   min-height: 100vh;
- display: flex; /* Add this to center the login container */
- justify-content: center; /* Center horizontally */
- align-items: center; /* Center vertically */
+  display: flex; /* Add this to center the login container */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
 }
 .login-container {
   width: 100%;
