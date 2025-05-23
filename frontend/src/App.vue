@@ -99,6 +99,7 @@ body {
   align-items: center;
   color: var(--text-color);
   font-size: 14px;
+  z-index: 10; /* Ensure user info is above other elements */
 }
 
 .user-info .avatar {
