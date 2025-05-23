@@ -69,27 +69,42 @@ export default {
     const error = ref(null)
     const imageError = ref(false)
     const cardNameRef = ref(null)
-    const baseFontSize = 100 // Базовый размер шрифта
 
     const adjustFontSize = () => {
       if (!cardNameRef.value) return
+
+      const element = cardNameRef.value
+      const parent = element.parentElement
       
-      const container = cardNameRef.value.parentElement
-      const textElement = cardNameRef.value
+      // Сброс стилей для точного измерения
+      element.style.fontSize = ''
+      element.style.whiteSpace = 'nowrap'
       
-      // Сброс к базовому размеру
-      textElement.style.fontSize = `${baseFontSize}px`
+      const parentWidth = parent.offsetWidth
+      let currentFontSize = 100 // Начальный размер шрифта
+      element.style.fontSize = `${currentFontSize}px`
       
-      // Получаем реальные размеры
-      const containerWidth = container.offsetWidth
-      const textWidth = textElement.scrollWidth
+      // Бинарный поиск подходящего размера шрифта
+      let minSize = 10
+      let maxSize = 100
+      let iterations = 0
+      const maxIterations = 20
       
-      // Если текст не помещается, уменьшаем шрифт
-      if (textWidth > containerWidth) {
-        const scaleFactor = containerWidth / textWidth
-        const newSize = Math.max(20, Math.floor(baseFontSize * scaleFactor)) // Минимальный размер 20px
-        textElement.style.fontSize = `${newSize}px`
+      while (iterations < maxIterations) {
+        const midSize = Math.floor((minSize + maxSize) / 2)
+        element.style.fontSize = `${midSize}px`
+        
+        if (element.scrollWidth > parentWidth) {
+          maxSize = midSize - 1
+        } else {
+          minSize = midSize + 1
+        }
+        
+        iterations++
       }
+      
+      // Установка окончательного размера
+      element.style.fontSize = `${Math.min(minSize, maxSize)}px`
     }
 
     const loadData = async () => {
@@ -102,11 +117,10 @@ export default {
         
         comments.value = await fetchComments(card.value.id)
         
-        // Двойной nextTick для гарантии обновления DOM
         nextTick(() => {
-          nextTick(() => {
-            adjustFontSize()
-          })
+          adjustFontSize()
+          // Дополнительная проверка после небольшой задержки
+          setTimeout(adjustFontSize, 100)
         })
       } catch (err) {
         error.value = err.message || 'Failed to load card details'
@@ -118,16 +132,17 @@ export default {
 
     onMounted(() => {
       loadData()
-      window.addEventListener('resize', adjustFontSize)
+      const resizeObserver = new ResizeObserver(adjustFontSize)
+      if (cardNameRef.value) {
+        resizeObserver.observe(cardNameRef.value.parentElement)
+      }
+      
+      return () => {
+        resizeObserver.disconnect()
+      }
     })
 
-    onUnmounted(() => {
-      window.removeEventListener('resize', adjustFontSize)
-    })
-
-    watch(() => props.uuid, (newUuid) => {
-      loadData(newUuid)
-    })
+    watch(() => props.uuid, loadData)
 
     return {
       card,
@@ -141,6 +156,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 .background-container {
@@ -222,20 +238,22 @@ export default {
   text-align: center; /* Center the description text */
 }
 
-.card-main-content {
-  color: var(--text-color);
-}
-
-
 .card-main-content h1 {
   margin-bottom: 17px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
-  transition: font-size 0.3s ease; /* Плавное изменение размера */
-  line-height: 1.2; /* Убедитесь, что line-height адекватный */
+  line-height: 1.2;
   font-size: 100px; /* Базовый размер */
+  transition: font-size 0.2s ease;
+  will-change: font-size; /* Оптимизация анимации */
+}
+
+/* Дополнительные стили для контейнера */
+.card-main-content {
+  position: relative;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
