@@ -229,7 +229,7 @@ export default {
 
 h3 {
   font-size: 25px;
-  margin-bottom: 15px;
+  text-align: center;
   color: var(--accent-color);
 }
 
