@@ -39,20 +39,11 @@ export default {
   text-decoration: none;
   font-weight: 500;
   font-size: 27px; /* Base font size */
+  -webkit-text-stroke: 2px black; /* Apply the black stroke */
   letter-spacing: 1px;
   position: relative;
   padding: 5px 0;
   transition: color 0.3s ease;
-}
-
-.nav-btn::before {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  font-size: 29px; /* Slightly larger size for the outline effect */
-  -webkit-text-stroke: 2px black; /* Apply the black stroke */
-  z-index: -1; /* Place behind the original text */
 }
 
 .nav-btn:hover {
