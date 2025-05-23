@@ -50,12 +50,9 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  color: #000; /* Black color for the outline text */
   font-size: 29px; /* Slightly larger size for the outline effect */
+  -webkit-text-stroke: 2px black; /* Apply the black stroke */
   z-index: -1; /* Place behind the original text */
-}
-.nav-btn::before {
-  transform: translate(-2px, 2px);
 }
 
 .nav-btn:hover {
