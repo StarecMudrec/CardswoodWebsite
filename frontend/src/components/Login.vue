@@ -78,12 +78,6 @@ h1 {
   font-size: 28px;
 }
 
-p {
-  margin-bottom: 30px;
-  color: #aaa;
-  font-size: 16px;
-}
-
 .back-link {
   display: inline-block;
   margin-top: 25px;
