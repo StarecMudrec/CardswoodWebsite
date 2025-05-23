@@ -19,7 +19,9 @@
         <div class="card-content-wrapper">
           <!-- Название карточки и главная разделительная линия -->
           <div class="card-header-section">
-            <h1 ref="cardNameRef">{{ card.name }}</h1>
+            <div class="title-container">
+              <h1 ref="cardNameRef">{{ card.name }}</h1>
+            </div>
             <div class="main-divider"></div>
           </div>
           
@@ -161,6 +163,7 @@ export default {
 </script>
 
 <style scoped>
+
 .background-container {
   position: absolute;
   top: 0;
@@ -173,26 +176,21 @@ export default {
   z-index: -1;
 }
 
-/* Основная граница разделения */
-.main-divider {
-  height: 2px;
-  width: 100%;
-  background-color: var(--card-border-color);
-  margin: 20px 0;
-}
-
-/* Вторичная граница */
-.secondary-divider {
-  height: 1px;
-  width: 100%;
-  background-color: var(--card-border-color);
-  margin: 20px 0;
-}
-
 .card-detail-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 30px;
+}
+
+.loading, .error-message {
+  text-align: center;
+  margin: 50px 0;
+  font-size: 18px;
+  color: var(--text-color);
+}
+
+.error-message {
+  color: #ff5555;
 }
 
 .card-detail {
@@ -227,29 +225,52 @@ export default {
   border: 10px solid var(--card-border-color);
 }
 
-.card-main-content {
+.card-content-wrapper {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
-/* Секция с названием прямо над главной границей */
-.card-title-section {
+/* Стили для секции с названием */
+.card-header-section {
   margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 180px;
+  position: relative;
 }
 
-.card-main-content h1 {
+.title-container {
+  display: flex;
+  align-items: flex-end;
+  min-height: 120px;
+  margin-bottom: 10px;
+}
+
+.card-header-section h1 {
   margin: 0;
-  padding: 0 0 20px 0;
+  padding: 0;
   white-space: nowrap;
   font-size: 100px;
-  line-height: 1.2;
+  line-height: 1;
   color: var(--text-color);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Тень для объема */
+  transition: font-size 0.2s ease;
+  display: inline-block;
+  vertical-align: bottom;
+  transform-origin: left bottom;
 }
 
-/* Секция с описанием под главной границей */
+.main-divider {
+  height: 2px;
+  width: 100%;
+  background-color: var(--card-border-color);
+  margin: 20px 0 0 0;
+}
+
+/* Стили для секции с описанием */
 .card-description-section {
-  padding: 0px 0;
+  padding: 30px 0;
 }
 
 .card-description {
@@ -258,9 +279,16 @@ export default {
   color: var(--text-color);
 }
 
-/* Секция с категорией и сезоном */
+.secondary-divider {
+  height: 1px;
+  width: 100%;
+  background-color: var(--card-border-color);
+  margin: 30px 0;
+}
+
+/* Стили для секции с информацией */
 .card-info-section {
-  padding: 0px 0;
+  padding: 20px 0;
 }
 
 .card-info-columns {
@@ -285,10 +313,10 @@ export default {
   color: var(--text-color);
 }
 
-/* Секция с комментариями в самом низу */
+/* Стили для секции с комментариями */
 .comments-section {
   margin-top: auto;
-  padding-top: 30px;
+  padding-top: 40px;
 }
 
 .no-comments {
@@ -319,12 +347,43 @@ export default {
   color: #aaa;
 }
 
+/* Адаптивные стили */
+@media (max-width: 1600px) {
+  .card-header-section {
+    min-height: 160px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .card-header-section {
+    min-height: 140px;
+  }
+  
+  .card-header-section h1 {
+    font-size: 80px;
+  }
+}
+
+@media (max-width: 992px) {
+  .card-header-section {
+    min-height: 120px;
+  }
+  
+  .card-header-section h1 {
+    font-size: 70px;
+  }
+}
+
 @media (max-width: 768px) {
   .card-detail {
     grid-template-columns: 1fr;
   }
   
-  .card-main-content h1 {
+  .card-header-section {
+    min-height: 100px;
+  }
+  
+  .card-header-section h1 {
     font-size: 60px;
   }
   
@@ -339,7 +398,11 @@ export default {
 }
 
 @media (max-width: 576px) {
-  .card-main-content h1 {
+  .card-header-section {
+    min-height: 80px;
+  }
+  
+  .card-header-section h1 {
     font-size: 40px;
   }
   
