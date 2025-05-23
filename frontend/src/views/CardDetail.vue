@@ -182,6 +182,8 @@ export default {
   margin-bottom: 17px;
   margin-top: 15%;
   color: var(--accent-color);
+  position: relative;
+  top: -5%;
 }
 
 .card-meta {
