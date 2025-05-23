@@ -35,8 +35,8 @@
   top: 17%;
   left: 50%;
   transform: translate(-50%, 0);
-  max-width: 300px; /* Adjust size as needed */
-  max-height: 300px; /* Adjust size as needed */
+  max-width: 400px; /* Adjust size as needed */
+  max-height: 400px; /* Adjust size as needed */
   z-index: 1; /* Ensure it's behind the content */
 }
 
