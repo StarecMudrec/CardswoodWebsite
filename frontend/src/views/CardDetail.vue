@@ -186,7 +186,10 @@ export default {
   font-size: 100px;
   margin-bottom: 17px;
   align-self: center;
-  color: var(--accent-color);
+  display: -webkit-box; /* For Webkit browsers */
+  display: box; /* Older syntax */
+  -webkit-line-clamp: 2; /* Limit to 2 lines (adjust as needed) */
+  -webkit-box-orient: vertical;
 }
 
 .card-meta {
