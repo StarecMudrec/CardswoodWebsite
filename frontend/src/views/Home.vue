@@ -50,7 +50,7 @@ export default {
 .background-container {
   background-image: url('/background.jpg');
   background-size: cover;
-  background-position: center;
+  background-position: top center;
   height: 400px; /* Adjust this height as needed */
   width: 100%;
   position: absolute; /* Position over other content */
@@ -60,7 +60,7 @@ export default {
 }
 
  #seasons-container {
-  margin-top: 400px; /* Adjust this value to be at least the height of the background */
+  margin-top: 420px; /* Adjust this value to be at least the height of the background */
   z-index: 2; /* Ensure it's above the background */
 }
 </style>
