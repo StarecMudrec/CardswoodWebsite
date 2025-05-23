@@ -140,6 +140,7 @@ export default {
   border-radius: 17px;
   border-width: 10px;
   border-color: var(--card-border-color);
+  border-style: solid;
   background-color: #1e1e1e;
 }
 
