@@ -196,7 +196,7 @@ export default {
   justify-content: space-around;
   width: 100%;
   margin-bottom: 20px;
-  margin-top: 200px;
+  margin-top: 57%;
 }
 
 .card-info-column {
