@@ -1,49 +1,51 @@
 <template>
-  <div class="background-container"></div>
-  <div class="card-detail-container">
-    <div v-if="loading" class="loading">Loading card details...</div>
-    <div v-else-if="error" class="error-message">Error loading card: {{ error }}</div>
-    <div v-else class="card-detail">
-      <div class="card-image-container">
-        <img 
-          v-if="card.img" 
-          :src="`/card_imgs/${card.img}`" 
-          :alt="card.name" 
-          class="card-detail-image"
-          @error="imageError = true"
-        />
-        <div v-else class="image-placeholder">No image available</div>
-      </div>
-      
-      <div class="card-info">
-        <h1>{{ card.name }}</h1>
-        <h2></h2>
-        <div class="card-info-section">
-          <h3>Category</h3>
-          <div class="card-meta">
-            <span class="card-category">{{ card.category }}</span>
-          </div>
-        </div>
-
-        <div class="card-info-section">
-          <h3>Season</h3>
-          <p>{{ seasonName }}</p>
-        </div>
-
-        <div class="card-info-section">
-          <h3>Description</h3>
-          <p>{{ card.description }}</p>
+  <div>
+    <div class="background-container"></div>
+    <div class="card-detail-container">
+      <div v-if="loading" class="loading">Loading card details...</div>
+      <div v-else-if="error" class="error-message">Error loading card: {{ error }}</div>
+      <div v-else class="card-detail">
+        <div class="card-image-container">
+          <img 
+            v-if="card.img" 
+            :src="`/card_imgs/${card.img}`" 
+            :alt="card.name" 
+            class="card-detail-image"
+            @error="imageError = true"
+          />
+          <div v-else class="image-placeholder">No image available</div>
         </div>
         
-        <div class="comments-section">
-          <h3>Comments</h3>
-          <div v-if="comments.length === 0" class="no-comments">
-            No comments yet
+        <div class="card-info">
+          <h1>{{ card.name }}</h1>
+          <h2></h2>
+          <div class="card-info-section">
+            <h3>Category</h3>
+            <div class="card-meta">
+              <span class="card-category">{{ card.category }}</span>
+            </div>
           </div>
-          <div v-else class="comments-list">
-            <div v-for="comment in comments" :key="comment.id" class="comment">
-              <div class="comment-text">{{ comment.text }}</div>
-              <div class="comment-meta">User #{{ comment.user_id }}</div>
+
+          <div class="card-info-section">
+            <h3>Season</h3>
+            <p>{{ seasonName }}</p>
+          </div>
+
+          <div class="card-info-section">
+            <h3>Description</h3>
+            <p>{{ card.description }}</p>
+          </div>
+          
+          <div class="comments-section">
+            <h3>Comments</h3>
+            <div v-if="comments.length === 0" class="no-comments">
+              No comments yet
+            </div>
+            <div v-else class="comments-list">
+              <div v-for="comment in comments" :key="comment.id" class="comment">
+                <div class="comment-text">{{ comment.text }}</div>
+                <div class="comment-meta">User #{{ comment.user_id }}</div>
+              </div>
             </div>
           </div>
         </div>
