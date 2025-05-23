@@ -103,7 +103,7 @@ export default {
   background-image: url('/background.jpg');
   background-size: cover;
   background-position: center 57%; /* Position the vertical center 80% down from the top, center horizontally */
-  z-index: 1; /* Ensure it's behind the content */
+  z-index: 0; /* Ensure it's behind the content */
 }
 
 .card-detail-container {
