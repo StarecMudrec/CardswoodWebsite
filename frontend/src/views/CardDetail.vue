@@ -166,6 +166,7 @@ export default {
 .card-main-content h1 {
   font-size: 70px;
   margin-bottom: 15px;
+  margin-top: 15%;
   color: var(--accent-color);
 }
 
@@ -196,7 +197,7 @@ export default {
   justify-content: space-around;
   width: 100%;
   margin-bottom: 20px;
-  margin-top: 57%;
+  margin-top: 10%;
 }
 
 .card-info-column {
