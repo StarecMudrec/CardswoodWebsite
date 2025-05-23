@@ -6,9 +6,9 @@ COPY package*.json ./
 
 RUN npm install
 
-RUN npm run build
-
 COPY . /app
+
+RUN npm run build
 
 EXPOSE 5173
 
