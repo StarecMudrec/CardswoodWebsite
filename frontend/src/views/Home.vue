@@ -22,16 +22,16 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 400px; /* Adjust height as needed */
+  height: 600px; /* Adjust height as needed */
   background-image: url('/background.jpg');
   background-size: cover;
-  background-position: top center; /* Align top edge, center horizontally */
+  background-position: bottom center; /* Align bottom edge, center horizontally */
   z-index: 1; /* Ensure it's behind the content */
 }
 
 #seasons-container {
   position: relative; /* Essential for z-index to work correctly relative to the background */
-  margin-top: 400px; /* Push content down by the height of the background */
+  margin-top: 600px; /* Push content down by the height of the background */
   z-index: 2; /* Ensure content is above the background */
   /* Add other styles for your seasons container here */
 }
