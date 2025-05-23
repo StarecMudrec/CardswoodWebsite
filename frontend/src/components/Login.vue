@@ -52,7 +52,7 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100%;
   z-index: -1; /* Place it behind other content */
   background-image: url('/background.jpg');
   display: flex; /* Add this to center the login container */
