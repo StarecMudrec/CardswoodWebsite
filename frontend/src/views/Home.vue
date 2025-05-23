@@ -11,18 +11,18 @@
 
 <style scoped>
 .home-container {
-  border: 5px solid red; /* Temporary style for debugging */
+  border: 5px solid red;
   background-color: #eee;
 }
 
 #seasons-container {
-  margin-top: 600px; /* Keep existing margin-top */
+  margin-top: 600px;
   padding-bottom: 50px;
 }
 .error-message {
   text-align: center;
   margin: 50px 0;
-  color: #ff5555; /* Red color for errors */
+  color: #ff5555;
 }
 </style>
 
