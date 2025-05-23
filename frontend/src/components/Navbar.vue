@@ -43,6 +43,7 @@ export default {
   position: relative;
   padding: 5px 0;
   transition: color 0.3s ease;
+  text-stroke: 2px black;
 }
 
 .nav-btn:hover {
@@ -64,7 +65,6 @@ export default {
 .nav-btn:hover::after {
   width: 100%;
 }
-.nav-btn { text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; } /* Black text outline */
 
 @media (max-width: 768px) {
   .menu {
