@@ -185,8 +185,6 @@ export default {
   align-self: center;
   margin-top: 15%;
   color: var(--accent-color);
-  position: relative;
-  top: -5%;
 }
 
 .card-meta {
