@@ -65,7 +65,6 @@ export default {
   transform: translate(-50%, -50%);
   width: 100%;
   max-width: 400px;
-  width: 300px; /* Added width */
   padding: 40px;
   background-color: var(--card-bg);
   border-radius: 17px;
