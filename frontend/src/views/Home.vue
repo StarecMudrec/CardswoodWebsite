@@ -45,6 +45,7 @@
   margin-top: 600px; /* Push content down by the height of the background */
   z-index: 2; /* Ensure content is above the background */
   /* Add other styles for your seasons container here */
+  padding-bottom: 50px;
 }
 </style>
 
