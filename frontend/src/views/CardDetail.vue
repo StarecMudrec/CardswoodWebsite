@@ -183,7 +183,8 @@ export default {
   white-space: nowrap; /* Prevent wrapping */
   overflow: hidden; /* Hide overflowing text */
   text-overflow: ellipsis; /* Add ellipsis for truncated text (optional) */
-  font-size: 70px;
+  font-size-adjust: ch-width 0.73;
+  font-size-adjust: cap-height 0.73;
   margin-bottom: 17px;
   align-self: center;
 }
