@@ -37,8 +37,8 @@ export default {
 .nav-btn {
   color: var(--accent-color);
   text-decoration: none;
-  font-weight: 100;
-  font-size: 27px; /* Increased font size */
+  font-weight: 500;
+  font-size: 22px; /* Increased font size */
   letter-spacing: 1px; /* Slightly increased letter spacing for better readability with outline */
   position: relative;
   padding: 5px 0;
