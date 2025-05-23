@@ -76,9 +76,5 @@ export default {
   .nav-btn {
     font-size: 16px;
   }
-
-  .menu {
-    z-index: 10; /* Обеспечиваем, что навбар будет поверх изображения */
-  }
 }
 </style>
