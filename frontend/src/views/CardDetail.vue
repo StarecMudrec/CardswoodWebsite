@@ -186,7 +186,7 @@ export default {
   height: 1px;
   width: 100%;
   background-color: var(--card-border-color);
-  margin: 30px 0;
+  margin: 20px 0;
 }
 
 .card-detail-container {
@@ -248,7 +248,7 @@ export default {
 
 /* Секция с описанием под главной границей */
 .card-description-section {
-  padding: 30px 0;
+  padding: 0px 0;
 }
 
 .card-description {
@@ -287,7 +287,7 @@ export default {
 /* Секция с комментариями в самом низу */
 .comments-section {
   margin-top: auto;
-  padding-top: 40px;
+  padding-top: 30px;
 }
 
 .no-comments {
