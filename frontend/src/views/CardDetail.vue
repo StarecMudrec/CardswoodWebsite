@@ -7,14 +7,14 @@
       <div v-else class="card-detail">
         <div class="card-image-container">
           <img 
-            v-if="card.img" 
+            v-if="card.img && !imageError" 
             :src="`/card_imgs/${card.img}`" 
             :alt="card.name" 
             class="card-detail-image"
             @error="imageError = true"
           />
           <div v-else class="image-placeholder">No image available</div>
-          <h3 class=description-h3>Description:</h3>
+          <h3 class="description-h3">Description:</h3>
           <div class="card-description-overlay">
             <p>{{ card.description }}</p>
           </div>
@@ -41,8 +41,6 @@
               <div class="comment-text">{{ comment.text }}</div>
               <div class="comment-meta">User #{{ comment.user_id }}</div>
             </div>
-          </div>
-          <div class="comments-section">
           </div>
         </div>
       </div>
@@ -71,36 +69,36 @@ export default {
     const cardNameRef = ref(null)
 
     const adjustFontSize = () => {
-      if (!cardNameRef.value) return
-
-      const element = cardNameRef.value
-      const container = element.parentElement
-      
-      // Сброс стилей для чистого измерения
-      element.style.fontSize = ''
-      element.style.whiteSpace = 'nowrap'
-      element.style.width = 'auto'
-      element.style.display = 'inline-block'
-      
-      const containerWidth = container.offsetWidth
-      let fontSize = parseInt(window.getComputedStyle(element).fontSize) || 100
-      
-      // Быстрая проверка - если текст уже помещается
-      element.style.fontSize = `${fontSize}px`
-      if (element.offsetWidth <= containerWidth) {
-        return
-      }
-      
-      // Рассчитываем новый размер на основе соотношения ширины
-      const widthRatio = containerWidth / element.offsetWidth
-      fontSize = Math.floor(fontSize * widthRatio * 0.95) // 0.95 для небольшого запаса
-      
-      // Ограничиваем минимальный и максимальный размер
-      fontSize = Math.max(20, Math.min(100, fontSize))
-      
-      // Применяем новый размер
-      element.style.fontSize = `${fontSize}px`
-      element.style.display = '' // Восстанавливаем исходное значение
+      nextTick().then(() => {
+        if (!cardNameRef.value) return
+        
+        const element = cardNameRef.value
+        const container = element.parentElement
+        
+        // Сброс стилей для чистых измерений
+        element.style.fontSize = ''
+        element.style.whiteSpace = 'nowrap'
+        element.style.display = 'inline-block'
+        
+        // Получаем ширины
+        const containerWidth = container.clientWidth
+        let fontSize = 100 // Начальный размер
+        
+        // Устанавливаем начальный размер
+        element.style.fontSize = `${fontSize}px`
+        void element.offsetWidth // Принудительный рефлоу
+        
+        // Если текст не помещается - вычисляем оптимальный размер
+        if (element.scrollWidth > containerWidth) {
+          const ratio = containerWidth / element.scrollWidth
+          fontSize = Math.floor(fontSize * ratio * 0.95) // 5% запаса
+          fontSize = Math.max(20, fontSize) // Минимум 20px
+          element.style.fontSize = `${fontSize}px`
+        }
+        
+        // Восстанавливаем стандартное отображение
+        element.style.display = ''
+      })
     }
 
     const loadData = async () => {
@@ -113,11 +111,8 @@ export default {
         
         comments.value = await fetchComments(card.value.id)
         
-        // Двойная проверка с небольшим интервалом
-        nextTick(() => {
-          adjustFontSize()
-          setTimeout(adjustFontSize, 100)
-        })
+        // Вызываем после полного рендеринга
+        setTimeout(adjustFontSize, 0)
       } catch (err) {
         error.value = err.message || 'Failed to load card details'
         console.error('Error loading card:', err)
@@ -128,12 +123,11 @@ export default {
 
     onMounted(() => {
       loadData()
-      const resizeObserver = new ResizeObserver(adjustFontSize)
-      if (cardNameRef.value?.parentElement) {
-        resizeObserver.observe(cardNameRef.value.parentElement)
-      }
-      
-      return () => resizeObserver.disconnect()
+      window.addEventListener('resize', adjustFontSize)
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', adjustFontSize)
     })
 
     watch(() => props.uuid, loadData)
@@ -151,18 +145,17 @@ export default {
 }
 </script>
 
-
 <style scoped>
 .background-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 400px; /* Adjust height as needed */
+  height: 400px;
   background-image: url('/background.jpg');
   background-size: cover;
-  background-position: center 57%; /* Position the vertical center 80% down from the top, center horizontally */
-  z-index: -1; /* Ensure it's behind the content */
+  background-position: center 57%;
+  z-index: -1;
 }
 
 .card-detail-container {
@@ -218,7 +211,7 @@ export default {
 
 .card-description-overlay {
   position: absolute;
-  top: 105%; /* Position below the image */
+  top: 105%;
   left: 0;
   width: 100%;
   color: var(--text-color);
@@ -227,41 +220,25 @@ export default {
 .card-description-overlay p {
   font-size: 18px;
   line-height: 1.6;
-  word-wrap: break-word; /* Ensure text wraps */
+  word-wrap: break-word;
   overflow-wrap: break-word;
-  text-align: center; /* Center the description text */
-}
-
-.card-main-content h1 {
-  margin-bottom: 17px;
-  white-space: nowrap;
-  overflow: visible;
-  max-width: 100%;
-  line-height: 1.2;
-  font-size: 100px;
-  transition: font-size 0.2s ease;
+  text-align: center;
 }
 
 .card-main-content {
+  color: var(--text-color);
   width: 100%;
   overflow: hidden;
 }
 
-@media (max-width: 768px) {
-  .card-main-content h1 {
-    font-size: 60px;
-  }
-}
-
-.card-meta {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 30px;
-  color: #aaa;
-}
-
-.card-info-section {
-  margin-bottom: 20px;
+.card-main-content h1 {
+  margin: 0 0 17px 0;
+  padding: 0;
+  white-space: nowrap;
+  font-size: 100px;
+  line-height: 1.2;
+  transition: font-size 0.2s ease;
+  will-change: font-size;
 }
 
 .card-info-columns {
@@ -285,7 +262,6 @@ export default {
   overflow-wrap: break-word;
 }
 
-
 .card-info-column {
   flex: 1;
   padding: 0 10px;
@@ -294,20 +270,13 @@ export default {
 
 .description-h3 {
   position: absolute;
-  top: 95%; /* Position below the image */
+  top: 95%;
   left: 0;
   width: 100%;
   font-size: 25px;
   text-align: center;
   color: var(--accent-color);
 }
-
-.comments-section h3 {
-  font-size: 20px;
-  margin-bottom: 20px;
-  color: var(--accent-color);
-}
-
 
 .no-comments {
   color: #666;
@@ -330,9 +299,13 @@ export default {
   color: #aaa;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .card-detail {
     grid-template-columns: 1fr;
+  }
+  
+  .card-main-content h1 {
+    font-size: 60px;
   }
   
   .card-detail-image, .image-placeholder {
