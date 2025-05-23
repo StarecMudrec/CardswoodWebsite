@@ -57,12 +57,6 @@ export default {
   --hover-border-color: #9a62df;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 html, body {
   height: 100%;
   background-color: var(--bg-color);
@@ -74,11 +68,11 @@ html, body {
   align-items: center;
   margin: 0;
 }
-
-/* Убираем стандартные отступы браузера */
+/* Глобальные стили для всех элементов */
+* {
+  box-sizing: border-box;
+}
 body {
-  margin: 0;
-  padding: 0;
 }
 
 /* Анимации переходов */
