@@ -236,12 +236,10 @@ export default {
   margin-bottom: 17px;
   white-space: nowrap;
   overflow: visible;
-  text-overflow: clip;
   max-width: 100%;
   line-height: 1.2;
   font-size: 100px;
   transition: font-size 0.2s ease;
-  will-change: font-size;
 }
 
 .card-main-content {
@@ -251,7 +249,7 @@ export default {
 
 @media (max-width: 768px) {
   .card-main-content h1 {
-    font-size: 60px; /* Базовый размер для мобильных */
+    font-size: 60px;
   }
 }
 
