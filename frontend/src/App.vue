@@ -111,4 +111,13 @@ body {
   object-fit: cover; /* Ensure the image covers the area without distortion */
 }
 
+button, .button {
+  padding: 10px 15px; /* Increased padding for larger buttons */
+  /* Black text outline using text-shadow */
+  text-shadow: 
+    -1px -1px 0 #000,  
+     1px -1px 0 #000,
+    -1px 1px 0 #000,
+     1px 1px 0 #000;
+}
 </style>
