@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div class="background-container">
+      <!-- The background image will be applied here -->
+    </div>
     <div id="seasons-container">
       <div v-if="loading" class="loading">Loading cards...</div>
       <div v-else-if="error" class="loading" style="color: #ff5555;">Error loading data. Please try again later.</div>
@@ -12,6 +15,7 @@
       />
     </div>
   </div>
+
 </template>
 
 <script>

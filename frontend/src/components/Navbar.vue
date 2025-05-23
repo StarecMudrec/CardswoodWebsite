@@ -30,6 +30,11 @@ export default {
   gap: 30px;
   margin: 30px 0 50px 0;
   padding: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный фон */
+  position: absolute; /* Абсолютное позиционирование */
+  top: 0; /* Прижимаем к верху */
+  left: 0; /* Прижимаем к левому краю */
+  width: 100%; /* Растягиваем по всей ширине */
 }
 
 .nav-btn {
@@ -70,6 +75,10 @@ export default {
   
   .nav-btn {
     font-size: 16px;
+  }
+
+  .menu {
+    z-index: 10; /* Обеспечиваем, что навбар будет поверх изображения */
   }
 }
 </style>
