@@ -55,7 +55,7 @@ export default {
   height: 100%;
   background-image: url('/background.jpg');
   background-size: cover;
-  background-position: center 100%; /* Position the vertical center 80% down from the top, center horizontally */
+  background-position: center 97%; /* Position the vertical center 80% down from the top, center horizontally */
   z-index: 1; /* Ensure it's behind the content */
 }
 .login-container {
