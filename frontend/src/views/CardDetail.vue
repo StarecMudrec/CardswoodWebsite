@@ -14,32 +14,47 @@
             @error="imageError = true"
           />
           <div v-else class="image-placeholder">No image available</div>
-          <h3 class="description-h3">Description:</h3>
-          <div class="card-description-overlay">
-            <p>{{ card.description }}</p>
-          </div>
         </div>
-        <div class="card-main-content">
-          <h1 ref="cardNameRef">{{ card.name }}</h1>
-
-          <div class="card-info-columns">
-            <div class="card-info-column">
-              <h3>Category</h3>
-              <p>{{ card.category }}</p>
+        
+        <div class="card-content-wrapper">
+          <!-- Название карточки и главная разделительная линия -->
+          <div class="card-header-section">
+            <h1 ref="cardNameRef">{{ card.name }}</h1>
+            <div class="main-divider"></div>
+          </div>
+          
+          <!-- Описание карточки -->
+          <div class="card-description-section">
+            <div class="card-description">
+              <p>{{ card.description }}</p>
             </div>
-            <div class="card-info-column">
-              <h3>Season</h3>
-              <p>{{ seasonName }}</p>
+            <div class="secondary-divider"></div>
+          </div>
+          
+          <!-- Информация о категории и сезоне -->
+          <div class="card-info-section">
+            <div class="card-info-columns">
+              <div class="card-info-column">
+                <h3>Category</h3>
+                <p>{{ card.category }}</p>
+              </div>
+              <div class="card-info-column">
+                <h3>Season</h3>
+                <p>{{ seasonName }}</p>
+              </div>
             </div>
           </div>
-
-          <div v-if="comments.length === 0" class="no-comments">
-            No comments yet
-          </div>
-          <div v-else class="comments-list">
-            <div v-for="comment in comments" :key="comment.id" class="comment">
-              <div class="comment-text">{{ comment.text }}</div>
-              <div class="comment-meta">User #{{ comment.user_id }}</div>
+          
+          <!-- Комментарии -->
+          <div class="comments-section">
+            <div v-if="comments.length === 0" class="no-comments">
+              No comments yet
+            </div>
+            <div v-else class="comments-list">
+              <div v-for="comment in comments" :key="comment.id" class="comment">
+                <div class="comment-text">{{ comment.text }}</div>
+                <div class="comment-meta">User #{{ comment.user_id }}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -156,23 +171,28 @@ export default {
   background-size: cover;
   background-position: center 57%;
   z-index: -1;
-  border-bottom: 2px solid var(--card-border-color);
+}
+
+/* Основная граница разделения */
+.main-divider {
+  height: 2px;
+  width: 100%;
+  background-color: var(--card-border-color);
+  margin: 20px 0;
+}
+
+/* Вторичная граница */
+.secondary-divider {
+  height: 1px;
+  width: 100%;
+  background-color: var(--card-border-color);
+  margin: 30px 0;
 }
 
 .card-detail-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 30px;
-}
-
-.loading, .error-message {
-  text-align: center;
-  margin: 50px 0;
-  font-size: 18px;
-}
-
-.error-message {
-  color: #ff5555;
 }
 
 .card-detail {
@@ -210,48 +230,45 @@ export default {
 .card-main-content {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
 }
 
-.card-header {
-  margin-bottom: 30px;
+/* Секция с названием прямо над главной границей */
+.card-title-section {
+  margin-bottom: 0;
 }
 
 .card-main-content h1 {
-  margin: 0 0 15px 0;
-  padding: 0;
+  margin: 0;
+  padding: 0 0 20px 0;
   white-space: nowrap;
   font-size: 100px;
   line-height: 1.2;
   color: var(--text-color);
-  transition: font-size 0.2s ease;
+}
+
+/* Секция с описанием под главной границей */
+.card-description-section {
+  padding: 30px 0;
 }
 
 .card-description {
-  padding: 20px 0;
-  margin-bottom: 30px;
-  border-bottom: 2px solid var(--card-border-color);
-}
-
-.card-description p {
   font-size: 18px;
   line-height: 1.6;
   color: var(--text-color);
 }
 
+/* Секция с категорией и сезоном */
+.card-info-section {
+  padding: 20px 0;
+}
+
 .card-info-columns {
   display: flex;
   justify-content: space-around;
-  width: 100%;
-  padding: 20px 0;
-  margin: 20px 0;
-  border-top: 1px solid var(--card-border-color);
-  border-bottom: 1px solid var(--card-border-color);
 }
 
 .card-info-column {
   flex: 1;
-  padding: 0 20px;
   text-align: center;
 }
 
@@ -267,21 +284,21 @@ export default {
   color: var(--text-color);
 }
 
+/* Секция с комментариями в самом низу */
 .comments-section {
   margin-top: auto;
   padding-top: 40px;
-  text-align: center;
 }
 
 .no-comments {
   color: #666;
   font-style: italic;
+  text-align: center;
 }
 
 .comments-list {
-  display: inline-block;
   max-width: 800px;
-  width: 100%;
+  margin: 0 auto;
 }
 
 .comment {
@@ -289,7 +306,6 @@ export default {
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 15px;
-  text-align: left;
 }
 
 .comment-text {
@@ -300,18 +316,6 @@ export default {
 .comment-meta {
   font-size: 14px;
   color: #aaa;
-}
-
-@media (max-width: 1200px) {
-  .card-main-content h1 {
-    font-size: 80px;
-  }
-}
-
-@media (max-width: 992px) {
-  .card-main-content h1 {
-    font-size: 70px;
-  }
 }
 
 @media (max-width: 768px) {
@@ -327,23 +331,19 @@ export default {
     max-height: 400px;
   }
   
-  .comments-section {
-    padding-top: 30px;
+  .card-info-columns {
+    flex-direction: column;
+    gap: 20px;
   }
 }
 
 @media (max-width: 576px) {
   .card-main-content h1 {
-    font-size: 50px;
+    font-size: 40px;
   }
   
-  .card-info-columns {
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .card-info-column {
-    padding: 10px 0;
+  .card-description {
+    font-size: 16px;
   }
 }
 </style>
