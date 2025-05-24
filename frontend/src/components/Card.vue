@@ -49,7 +49,7 @@ export default {
   },
   data() {
     return {
-      isSelected: false
+      isSelected: false,
       isLongPress: false,
       lastTapTime: 0
     };
