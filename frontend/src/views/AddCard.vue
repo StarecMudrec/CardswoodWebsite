@@ -218,6 +218,10 @@ export default {
   width: 100%;
   color: var(--hover-color);
 }
+.modal-button:hover {
+  width: 100%;
+  color: var(--hover-color);
+}
 
 /* Остальные стили формы */
 h1 {
@@ -304,8 +308,13 @@ input[type="file"] {
   transition: width 0.3s ease;
 }
 
+.back-link:hover {
+  width: 100%;
+  color: var(--hover-color);
+}
 .back-link:hover::after {
   width: 100%;
+  color: var(--hover-color);
 }
 
 @media (max-width: 600px) {
