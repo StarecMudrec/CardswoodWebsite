@@ -51,11 +51,13 @@ export default {
     },
     async submitForm() {
       const formData = new FormData();
+      const cardUuid = this.uuidv4(); // Generate UUID
+      formData.append('uuid', cardUuid);
       formData.append('name', this.card.name);
       formData.append('description', this.card.description);
       formData.append('category', this.card.category);
-      formData.append('season', this.card.season);
-      formData.append('image', this.card.image);
+      formData.append('season_id', this.card.season);
+      formData.append('img', this.card.image);
 
       try {
         const response = await axios.post('/api/cards', formData, {
@@ -82,6 +84,18 @@ export default {
         fileInput.value = '';
       }
     }
+  },
+  setup() {
+    // Function to generate a random UUID (v4)
+    const uuidv4 = () => {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    };
+    return {
+      uuidv4
+    };
   }
 };
 </script>
