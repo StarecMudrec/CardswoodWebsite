@@ -178,6 +178,7 @@ export default {
 }
 
 .delete-selected-button {
+  background-color: rgba(255, 42, 42, 0);
   color: red;
   border: none;
   border-radius: 14px;
