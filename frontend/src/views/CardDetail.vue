@@ -385,5 +385,9 @@ export default {
   .main-divider {
     margin-top: 15px;
   }
+  .card-description {
+    left: -5%;
+    width: 110%;
+  }
 }
 </style>
