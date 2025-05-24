@@ -280,7 +280,7 @@ export default {
 
 @media (max-width: 768px) {
   .cards-container {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     gap: 10px;
     padding: 0 10px;
   }
