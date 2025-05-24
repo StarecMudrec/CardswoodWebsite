@@ -392,7 +392,6 @@ export default {
   .card-header-section h1.force-wrap {
     white-space: normal;
     line-height: 1.3;
-    font-size: 28px !important;
   }
 
   .main-divider {
