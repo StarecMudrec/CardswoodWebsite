@@ -13,7 +13,7 @@ class AuthToken(db.Model):
 
 # Card Model
 class Card(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     uuid = db.Column(db.String, nullable=False, unique=True)
     img = db.Column(db.String)
     category = db.Column(db.String(20))
