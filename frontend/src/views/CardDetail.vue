@@ -91,7 +91,7 @@ export default {
     const router = useRouter()
 
     const adjustFontSize = () => {
-  nextTick(() => {
+    nextTick(() => {
     if (!cardNameRef.value) return;
     
     const element = cardNameRef.value;

@@ -12,6 +12,7 @@
         :key="card.uuid" 
         :card="card || {}"
         @click="$emit('card-clicked', card.uuid)"
+        @card-deleted="handleCardDeleted"
       />
       <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
         No cards in this season

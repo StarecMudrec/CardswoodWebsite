@@ -13,6 +13,7 @@
         :season="season" 
         @card-clicked="navigateToCard"
         @add-card="navigateToAddCard"
+        @card-deleted="handleCardDeleted"
       />
     </div>
   </div>
@@ -80,8 +81,24 @@ export default {
   methods: {
     ...mapActions(['fetchSeasons']),
     navigateToCard(cardUuid) {
-      this.$router.push(`/card/${cardUuid}`)
-    }
+ this.$router.push(`/card/${cardUuid}`)
+    },
+    async handleCardDeleted(deletedCardUuid) {
+      try {
+        // Assuming you have an axios instance configured globally or imported
+        await this.$axios.delete(`/api/cards/${deletedCardUuid}`);
+        console.log(`Card with UUID ${deletedCardUuid} deleted successfully`);
+        
+        // Update the seasons state to remove the deleted card
+        // This requires modifying how seasons and cards are managed in the store
+        // For simplicity, this example refetches seasons.
+        // A more efficient approach would be to mutate the store state directly.
+        this.fetchSeasons(); 
+      } catch (error) {
+        console.error(`Error deleting card with UUID ${deletedCardUuid}:`, error);
+        alert('Failed to delete card: ' + (error.response?.data?.error || error.message));
+      }
+    },
   },
   mounted() {
     this.fetchSeasons()
