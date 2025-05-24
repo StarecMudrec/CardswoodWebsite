@@ -3,7 +3,7 @@
     <div class="season-header">
       <h2 class="season-title">{{ season.name }}</h2>
       <button @click="$router.push('/add-card')" class="add-card-button">
-        Add New Card
+        +Add New Card
       </button>
     </div>
     <div class="cards-container">
