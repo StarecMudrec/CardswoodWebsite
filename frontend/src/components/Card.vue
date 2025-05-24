@@ -50,7 +50,6 @@ export default {
   data() {
     return {
       isSelected: false,
-      lastTapTime: 0
     };
   },
   methods: {
@@ -70,20 +69,18 @@ export default {
       this.$emit('card-selected', this.card.uuid, this.isSelected);
     },
     handleTouchEnd() {
-      const currentTime = new Date().getTime(); // Get current time at the start
-      const timeDiff = currentTime - this.lastTapTime;
+      // Add double tap logic here later if needed
+    },
+    toggleSelection() {
       if (window.innerWidth <= 768 && timeDiff < 300) { // Adjust breakpoint as needed
-        this.toggleSelection();
+        this.isSelected = !this.isSelected; // Toggle selection state
       }
       else if (window.innerWidth <= 768) { // If not a double tap on mobile, navigate
         this.$emit('card-clicked', this.card.uuid);
       }
-      this.lastTapTime = currentTime; // Update last tap time at the end
-    },
-    toggleSelection() {
-      // Add vibration for mobile on selection on long press end
       if (this.isSelected && window.innerWidth <= 768 && navigator.vibrate) {
         window.navigator.vibrate(500); // Vibrate for 50ms
+        this.isSelected = !this.isSelected; // Toggle selection state
       }
       this.$emit('card-selected', this.card.id, this.isSelected);
     },
