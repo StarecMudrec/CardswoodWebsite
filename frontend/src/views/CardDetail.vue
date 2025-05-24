@@ -343,6 +343,9 @@ export default {
     margin-top: 0px;
     min-height: 15px;
   }
+  .card-header-section h1{
+    white-space: pre-wrap;
+  }
   .card-detail {
     grid-template-columns: 1fr;
   }
