@@ -83,7 +83,7 @@ export default {
 }
 
 .card-inner-content {
-  transition: filter 0.2s ease; /* Add transition for blur */
+  transition: filter 0.3s ease; /* Add transition for blur */
 }
 
 .card.selected {
