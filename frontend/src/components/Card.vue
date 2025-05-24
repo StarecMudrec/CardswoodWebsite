@@ -50,7 +50,6 @@ export default {
   data() {
     return {
       isSelected: false,
-      isLongPress: false,
       lastTapTime: 0
     };
   },
@@ -63,12 +62,9 @@ export default {
       if (event.target.classList.contains('selection-checkbox')) {
         return;
       }
-      // Navigate on desktop
-      if (window.innerWidth > 768) { // Adjust breakpoint as needed
-         this.$emit('card-clicked', this.card.uuid);
-      }
+      // Desktop click handled here, mobile tap handled in handleTouchEnd
+      this.$emit('card-clicked', this.card.uuid);
     },
-    handleCheckboxChange(event) {
       this.isSelected = event.target.checked;
       this.$emit('card-selected', this.card.uuid, this.isSelected);
     },
@@ -78,10 +74,11 @@ export default {
       if (window.innerWidth <= 768 && timeDiff < 300) { // Adjust breakpoint as needed
         this.toggleSelection();
       }
+      else if (window.innerWidth <= 768) { // If not a double tap on mobile, navigate
+         this.$emit('card-clicked', this.card.uuid);
+      }
       this.lastTapTime = currentTime; // Update last tap time at the end
-
     },
-    toggleSelection() {
       this.isSelected = !this.isSelected;
       // Add vibration for mobile on selection on long press end
       if (this.isSelected && window.innerWidth <= 768 && navigator.vibrate) {
