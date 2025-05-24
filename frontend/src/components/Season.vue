@@ -178,9 +178,10 @@ export default {
 }
 
 .delete-selected-button {
-  padding: 0px;
+  background-color: rgba(255, 42, 42, 0);
   color: red;
   border: none;
+  padding: 0px;
   border-radius: 10px;
   opacity: 0.7;
   cursor: pointer;
@@ -194,7 +195,7 @@ export default {
 
 
 .delete-selected-button:hover {
-  background-color: rgba(255, 42, 42, 0.32);
+  background-color: rgba(255, 42, 42, 0);
 }
 
 
