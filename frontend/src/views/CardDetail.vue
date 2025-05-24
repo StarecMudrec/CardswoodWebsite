@@ -337,26 +337,48 @@ export default {
   color: #aaa;
 }
 
+/* Mobile-specific fixes */
 @media (max-width: 768px) {
-  .card-header-section {
-    margin-top: 0px;
-    min-height: 15px;
-  }
-  .card-header-section h1{
-    white-space: pre-wrap;
-  }
-  .title-container {
-    position: relative;
-  }
   .card-detail {
     grid-template-columns: 1fr;
-  }
-  .card-detail-image, .image-placeholder {
-    max-height: 400px;
-  }
-  .card-info-columns {
-    flex-direction: column;
     gap: 20px;
+  }
+
+  .card-header-section {
+    position: relative;
+    min-height: auto;
+    margin: 20px 0 10px 0;
+    padding: 0 15px;
+  }
+
+  .title-container {
+    position: static;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .card-header-section h1 {
+    font-size: min(9vw, 42px); /* Dynamic scaling with max size */
+    white-space: normal;
+    word-wrap: break-word;
+    line-height: 1.2;
+    text-align: center;
+    padding: 0;
+    margin: 0 0 15px 0;
+    display: inline;
+    transition: font-size 0.3s ease;
+  }
+
+  .main-divider {
+    position: static;
+    margin: 10px 0;
+  }
+
+  /* Additional scaling for very long titles */
+  .card-header-section h1.long-title {
+    font-size: min(7vw, 36px);
+    line-height: 1.3;
   }
 }
 </style>
