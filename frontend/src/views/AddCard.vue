@@ -209,7 +209,7 @@ export default {
   left: 0;
   width: 0;
   height: 1px;
-  background-color: var(--accent-color);
+  background-color: var(--hover-color);
   transition: width 0.3s ease;
   color: var(--hover-color);
 }
@@ -268,7 +268,7 @@ input[type="file"] {
 .submit-button {
   width: 100%;
   padding: 14px;
-  background-color: var(--accent-color);
+  background-color: var(--border-color);
   color: white;
   border: none;
   border-radius: 8px;
@@ -300,7 +300,7 @@ input[type="file"] {
   left: 0;
   width: 0;
   height: 1px;
-  background-color: var(--accent-color);
+  background-color: var(--hover-color);
   transition: width 0.3s ease;
 }
 
