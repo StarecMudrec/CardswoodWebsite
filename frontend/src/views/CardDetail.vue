@@ -293,8 +293,28 @@ export default {
       loading,
       error,
       imageError: imageError,\
-      cardNameRef
-      ,\n\n      // Editing state and values\n      editingName,\n      editingDescription,\n      editingCategory,\n      editingRarity,\n      editedName,\n      editedDescription,\n      editedCategory,\n      editedRarity,\n\n      // Editing functions\n      startEditingName,\n      saveName,\n      cancelEditingName,\n      startEditingDescription,\n      saveDescription,\n      cancelEditingDescription,\n      startEditingCategory,\n      saveCategory,\n      cancelEditingCategory,\n      startEditingRarity,\n      saveRarity,\n      cancelEditingRarity\n
+      cardNameRef,
+      editingName,
+      editingDescription,
+      editingCategory,
+      editingRarity,
+      editedName,
+      editedDescription,
+      editedCategory,
+      editedRarity,
+      startEditingName,
+      saveName,
+      cancelEditingName,
+      startEditingDescription,
+      saveDescription,
+      cancelEditingDescription,
+      startEditingCategory,
+      saveCategory,
+      cancelEditingCategory,
+      startEditingRarity,
+      saveRarity,
+      cancelEditingRarity
+      
     }
   }
 }
