@@ -181,6 +181,20 @@ export default {
         }
       });
     };
+    
+    
+    const toggleEdit = (field) => {
+      if (editing.value[field]) {
+        cancelEdit(field)
+      } else {
+        startEditing(field)
+      }
+    }
+
+    const cancelEdit = (field) => {
+      editing.value = { ...editing.value, [field]: false }
+    }
+
 
     const startEditing = (field) => {
       editing.value = { ...editing.value, [field]: true }
