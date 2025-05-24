@@ -47,7 +47,16 @@ export default {
   },
   methods: {
     handleFileUpload(event) {
-      this.card.image = event.target.files[0];
+      const file = event.target.files[0];
+      if (file && file.type.startsWith('image/')) {
+        this.card.image = file;
+      } else {
+        // If not an image, clear the file input and reset the card.image
+        alert('Please select an image file (JPEG, PNG, GIF, etc.).');
+        event.target.value = '';
+        this.card.image = null;
+      }
+
     },
     async submitForm() {
       const formData = new FormData();
