@@ -102,6 +102,8 @@ export default {
   transition: transform 0.2s ease;
   text-decoration: none;
   font-family: Geneva;
+  position: relative; /* Добавляем для позиционирования псевдоэлемента */
+  text-decoration: none; /* Убираем стандартное подчеркивание */
 }
 
 .add-card-button:hover {
