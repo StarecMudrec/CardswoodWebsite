@@ -3,9 +3,9 @@
     <!-- Модальное окно для ошибок -->
     <div v-if="showErrorModal" class="modal-overlay">
       <div class="modal-content">
-        <h3 class="error-title">Ошибка</h3>
+        <h3 class="error-title">Error</h3>
         <p>{{ errorMessage }}</p>
-        <button @click="closeModal" class="modal-button">OK</button>
+        <button @click="closeModal" class="modal-button">ok</button>
       </div>
     </div>
 
@@ -178,7 +178,7 @@ export default {
 }
 
 .error-title {
-  color: var(--accent-color);
+  color: var(--text-color);
   font-weight: 500;
   margin-bottom: 15px;
   font-size: 28px;
@@ -192,8 +192,7 @@ export default {
 
 .modal-button {
   display: inline-block;
-  margin-top: 25px;
-  color: var(--accent-color);
+  color: var(--text-color);
   text-decoration: none;
   font-size: 17px;
   background: none;
@@ -212,15 +211,17 @@ export default {
   height: 1px;
   background-color: var(--accent-color);
   transition: width 0.3s ease;
+  color: var(--hover-color);
 }
 
 .modal-button:hover::after {
   width: 100%;
+  color: var(--hover-color);
 }
 
 /* Остальные стили формы */
 h1 {
-  color: var(--accent-color);
+  color: var(--text-color);
   font-weight: 500;
   margin-bottom: 25px;
   font-size: 28px;
@@ -237,7 +238,7 @@ h1 {
 label {
   display: block;
   margin-bottom: 8px;
-  color: var(--accent-color);
+  color: var(--text-color);
   font-weight: 500;
 }
 
@@ -261,7 +262,7 @@ textarea {
 input[type="file"] {
   width: 100%;
   padding: 12px 0;
-  color: var(--accent-color);
+  color: var(--text-color);
 }
 
 .submit-button {
@@ -285,7 +286,7 @@ input[type="file"] {
 .back-link {
   display: inline-block;
   margin-top: 25px;
-  color: var(--accent-color);
+  color: var(--text-color);
   text-decoration: none;
   font-size: 17px;
   position: relative;
