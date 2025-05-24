@@ -371,50 +371,57 @@ export default {
     grid-template-areas:
       "image"
       "title"
-      "content";
-    gap: 20px;
-  }
-
-  .card-image-container {
-    grid-area: image;
+      "description"
+      "info"
+      "comments";
+    gap: 15px;
   }
 
   .card-header-section {
     grid-area: title;
     min-height: auto;
-    margin: 0;
+    margin: 10px 0;
     padding: 0 15px;
-  }
-
-  .card-content-wrapper {
-    grid-area: content;
-    padding: 0 15px;
+    position: relative;
   }
 
   .card-header-section h1 {
-    font-size: clamp(24px, 8vw, 48px); /* Динамический размер с ограничениями */
+    font-size: clamp(32px, 9vw, 42px); /* Увеличили минимальный размер */
     white-space: normal;
     word-break: break-word;
     line-height: 1.2;
     padding: 0;
-    margin: 10px 0;
-    text-align: center;
-  }
-
-  .title-container {
-    position: static;
-    margin: 0;
+    margin: 0 0 15px 0; /* Отступ перед линией */
+    text-align: left; /* Выравнивание по левому краю */
+    font-weight: bold; /* Делаем более заметным */
   }
 
   .main-divider {
-    display: none; /* Скрываем разделитель на мобилках */
+    display: block !important; /* Возвращаем линию */
+    height: 1px;
+    margin: 10px 0;
+    background-color: var(--card-border-color);
+    position: static; /* Возвращаем в поток */
+  }
+
+  .card-description-section {
+    grid-area: description;
+    padding: 0 15px;
+  }
+
+  .card-info-section {
+    grid-area: info;
+  }
+
+  .comments-section {
+    grid-area: comments;
   }
 }
 
 /* Для очень маленьких экранов */
 @media (max-width: 480px) {
   .card-header-section h1 {
-    font-size: clamp(20px, 7vw, 40px);
+    font-size: clamp(28px, 8vw, 36px); /* Чуть меньше, но всё ещё читаемо */
   }
 }
 
