@@ -84,12 +84,12 @@ export default {
       }, 500); // Adjust long press duration (milliseconds)
     },
     handleTouchEnd() {
+      const currentTime = new Date().getTime(); // Get current time at the start
       clearTimeout(this.touchTimer);
       if (!this.isLongPress) {
-        const currentTime = new Date().getTime();
         const timeDiff = currentTime - this.lastTapTime;
 
-        if (window.innerWidth <= 768 && timeDiff < 1000) { // Adjust breakpoint as needed
+        if (window.innerWidth <= 768 && timeDiff < 300) { // Adjust breakpoint as needed
           // Double tap on mobile
           this.toggleSelection();
           this.isLongPress = false; // Prevent accidental navigation after double tap
@@ -97,6 +97,8 @@ export default {
           this.$emit('card-clicked', this.card.uuid);
         }
       }
+      this.lastTapTime = currentTime; // Update last tap time at the end
+
     },
     toggleSelection() {
       this.isSelected = !this.isSelected;
