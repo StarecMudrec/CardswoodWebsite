@@ -347,6 +347,7 @@ export default {
   border-radius: 4px;
   padding: 5px;
   width: 80%;
+  text-align: inherit;
 }
 .edit-input:focus {
   border-color: white;
