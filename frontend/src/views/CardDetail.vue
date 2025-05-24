@@ -91,6 +91,20 @@ export default {
         
         const element = cardNameRef.value
         const container = element.parentElement
+    
+        // Для мобильных - используем vw подход
+        if (window.innerWidth <= 768) {
+          element.style.fontSize = '';
+          element.style.whiteSpace = 'normal';
+          
+          // Добавляем класс для очень длинных названий
+          if (element.scrollWidth > container.clientWidth * 1.5) {
+            element.classList.add('long-name');
+          } else {
+            element.classList.remove('long-name');
+          }
+          return;
+        }
         
         // Сброс стилей для чистых измерений
         element.style.fontSize = ''
