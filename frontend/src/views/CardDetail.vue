@@ -92,17 +92,10 @@ export default {
         const element = cardNameRef.value
         const container = element.parentElement
     
-        // Для мобильных - используем vw подход
+        // Для мобильных - используем CSS clamp
         if (window.innerWidth <= 768) {
           element.style.fontSize = '';
           element.style.whiteSpace = 'normal';
-          
-          // Добавляем класс для очень длинных названий
-          if (element.scrollWidth > container.clientWidth * 1.5) {
-            element.classList.add('long-name');
-          } else {
-            element.classList.remove('long-name');
-          }
           return;
         }
         
@@ -371,41 +364,57 @@ export default {
   }
 }
 
+/* Мобильная версия */
 @media (max-width: 768px) {
-  .card-header-section {
-    min-height: 100px;
-    width: 100%;
-    overflow: hidden;
+  .card-detail {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "image"
+      "title"
+      "content";
+    gap: 20px;
   }
-  
+
+  .card-image-container {
+    grid-area: image;
+  }
+
+  .card-header-section {
+    grid-area: title;
+    min-height: auto;
+    margin: 0;
+    padding: 0 15px;
+  }
+
+  .card-content-wrapper {
+    grid-area: content;
+    padding: 0 15px;
+  }
+
   .card-header-section h1 {
-    font-size: 12vw; /* Динамический размер относительно ширины экрана */
-    white-space: normal; /* Разрешаем перенос слов */
-    word-break: break-word; /* Перенос длинных слов */
-    line-height: 1.1;
-    padding-bottom: 5px;
+    font-size: clamp(24px, 8vw, 48px); /* Динамический размер с ограничениями */
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.2;
+    padding: 0;
+    margin: 10px 0;
+    text-align: center;
   }
 
   .title-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    position: static;
+    margin: 0;
+  }
+
+  .main-divider {
+    display: none; /* Скрываем разделитель на мобилках */
   }
 }
 
+/* Для очень маленьких экранов */
 @media (max-width: 480px) {
   .card-header-section h1 {
-    font-size: 11vw; /* Ещё меньше на очень маленьких экранах */
-    line-height: 1.15;
-  }
-}
-
-/* Дополнительная адаптация для очень длинных названий */
-@media (max-width: 768px) {
-  .card-header-section h1.long-name {
-    font-size: 10vw;
-    word-break: break-all; /* Более агрессивный перенос */
+    font-size: clamp(20px, 7vw, 40px);
   }
 }
 
