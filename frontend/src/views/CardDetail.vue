@@ -146,7 +146,7 @@ export default {
         let fontSize = 100;
         element.style.fontSize = `${fontSize}px`;
         void element.offsetWidth;
-        
+
         if (element.scrollWidth > containerWidth) {
           const ratio = containerWidth / element.scrollWidth;
           fontSize = Math.max(
