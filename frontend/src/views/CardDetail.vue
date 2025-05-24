@@ -326,6 +326,7 @@ export default {
   justify-content: center;
   color: white;
   font-size: 20px;
+  text-align: center;
 }
 .category-container p {
   color: white;
