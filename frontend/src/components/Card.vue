@@ -50,8 +50,6 @@ export default {
   data() {
     return {
       isSelected: false
-      ,
-      touchTimer: null,
       isLongPress: false,
       lastTapTime: 0
     };
@@ -65,8 +63,8 @@ export default {
       if (event.target.classList.contains('selection-checkbox')) {
         return;
       }
-      // Only navigate on desktop (or if not a long press on mobile)
-      if (!this.isLongPress && window.innerWidth > 768) { // Adjust breakpoint as needed
+      // Navigate on desktop
+      if (window.innerWidth > 768) { // Adjust breakpoint as needed
          this.$emit('card-clicked', this.card.uuid);
       }
     },
@@ -74,28 +72,11 @@ export default {
       this.isSelected = event.target.checked;
       this.$emit('card-selected', this.card.uuid, this.isSelected);
     },
-    handleTouchStart(event) {
-      // Prevent default touch behavior initially (e.g., scrolling)
-      // event.preventDefault(); // May interfere with other interactions, use cautiously
-      this.isLongPress = false;
-      this.touchTimer = setTimeout(() => {
-        this.isLongPress = true;
-        this.toggleSelection(); // Toggle selection on long press
-      }, 500); // Adjust long press duration (milliseconds)
-    },
     handleTouchEnd() {
       const currentTime = new Date().getTime(); // Get current time at the start
-      clearTimeout(this.touchTimer);
-      if (!this.isLongPress) {
-        const timeDiff = currentTime - this.lastTapTime;
-
-        if (window.innerWidth <= 768 && timeDiff < 300) { // Adjust breakpoint as needed
-          // Double tap on mobile
-          this.toggleSelection();
-          this.isLongPress = false; // Prevent accidental navigation after double tap
-        } else if (window.innerWidth <= 768) {
-          this.$emit('card-clicked', this.card.uuid);
-        }
+      const timeDiff = currentTime - this.lastTapTime;
+      if (window.innerWidth <= 768 && timeDiff < 300) { // Adjust breakpoint as needed
+        this.toggleSelection();
       }
       this.lastTapTime = currentTime; // Update last tap time at the end
 
@@ -103,10 +84,9 @@ export default {
     toggleSelection() {
       this.isSelected = !this.isSelected;
       // Add vibration for mobile on selection on long press end
-      if (this.isSelected && window.innerWidth <= 768) {
+      if (this.isSelected && window.innerWidth <= 768 && navigator.vibrate) {
         window.navigator.vibrate(500); // Vibrate for 50ms
       }
-      this.lastTapTime = new Date().getTime(); // Update last tap time on any successful tap/selection action
       this.$emit('card-selected', this.card.id, this.isSelected);
     },
     deleteCard() {
