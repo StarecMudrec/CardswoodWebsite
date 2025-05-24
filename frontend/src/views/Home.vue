@@ -12,6 +12,7 @@
         :key="season.uuid" 
         :season="season" 
         @card-clicked="navigateToCard"
+        @add-card="navigateToAddCard"
       />
     </div>
   </div>
