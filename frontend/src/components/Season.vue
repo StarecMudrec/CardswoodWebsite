@@ -15,6 +15,7 @@
         :key="card.uuid" 
         :card="card || {}"
         @card-selected="handleCardSelected"
+        @card-clicked="handleCardClicked"
         @delete-card="handleCardDeleted(card.uuid)"
       />
       <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
@@ -87,6 +88,9 @@ export default {
       }
     }
     ,
+    handleCardClicked(cardUuid) {
+      this.$emit('card-clicked', cardUuid);
+    },
     handleCardSelected(cardId, isSelected) {
       if (isSelected) {
         this.selectedCards.push(cardId);
