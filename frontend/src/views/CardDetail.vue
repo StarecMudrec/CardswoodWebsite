@@ -353,8 +353,7 @@ export default {
     flex-direction: column;
     gap: 20px;
   }
-  .card-header-section { */
-    min-height: 15px;
+  .card-header-section {
     text-align: center;
   }
 
