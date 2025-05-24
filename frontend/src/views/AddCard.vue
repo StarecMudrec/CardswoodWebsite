@@ -26,7 +26,12 @@
         </div>
         <div class="form-group">
           <label for="season">Season:</label>
-          <input type="number" id="season" v-model="card.season" required>
+          <select id="season" v-model="card.season" required>
+            <option disabled value="">Select a season</option>
+            <option v-for="season in seasons" :key="season.id" :value="season.id">
+              {{ season.name }}
+            </option>
+          </select>
         </div>
         <div class="form-group file-upload-group">
           <label for="image" class="file-upload-label">
@@ -63,14 +68,31 @@ export default {
         name: '',
         description: '',
         category: '',
-        season: null,
+        season: '',
         image: null
       },
+      seasons: [], // Здесь будут храниться сезоны
       showErrorModal: false,
       errorMessage: ''
     };
   },
+  created() {
+    this.fetchSeasons();
+  },
   methods: {
+    async fetchSeasons() {
+      try {
+        const response = await axios.get('/api/seasons');
+        this.seasons = response.data.map(season => ({
+          id: season.id,
+          name: season.name || `Season ${season.id}`
+        }));
+      } catch (error) {
+        this.errorMessage = 'Failed to load seasons: ' + (error.response?.data?.message || error.message);
+        this.showErrorModal = true;
+        console.error('Error loading seasons:', error);
+      }
+    },
     handleFileUpload(event) {
       const file = event.target.files[0];
       if (file && file.type.startsWith('image/')) {
@@ -115,7 +137,7 @@ export default {
         name: '',
         description: '',
         category: '',
-        season: null,
+        season: '',
         image: null
       };
       const fileInput = document.getElementById('image');
