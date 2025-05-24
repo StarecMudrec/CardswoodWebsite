@@ -173,10 +173,11 @@ export default {
   bottom: 0;
   background-color: rgba(255, 42, 42, 0.24);
   z-index: 0; /* Lower than checkbox and potential future delete button */
+  filter: blur(4px);
 }
 .card.selected .card-inner-content {
   filter: blur(4px);
-  filter: opacity(0.5)
+  filter: opacity(0.5);
 }
 .card-content {
   padding: 16px;
