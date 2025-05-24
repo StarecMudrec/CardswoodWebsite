@@ -197,7 +197,7 @@ export default {
         }
       })
     }
-    
+
 
     const saveField = async (field) => {
       try {
@@ -285,6 +285,17 @@ export default {
   width: 24px;
   height: 24px;
   border-radius: 50%;
+}
+
+.category-text {
+  font-size: 20px;
+  color: white; /* Белый текст */
+  margin: 10px 0;
+  padding: 8px 12px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  display: inline-block;
+  min-width: 200px;
 }
 
 .edit-icon:hover {
