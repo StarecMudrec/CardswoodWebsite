@@ -324,6 +324,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
 }
 .category-container p {
   color: white;
