@@ -187,6 +187,7 @@ export default {
   font-size: 1rem;
   transition: opacity 0.3s ease;
   margin-left: 15px;
+  font-family: var(--font-family-main);
 }
 
 .delete-selected-button:hover {
