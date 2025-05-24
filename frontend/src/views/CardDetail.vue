@@ -91,13 +91,6 @@ export default {
         
         const element = cardNameRef.value
         const container = element.parentElement
-    
-        // Для мобильных - используем CSS clamp
-        if (window.innerWidth <= 768) {
-          element.style.fontSize = '';
-          element.style.whiteSpace = 'normal';
-          return;
-        }
         
         // Сброс стилей для чистых измерений
         element.style.fontSize = ''
@@ -364,49 +357,22 @@ export default {
   }
 }
 
-/* Мобильная версия (исправленная) */
 @media (max-width: 768px) {
+  .card-detail {
+    grid-template-columns: 1fr;
+  }
   .card-header-section {
-    min-height: auto;
-    margin: 10px 0 5px 0;
-    padding: 0 15px;
-    display: flex;
+    min-height: 120px;
+  }
+  .card-header-section h1 {
+    font-size: 60px;
+  }
+  .card-detail-image, .image-placeholder {
+    max-height: 400px;
+  }
+  .card-info-columns {
     flex-direction: column;
-  }
-
-  .card-header-section h1 {
-    font-size: clamp(36px, 10vw, 48px); /* Увеличили базовый размер */
-    line-height: 1.15;
-    margin: 0;
-    padding: 0 0 8px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
-    transition: all 0.3s ease;
-  }
-
-  .main-divider {
-    height: 1px;
-    width: 100%;
-    background: var(--card-border-color);
-    margin: 0;
-    flex-shrink: 0;
-  }
-
-  /* Автоматическое уменьшение для очень длинных названий */
-  @media (max-width: 500px) {
-    .card-header-section h1.long-name {
-      font-size: clamp(28px, 8vw, 36px);
-      white-space: normal;
-      line-height: 1.2;
-    }
-  }
-}
-/* Для очень маленьких экранов */
-@media (max-width: 480px) {
-  .card-header-section h1 {
-    font-size: clamp(28px, 8vw, 36px); /* Чуть меньше, но всё ещё читаемо */
+    gap: 20px;
   }
 }
 
