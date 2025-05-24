@@ -114,15 +114,18 @@ export default {
 .add-card-button::after {
   content: '';
   position: absolute;
-  bottom: 5px; /* Регулируем расстояние от текста */
-  left: 20px; /* Совпадает с padding-left кнопки */
-  width: calc(100% - 40px); /* Учитываем padding кнопки */
+  bottom: 0;
+  left: 0;
+  width: 0;
   height: 1px;
   background-color: var(--hover-color);
   transition: width 0.3s ease;
 }
 
 .add-card-button:hover::after {
+  bottom: 5px; /* Регулируем расстояние от текста */
+  left: 20px; /* Совпадает с padding-left кнопки */
+  width: calc(100% - 40px); /* Учитываем padding кнопки */
   width: 100%;
 }
 
