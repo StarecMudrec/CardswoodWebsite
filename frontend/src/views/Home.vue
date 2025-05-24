@@ -43,7 +43,7 @@
 
 .separator-line {
   position: relative;
-  margin-top: 360px; /* Adjust to be below the background image */
+  margin-top: 370px; /* Adjust to be below the background image */
   height: 2px;
   background-color: white;
   border: none;
@@ -52,7 +52,7 @@
 
 #seasons-container {
   position: relative; /* Essential for z-index to work correctly relative to the background */
-  margin-top: 40px; /* Push content down by the height of the background */
+  margin-top: 30px; /* Push content down by the height of the background */
   z-index: 2; /* Ensure content is above the background */
   /* Add other styles for your seasons container here */
   padding-bottom: 50px;
