@@ -70,6 +70,7 @@ export default {
 .season-title {
   font-size: 24px;
   margin-bottom: 20px;
+  margin-top: 0px;  
   color: var(--accent-color);
   font-weight: 500;
   padding-bottom: 10px;
@@ -90,7 +91,7 @@ export default {
   grid-column: 1/-1; /* Make the button span across all columns */
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: var(--accent-color);
+  background-color: var(--card-bg);
   color: white;
   border: none;
   border-radius: 5px;
