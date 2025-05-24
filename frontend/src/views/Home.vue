@@ -23,7 +23,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 500px; /* Adjust height as needed */
+  height: 400px; /* Adjust height as needed */
   background-image: url('/background.jpg');
   background-size: cover;
   background-position: center 57%; /* Position the vertical center 80% down from the top, center horizontally */
@@ -35,14 +35,14 @@
   top: 13%;
   left: 50%;
   transform: translate(-50%, 0);
-  max-width: 300px; /* Adjust size as needed */
-  max-height: 300px; /* Adjust size as needed */
+  max-width: 250px; /* Adjust size as needed */
+  max-height: 250px; /* Adjust size as needed */
   z-index: 1; /* Ensure it's behind the content */
 }
 
 #seasons-container {
   position: relative; /* Essential for z-index to work correctly relative to the background */
-  margin-top: 500px; /* Push content down by the height of the background */
+  margin-top: 400px; /* Push content down by the height of the background */
   z-index: 2; /* Ensure content is above the background */
   /* Add other styles for your seasons container here */
   padding-bottom: 50px;
