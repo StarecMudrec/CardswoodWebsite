@@ -202,6 +202,7 @@ export default {
   cursor: pointer;
   position: relative;
   padding-bottom: 2px;
+  font-family: var(--font-family-main);
 }
 
 .modal-button::after {
@@ -277,11 +278,11 @@ input[type="file"] {
   color: var(--text-color);
   border: none;
   border-radius: 8px;
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 500;
   cursor: pointer;
-  margin-top: 10px;
   position: relative;
+  font-family: var(--font-family-main);
 }
 
 .submit-button-text {
