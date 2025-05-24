@@ -59,9 +59,7 @@ export default {
       }
       // Navigate on any click unless it's the checkbox
       // This handler is primarily for desktop, mobile is handled by handleCardContentClick
-      if (window.innerWidth > 768) {
-        this.$emit('card-clicked', this.card.uuid);
-      }
+      this.$emit('card-clicked', this.card.uuid);
     },
     handleCheckboxChange(event) {
       this.isSelected = event.target.checked;
