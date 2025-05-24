@@ -101,16 +101,18 @@ export default {
     };
 
     const adjustFontSize = () => {
-      if (window.innerWidth > 768) {
-        nextTick().then(() => {
-          if (!cardNameRef.value) return
-          
-          const element = cardNameRef.value
-          const container = element.parentElement
-          
-          // Сброс стилей для чистых измерений
-          element.style.fontSize = ''
-          element.style.display = 'inline-block'
+      nextTick().then(() => {
+        if (!cardNameRef.value) return
+        
+        const element = cardNameRef.value
+        const container = element.parentElement
+        isMobile.value = window.innerWidth <= 768;
+        
+        if (!isMobile.value) {
+          // Сброс стилей
+          element.style.fontSize = '';
+          element.style.whiteSpace = 'nowrap';
+          element.style.lineHeight = '1.1';
           
           // Получаем ширины
           const containerWidth = container.clientWidth
@@ -130,10 +132,27 @@ export default {
           
           // Восстанавливаем стандартное отображение
           element.style.display = ''
-        })
-      } else {
-        checkTitleLength();
-      }
+          return;
+        }
+        // Мобильная логика
+        const containerWidth = container.offsetWidth;
+        let fontSize = 42; // Стартовый размер для мобильных
+        const minFontSize = 28; // Минимальный размер
+        
+        // Проверяем, помещается ли текст
+        element.style.fontSize = `${fontSize}px`;
+        
+        while (element.scrollWidth > containerWidth && fontSize > minFontSize) {
+          fontSize -= 1;
+          element.style.fontSize = `${fontSize}px`;
+        }
+
+        // Если достигли минимума и всё ещё не влезает - разрешаем перенос
+        if (element.scrollWidth > containerWidth && fontSize <= minFontSize) {
+          element.style.whiteSpace = 'normal';
+          element.style.lineHeight = '1.2';
+        }
+      })
     }
 
     const loadData = async () => {
@@ -157,10 +176,8 @@ export default {
     }
 
     onMounted(() => {
-      window.addEventListener('resize', adjustFontSize)
-      loadData().then(() => {
-        setTimeout(adjustFontSize, 100);
-      });
+      window.addEventListener('resize', adjustFontSize);
+      adjustFontSize();
     })
 
     onUnmounted(() => {
