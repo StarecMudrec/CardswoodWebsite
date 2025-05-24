@@ -364,60 +364,45 @@ export default {
   }
 }
 
-/* Мобильная версия */
+/* Мобильная версия (исправленная) */
 @media (max-width: 768px) {
-  .card-detail {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "image"
-      "title"
-      "description"
-      "info"
-      "comments";
-    gap: 15px;
-  }
-
   .card-header-section {
-    grid-area: title;
     min-height: auto;
-    margin: 10px 0;
+    margin: 10px 0 5px 0;
     padding: 0 15px;
-    position: relative;
+    display: flex;
+    flex-direction: column;
   }
 
   .card-header-section h1 {
-    font-size: clamp(32px, 9vw, 42px); /* Увеличили минимальный размер */
-    white-space: normal;
-    word-break: break-word;
-    line-height: 1.2;
-    padding: 0;
-    margin: 0 0 15px 0; /* Отступ перед линией */
-    text-align: left; /* Выравнивание по левому краю */
-    font-weight: bold; /* Делаем более заметным */
+    font-size: clamp(36px, 10vw, 48px); /* Увеличили базовый размер */
+    line-height: 1.15;
+    margin: 0;
+    padding: 0 0 8px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    transition: all 0.3s ease;
   }
 
   .main-divider {
-    display: block !important; /* Возвращаем линию */
     height: 1px;
-    margin: 10px 0;
-    background-color: var(--card-border-color);
-    position: static; /* Возвращаем в поток */
+    width: 100%;
+    background: var(--card-border-color);
+    margin: 0;
+    flex-shrink: 0;
   }
 
-  .card-description-section {
-    grid-area: description;
-    padding: 0 15px;
-  }
-
-  .card-info-section {
-    grid-area: info;
-  }
-
-  .comments-section {
-    grid-area: comments;
+  /* Автоматическое уменьшение для очень длинных названий */
+  @media (max-width: 500px) {
+    .card-header-section h1.long-name {
+      font-size: clamp(28px, 8vw, 36px);
+      white-space: normal;
+      line-height: 1.2;
+    }
   }
 }
-
 /* Для очень маленьких экранов */
 @media (max-width: 480px) {
   .card-header-section h1 {
