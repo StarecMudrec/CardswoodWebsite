@@ -279,7 +279,7 @@ input[type="file"] {
   color: var(--text-color);
   border: none;
   border-radius: 8px;
-  font-size: 32px;
+  font-size: 37px;
   font-weight: 500;
   cursor: pointer;
   position: relative;
