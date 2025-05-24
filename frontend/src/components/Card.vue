@@ -82,6 +82,7 @@ export default {
 
 .card.selected {
   border: 2px solid var(--accent-color); /* Example style for selected card */
+  filter: blur(2px); /* Add blur effect */
 }
 .card-content {
   padding: 16px;

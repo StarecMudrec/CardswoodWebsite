@@ -193,6 +193,7 @@ export default {
   letter-spacing: 0.2px;
 }
 
+
 .delete-selected-button:hover {
   background-color: rgba(255, 42, 42, 0.32);
 }
