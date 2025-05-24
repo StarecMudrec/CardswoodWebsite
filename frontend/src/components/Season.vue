@@ -1,14 +1,16 @@
 <template>
   <div class="season">
-    <h2 class="season-title">{{ season.name }}</h2>
-    <button @click="$router.push('/add-card')" class="add-card-button">
-      Add New Card
-    </button>
+    <div class="season-header">
+      <h2 class="season-title">{{ season.name }}</h2>
+      <button @click="$router.push('/add-card')" class="add-card-button">
+        Add New Card
+      </button>
+    </div>
     <div class="cards-container">
       <Card 
         v-for="card in cards" 
         :key="card.uuid" 
-	:card="card || {}"
+        :card="card || {}"
         @click="$emit('card-clicked', card.uuid)"
       />
       <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
