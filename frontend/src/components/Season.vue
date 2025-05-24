@@ -181,7 +181,7 @@ export default {
   background-color: rgba(255, 42, 42, 0.24);
   color: red;
   border: none;
-  border-radius: 14px;
+  border-radius: 10px;
   opacity: 0.7;
   cursor: pointer;
   font-size: 1rem;
