@@ -358,56 +358,21 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .card-detail {
+    grid-template-columns: 1fr;
+  }
   .card-header-section {
-    margin-top: 30px; /* Уменьшить верхний отступ */
-    min-height: 100px; /* Уменьшить минимальную высоту */
+    min-height: 120px;
   }
-
-  .title-container {
-    bottom: 10px; /* Скорректировать расстояние до разделителя */
-  }
-
   .card-header-section h1 {
-    font-size: 40px; /* Уменьшить размер шрифта заголовка */
-    white-space: normal; /* Разрешить перенос строки для длинных заголовков */
-    text-align: center; /* Выравнивание по центру */
+    font-size: 60px;
   }
-
-  .main-divider {
-    bottom: -10px; /* Скорректировать положение разделителя */
+  .card-detail-image, .image-placeholder {
+    max-height: 400px;
   }
-
-  .card-description-section {
-    padding: 20px 0; /* Уменьшить отступы */
-  }
-
-  .card-description {
-    font-size: 16px; /* Уменьшить размер шрифта описания */
-  }
-
-  .secondary-divider {
-    margin-top: 20px; /* Уменьшить верхний отступ */
-  }
-
   .card-info-columns {
-    flex-direction: column; /* Расположить столбцы по вертикали */
-    align-items: center; /* Выровнять элементы по центру */
-  }
-
-  .card-info-column {
-    margin-bottom: 20px; /* Добавить нижний отступ между столбцами */
-  }
-
-  .card-info-column h3 {
-    font-size: 20px; /* Уменьшить размер шрифта заголовков в колонках */
-  }
-
-  .card-info-column p {
-    font-size: 18px; /* Уменьшить размер шрифта текста в колонках */
-  }
-
-  .comments-section {
-    padding-top: 20px; /* Уменьшить верхний отступ */
+    flex-direction: column;
+    gap: 20px;
   }
 }
 
