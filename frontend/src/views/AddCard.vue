@@ -28,9 +28,21 @@
           <label for="season">Season:</label>
           <input type="number" id="season" v-model="card.season" required>
         </div>
-        <div class="form-group">
-          <label for="image">Card Image:</label>
-          <input type="file" id="image" @change="handleFileUpload" accept="image/*" required>
+        <div class="form-group file-upload-group">
+          <label for="image" class="file-upload-label">
+            <span class="file-upload-text">
+              {{ card.image ? card.image.name : 'Choose card image...' }}
+            </span>
+            <span class="file-upload-button">Browse</span>
+            <input 
+              type="file" 
+              id="image" 
+              @change="handleFileUpload" 
+              accept="image/*" 
+              required
+              class="file-upload-input"
+            >
+          </label>
         </div>
         <button type="submit" class="submit-button">
           <span class="submit-button-text">Add Card</span>
@@ -147,7 +159,7 @@ export default {
   width: 100%;
   box-sizing: border-box;
   max-width: 500px;
-  padding: 40px;
+  padding: 30px;
   background-color: var(--card-bg);
   border-radius: 17px;
   border: 1px solid var(--card-bg);
@@ -239,51 +251,90 @@ h1 {
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   color: var(--text-color);
   font-weight: 500;
+  font-size: 14px;
 }
 
 input[type="text"],
 input[type="number"],
 textarea {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   border: 1px solid var(--card-bg);
   border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.05);
   color: white;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 textarea {
-  min-height: 100px;
+  min-height: 80px;
   resize: vertical;
 }
 
-input[type="file"] {
+/* Стили для загрузки файлов */
+.file-upload-group {
+  margin-bottom: 20px;
+}
+
+.file-upload-label {
+  display: flex;
+  align-items: center;
   width: 100%;
-  padding: 12px 0;
+  cursor: pointer;
+}
+
+.file-upload-text {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid var(--card-bg);
+  border-radius: 8px 0 0 8px;
+  background-color: rgba(255, 255, 255, 0.05);
   color: var(--text-color);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-upload-button {
+  padding: 10px 15px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+  border: 1px solid var(--card-bg);
+  border-radius: 0 8px 8px 0;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.file-upload-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.file-upload-input {
+  display: none;
 }
 
 .submit-button {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   background: none;
   color: var(--text-color);
   border: none;
   border-radius: 8px;
-  font-size: 32px;
+  font-size: 18px;
   font-weight: 500;
   cursor: pointer;
   position: relative;
   font-family: var(--font-family-main);
+  margin-top: 10px;
 }
 
 .submit-button-text {
@@ -312,10 +363,10 @@ input[type="file"] {
 
 .back-link {
   display: inline-block;
-  margin-top: 25px;
+  margin-top: 20px;
   color: var(--text-color);
   text-decoration: none;
-  font-size: 17px;
+  font-size: 14px;
   position: relative;
   padding-bottom: 2px;
 }
@@ -341,13 +392,13 @@ input[type="file"] {
 
 @media (max-width: 768px) {
   .add-card-container {
-    padding: 30px 20px;
+    padding: 25px 20px;
     max-width: 90%;
   }
   
   h1 {
     font-size: 24px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
   }
   
   .error-title {
@@ -357,16 +408,17 @@ input[type="file"] {
   input[type="text"],
   input[type="number"],
   textarea {
-    padding: 10px;
+    padding: 8px;
     font-size: 14px;
   }
   
   .submit-button {
-    font-size: 20px;
+    font-size: 16px;
+    padding: 10px;
   }
   
   .back-link {
-    font-size: 15px;
+    font-size: 13px;
   }
   
   .modal-content {
