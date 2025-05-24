@@ -150,7 +150,6 @@ export default {
     element.style.fontSize = `${fontSize}px`;
     void element.offsetWidth;
     
-    // Если текст не помещается - вычисляем оптимальный размер
     if (element.scrollWidth > containerWidth) {
       const ratio = containerWidth / element.scrollWidth;
       fontSize = Math.max(
