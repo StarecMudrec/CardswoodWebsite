@@ -221,10 +221,10 @@ export default {
 /* Исправленная секция заголовка */
 .card-header-section {
   position: relative;
-  min-height: 180px; /* Увеличиваем минимальную высоту */
+  min-height: 150px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 30px; /* Добавляем отступ снизу */
+  justify-content: flex-end;
 }
 
 .title-container {
