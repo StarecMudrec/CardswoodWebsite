@@ -96,7 +96,7 @@ export default {
       this.isSelected = !this.isSelected;
       // Add vibration for mobile on selection on long press end
       if (this.isLongPress && this.isSelected && window.innerWidth <= 768 && navigator.vibrate) {
-        navigator.vibrate(50); // Vibrate for 50ms
+        navigator.vibrate(500); // Vibrate for 50ms
       }
       this.$emit('card-selected', this.card.id, this.isSelected);
     },
