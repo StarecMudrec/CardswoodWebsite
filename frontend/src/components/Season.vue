@@ -92,7 +92,7 @@ export default {
   margin-top: 20px;
   padding: 10px 20px;
   background-color: var(--card-bg);
-  color: white;
+  color: var(--accent-color);
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -100,9 +100,30 @@ export default {
   text-align: center;
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
-  color: var(--accent-color);
   text-decoration: none;
   letter-spacing: 1px;
+}
+
+.add-card-button:hover {
+  color: var(--hover-color);
+  -webkit-text-stroke: 0.15px var(--hover-border-color);
+  transition: color 0.3s ease, box-shadow 0.3s ease; /* Add box-shadow to transition */
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Semi-transparent dark shadow */
+}
+
+.add-card-button::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--hover-color);
+  transition: width 0.3s ease;
+}
+
+.add-card-button:hover::after {
+  width: 100%;
 }
 
 @media (max-width: 768px) {
