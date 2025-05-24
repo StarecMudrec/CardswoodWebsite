@@ -92,38 +92,36 @@ export default {
   margin-top: 20px;
   padding: 10px 20px;
   background-color: var(--card-bg);
-  color: var(--accent-color);
+  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 16px;
   text-align: center;
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
-  text-decoration: none;
-  font-family: Geneva;
   position: relative; /* Добавляем для позиционирования псевдоэлемента */
   text-decoration: none; /* Убираем стандартное подчеркивание */
-}
-
-.add-card-button:hover {
-  color: var(--hover-color);
-  -webkit-text-stroke: 0.15px var(--hover-border-color);
 }
 
 .add-card-button::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
+  bottom: 5px; /* Регулируем расстояние от текста */
+  left: 20px; /* Совпадает с padding-left кнопки */
+  width: calc(100% - 40px); /* Учитываем padding кнопки */
   height: 1px;
-  background-color: var(--hover-color);
-  transition: width 0.3s ease;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
 }
 
 .add-card-button:hover::after {
-  width: 100%;
+  background-color: var(--hover-color); /* Используем тот же цвет, что и в Navbar */
+}
+
+/* Можно добавить hover-эффект для цвета текста, как в Navbar */
+.add-card-button:hover {
+  color: var(--hover-color);
 }
 
 @media (max-width: 768px) {
