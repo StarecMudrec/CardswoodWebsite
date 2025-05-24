@@ -219,7 +219,6 @@ export default {
   color: var(--hover-color);
 }
 .modal-button:hover {
-  width: 100%;
   color: var(--hover-color);
 }
 
@@ -309,7 +308,6 @@ input[type="file"] {
 }
 
 .back-link:hover {
-  width: 100%;
   color: var(--hover-color);
 }
 .back-link:hover::after {
