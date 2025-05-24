@@ -1,5 +1,5 @@
 <template>
-  <div class="card" v-if="card">
+  <div class="card" :class="{ 'selected': isSelected }" v-if="card" @click="toggleSelection">
     <div class="image-wrapper">
       <img 
         :src="card.img ? `/card_imgs/${card.img}` : '/placeholder.jpg'"
@@ -7,7 +7,6 @@
         class="card-image"
         @error="handleImageError"
       >
-    </div>
     <div class="card-content">
       <div class="card-info">
         <h3 class="card-title">{{ card.name }}</h3>
@@ -15,9 +14,6 @@
       </div>
       <div class="card-meta">
         <p class="card-category">{{ card.category }}</p>
-      </div>
-      <div>
-        <button class="delete-button" @click.stop="deleteCard"><i class="fas fa-trash-alt"></i></button>
       </div>
     </div>
   </div>
@@ -32,9 +28,18 @@ export default {
       validator: card => 'name' in card && 'img' in card
     }
   },
+  data() {
+    return {
+      isSelected: false
+    };
+  },
   methods: {
     handleImageError(e) {
       e.target.src = '/placeholder.jpg';
+    },
+    toggleSelection() {
+      this.isSelected = !this.isSelected;
+      this.$emit('card-selected', this.card.id, this.isSelected);
     },
     deleteCard() {
       this.$emit('delete-card', this.card.id);
@@ -52,7 +57,7 @@ export default {
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative; /* Added for absolute positioning of the button */
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, border 0.2s ease; /* Added border transition */
   margin: 15px;
 }
 
@@ -74,25 +79,9 @@ export default {
   object-position: center;
 }
 
-
-/* New styles for delete button */
-.delete-button {
-  background: none;
-  color: red;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
-  font-size: 0.8rem;
-  font-weight: bold;
-  z-index: 10; /* Ensure button is above image */
-  transition: background-color 0.2s ease;
-  padding:  0px;
+.card.selected {
+  border: 2px solid var(--accent-color); /* Example style for selected card */
 }
-
-.delete-button:hover {
-  color: darkred;
-}
-
 .card-content {
   padding: 16px;
 }

@@ -5,13 +5,16 @@
       <button @click="$router.push('/add-card')" class="add-card-button">
         + Add New Card
       </button>
+      <button v-if="selectedCards.length > 0" @click="deleteSelectedCards" class="delete-selected-button">
+        Delete Selected ({{ selectedCards.length }})
+      </button>
     </div>
     <div class="cards-container">
       <Card 
         v-for="card in cards" 
         :key="card.uuid" 
         :card="card || {}"
-        @click="$emit('card-clicked', card.uuid)"
+        @card-selected="handleCardSelected"
         @delete-card="handleCardDeleted(card.uuid)"
       />
       <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
@@ -39,6 +42,7 @@ export default {
     return {
       cards: [],
       loading: false,
+      selectedCards: [],
       error: null
     }
   },
@@ -53,6 +57,18 @@ export default {
       this.loading = false
     }
   },
+  watch: {
+    // Watch for changes in selectedCards and update cards data with selection state
+    selectedCards: {
+      handler(newSelectedCards) {
+        this.cards = this.cards.map(card => ({
+          ...card,
+          isSelected: newSelectedCards.includes(card.id)
+        }));
+      },
+      deep: true // Watch for changes inside the array
+    }
+  },
   methods: {
     async handleCardDeleted(cardId) {
       try {
@@ -65,6 +81,29 @@ export default {
         console.error('Error deleting card:', err);
       } finally {
         this.loading = false;
+      }
+    }
+    ,
+    handleCardSelected(cardId, isSelected) {
+      if (isSelected) {
+        this.selectedCards.push(cardId);
+      } else {
+        this.selectedCards = this.selectedCards.filter(id => id !== cardId);
+      }
+    },
+    async deleteSelectedCards() {
+      if (confirm(`Are you sure you want to delete ${this.selectedCards.length} selected cards?`)) {
+        try {
+          this.loading = true;
+          await Promise.all(this.selectedCards.map(cardId => deleteCard(cardId)));
+          this.selectedCards = []; // Clear selected cards
+          this.cards = await fetchCardsForSeason(this.season.uuid); // Refetch cards
+        } catch (err) {
+          this.error = err;
+          console.error('Error deleting selected cards:', err);
+        } finally {
+          this.loading = false;
+        }
       }
     }
 
@@ -137,6 +176,24 @@ export default {
 .add-card-button:hover::after {
   width: 100%;
 }
+
+.delete-selected-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  margin-left: 15px;
+}
+
+.delete-selected-button:hover {
+  background-color: #d32f2f;
+}
+
+
 
 
 .cards-container {
