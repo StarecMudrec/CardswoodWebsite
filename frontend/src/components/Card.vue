@@ -7,10 +7,18 @@
         class="card-image"
         @error="handleImageError"
       >
+      <button class="delete-button" @click.stop="deleteCard">X</button>
     </div>
     <div class="card-content">
-      <h3 class="card-title">{{ card.name }}</h3>
-      <p class="card-category">{{ card.category }}</p>
+      <div class="card-info">
+        <h3 class="card-title">{{ card.name }}</h3>
+        <span class="card-rarity">{{ card.rarity }}</span>
+      </div>
+      <div class="card-meta">
+        <p class="card-category">{{ card.category }}</p>
+      </div>
+
+
     </div>
   </div>
 </template>
@@ -26,7 +34,10 @@ export default {
   },
   methods: {
     handleImageError(e) {
-      e.target.src = '/placeholder.jpg'
+      e.target.src = '/placeholder.jpg';
+    },
+    deleteCard() {
+      this.$emit('delete-card', this.card.id);
     }
   }
 }
@@ -63,16 +74,38 @@ export default {
   object-position: center;
 }
 
+/* New styles for delete button */
+.delete-button {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background-color: rgba(255, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: bold;
+  z-index: 10; /* Ensure button is above image */
+  transition: background-color 0.2s ease;
+}
+
+.delete-button:hover {
+  background-color: rgba(255, 0, 0, 1);
+}
+
 .card-content {
   padding: 16px;
 }
 
-.card-title {
-  font-size: 1.1rem;
-  margin: 0 0 8px;
-  color: var(--accent-color);
+.card-info {
+  display: flex;
 }
-
 .card-category {
   font-size: 0.9rem;
   color: #888;
@@ -80,6 +113,24 @@ export default {
 }
 
 
+/* New styles for card info layout */
+.card-info {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 8px;
+}
+
+.card-title {
+ font-size: 1.1rem;
+ margin: 0;
+ color: var(--accent-color);
+}
+
+.card-rarity {
+  font-size: 0.9rem;
+  color: #888;
+}
 /* 🟡 НОВЫЕ СТИЛИ ДЛЯ КОМПАКТНОГО ВИДА */
 .card.compact {
   --card-width: 180px;
@@ -91,6 +142,7 @@ export default {
   
   .card-title {
     font-size: 0.9rem;
+    margin-right: 8px; /* Add spacing between title and rarity in compact view */
   }
 }
 
