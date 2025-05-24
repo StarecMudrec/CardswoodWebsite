@@ -3,7 +3,7 @@
     <div class="season-header">
       <h2 class="season-title">{{ season.name }}</h2>
       <button v-if="selectedCards.length > 0" @click="deleteSelectedCards" class="delete-selected-button">
-        <i class="bi bi-trash"></i> ({{ selectedCards.length }})
+        &#xF5DE ({{ selectedCards.length }})
       </button>
       <button @click="$router.push('/add-card')" class="add-card-button">
         + Add New Card
