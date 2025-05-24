@@ -350,6 +350,7 @@ export default {
   text-align: inherit;
   transition: inherit;
   text-shadow: inherit;
+  letter-spacing: inherit;
 }
 .edit-input:focus {
   border-color: white;
