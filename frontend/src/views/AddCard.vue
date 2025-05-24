@@ -268,11 +268,10 @@ input[type="file"] {
 .submit-button {
   width: 100%;
   padding: 14px;
-  background-color: var(--border-color);
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 500;
   cursor: pointer;
   margin-top: 10px;
