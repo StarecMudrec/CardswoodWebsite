@@ -69,22 +69,25 @@
               <div class="card-info-column">
                 <h3>
                   Category:
-                  <span class="edit-icon" @click="startEditing('category')">
+                  <span class="edit-icon" @click.stop="toggleEdit('category')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
                   </span>
                 </h3>
-                <p v-if="!editing.category">{{ card.category }}</p>
-                <input
-                  v-else
-                  v-model="editableCard.category"
-                  @blur="saveField('category')"
-                  @keyup.enter="saveField('category')"
-                  ref="categoryInput"
-                  class="edit-input"
-                >
+                <div class="category-container">
+                  <p v-if="!editing.category">{{ card.category }}</p>
+                  <input
+                    v-else
+                    v-model="editableCard.category"
+                    @blur="saveField('category')"
+                    @keyup.enter="saveField('category')"
+                    @keyup.esc="cancelEdit('category')"
+                    ref="categoryInput"
+                    class="edit-input"
+                  >
+                </div>
               </div>
               <div class="card-info-column">
                 <h3>Season:</h3>
@@ -296,17 +299,40 @@ export default {
   height: 16px;
 }
 
+.category-container {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin-top: 8px;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.category-container p {
+  color: white;
+  font-size: 20px;
+  margin: 0;
+  word-break: break-word;
+  text-align: center;
+}
+
 /* Стили для полей ввода при редактировании */
 .edit-input {
-  font-size: inherit;
-  font-family: inherit;
-  color: inherit;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid var(--accent-color);
-  border-radius: 4px;
-  padding: 5px;
-  width: 80%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid var(--accent-color);
+  color: white;
+  font-size: 20px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  width: 100%;
+  outline: none;
 }
+.edit-input:focus {
+  border-color: white;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
 
 .edit-textarea {
   font-size: inherit;
