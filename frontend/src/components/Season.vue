@@ -98,7 +98,7 @@ export default {
   text-decoration: none;
   transition: color 0.3s ease;
   white-space: nowrap;
-  font-family:    Geneva;
+  font-family: var(--font-family-main);
 }
 
 .add-card-button::after {
