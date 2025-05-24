@@ -212,6 +212,33 @@ def get_cards(season_id):
     cards_uuids = [card.uuid for card in cards]
     return jsonify(cards_uuids), 200
 
+@app.route("/api/cards", methods=["POST"])
+def add_card():
+ is_auth, user_id = is_authenticated(request, session)
+ if not is_auth:
+ return jsonify({'error': 'Unauthorized'}), 401
+
+    data = request.get_json()
+    uuid = data.get('uuid')
+    img = data.get('img')
+    category = data.get('category')
+ name = data.get('name')
+ description = data.get('description')
+    season_id = data.get('season_id')
+
+    if not all([uuid, img, category, name, description, season_id]):
+ return jsonify({'error': 'Missing required fields'}), 400
+
+    new_card = Card(uuid=uuid, img=img, category=category, name=name, description=description, season_id=season_id)
+ try:
+ db.session.add(new_card)
+ db.session.commit()
+ return jsonify({'message': 'Card added successfully', 'uuid': new_card.uuid}), 201
+ except Exception as e:
+ db.session.rollback()
+        logging.error(f"Error adding card: {e}")
+ return jsonify({'error': 'Error adding card'}), 500
+
 @app.route("/api/card_info/<card_id>")
 def get_card_info(card_id):  
     print(card_id)
