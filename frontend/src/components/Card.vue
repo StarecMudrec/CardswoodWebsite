@@ -54,7 +54,6 @@ export default {
       touchTimer: null,
       isLongPress: false,
       lastTapTime: 0
-      lastTapTime: 0
     };
   },
   methods: {
