@@ -2,11 +2,11 @@
   <div class="season">
     <div class="season-header">
       <h2 class="season-title">{{ season.name }}</h2>
-      <button @click="$router.push('/add-card')" class="add-card-button">
-        + Add New Card
-      </button>
       <button v-if="selectedCards.length > 0" @click="deleteSelectedCards" class="delete-selected-button">
         Delete Selected ({{ selectedCards.length }})
+      </button>
+      <button @click="$router.push('/add-card')" class="add-card-button">
+        + Add New Card
       </button>
     </div>
     <div class="cards-container">
@@ -178,19 +178,26 @@ export default {
 }
 
 .delete-selected-button {
-  background-color: #f44336;
-  color: white;
+  background: none;
+  color: red;
   border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
+  opacity: 0.7;
+  padding: 0;
   cursor: pointer;
   font-size: 1rem;
-  transition: background-color 0.3s ease;
+  transition: opacity 0.3s ease;
   margin-left: 15px;
 }
 
 .delete-selected-button:hover {
   background-color: #d32f2f;
+}
+
+.delete-selected-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px; /* Add some space between cards and the button */
 }
 
 
