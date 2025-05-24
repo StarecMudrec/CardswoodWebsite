@@ -2,11 +2,7 @@
   <div
     class="card"
     :class="{ 'selected': isSelected }"
-    v-if="card"
-    @click="handleCardClick"
-    @touchstart="handleTouchStart"
-    @touchend="handleTouchEnd"
-    @touchcancel="handleTouchEnd"
+    v-if="card"@click="handleCardClick"
   >
     <div class="card-inner-content">
       <div class="image-wrapper">
@@ -50,7 +46,6 @@ export default {
   data() {
     return {
       isSelected: false,
-      lastTapTime: 0,
     };
   },
   methods: {
@@ -63,22 +58,12 @@ export default {
         return;
       }
       // Desktop click handled here, mobile tap handled in handleTouchEnd
-      this.$emit('card-clicked', this.card.uuid);
+      if (window.innerWidth > 768) { // Only navigate on desktop
+        this.$emit('card-clicked', this.card.uuid);
+      }
     },
     handleCheckboxChange(event) {
       this.isSelected = event.target.checked;
-      this.$emit('card-selected', this.card.uuid, this.isSelected);
-    },
-    handleTouchEnd() {
-      // Add double tap logic here later if needed
-      const currentTime = new Date().getTime();
-      const timeDiff = currentTime - this.lastTapTime;
-
-      if (window.innerWidth <= 768 && timeDiff < 300) { // Adjust breakpoint as needed
-        this.toggleSelection();
-      } else if (window.innerWidth <= 768) { // If not a double tap on mobile, navigate
-        this.$emit('card-clicked', this.card.uuid);
-      }
       this.lastTapTime = currentTime; // Update last tap time after every touch end
     },
     toggleSelection() {
