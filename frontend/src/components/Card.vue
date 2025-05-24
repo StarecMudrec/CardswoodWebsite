@@ -65,6 +65,7 @@ export default {
       // Desktop click handled here, mobile tap handled in handleTouchEnd
       this.$emit('card-clicked', this.card.uuid);
     },
+    handleCheckboxChange(event) {
       this.isSelected = event.target.checked;
       this.$emit('card-selected', this.card.uuid, this.isSelected);
     },
@@ -75,11 +76,11 @@ export default {
         this.toggleSelection();
       }
       else if (window.innerWidth <= 768) { // If not a double tap on mobile, navigate
-         this.$emit('card-clicked', this.card.uuid);
+        this.$emit('card-clicked', this.card.uuid);
       }
       this.lastTapTime = currentTime; // Update last tap time at the end
     },
-      this.isSelected = !this.isSelected;
+    toggleSelection() {
       // Add vibration for mobile on selection on long press end
       if (this.isSelected && window.innerWidth <= 768 && navigator.vibrate) {
         window.navigator.vibrate(500); // Vibrate for 50ms
