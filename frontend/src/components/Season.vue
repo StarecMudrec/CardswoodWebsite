@@ -178,7 +178,7 @@ export default {
 }
 
 .delete-selected-button {
-  background: none;
+  background-color: rgba(255, 42, 42, 0.24);
   color: red;
   border: none;
   opacity: 0.7;
@@ -190,16 +190,8 @@ export default {
 }
 
 .delete-selected-button:hover {
-  background-color: #d32f2f;
+  background-color: rgba(255, 42, 42, 0.32);
 }
-
-.delete-selected-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px; /* Add some space between cards and the button */
-}
-
 
 
 
