@@ -87,7 +87,7 @@ export default {
 .add-card-button {
   background: none;
   border: none;
-  color: var(--accent-color);
+  color: var(--text-color);
   cursor: pointer;
   font-size: 20px;
   font-weight: 500;
