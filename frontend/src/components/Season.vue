@@ -188,6 +188,9 @@ export default {
   transition: opacity 0.3s ease;
   margin-left: 15px;
   font-family: var(--font-family-main);
+  font-weight: 750;
+  font-size: 20px;
+  letter-spacing: 0.2px;
 }
 
 .delete-selected-button:hover {
