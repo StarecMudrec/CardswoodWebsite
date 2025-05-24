@@ -89,7 +89,7 @@ export default {
         const currentTime = new Date().getTime();
         const timeDiff = currentTime - this.lastTapTime;
 
-        if (window.innerWidth <= 768 && timeDiff < 300) { // Adjust breakpoint as needed
+        if (window.innerWidth <= 768 && timeDiff < 1000) { // Adjust breakpoint as needed
           // Double tap on mobile
           this.toggleSelection();
           this.isLongPress = false; // Prevent accidental navigation after double tap
