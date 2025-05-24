@@ -217,6 +217,8 @@ export default {
 
     .selection-checkbox {
       display: block; /* Ensure checkbox is visible on mobile */
+      width: 40px;
+      height: 40px;
     }
   }
 }
