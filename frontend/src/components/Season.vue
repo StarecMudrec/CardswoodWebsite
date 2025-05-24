@@ -103,6 +103,7 @@ export default {
   position: relative;
   text-decoration: none;
   overflow: hidden; /* Чтобы линия не выходила за границы кнопки */
+  font-family: Geneva;
 }
 
 .add-card-button::after {
