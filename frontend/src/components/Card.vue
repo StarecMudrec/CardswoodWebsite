@@ -43,7 +43,7 @@ export default {
       this.$emit('card-selected', this.card.id, this.isSelected);
     },
     deleteCard() {
-      this.$emit('delete-card', this.card.uuid);
+      this.$emit('delete-card', this.card.id);
     }
   }
 }

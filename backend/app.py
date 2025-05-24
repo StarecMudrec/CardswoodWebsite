@@ -256,7 +256,7 @@ def delete_card(card_id):
     if not is_auth:
         return jsonify({'error': 'Unauthorized'}), 401
 
-    card = Card.query.filter_by(uuid=card_id).first()
+    card = Card.query.filter_by(id=card_id).first()
 
     if card is None:
         return jsonify({'error': 'Card not found'}), 404
