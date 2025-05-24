@@ -95,8 +95,9 @@ export default {
     toggleSelection() {
       this.isSelected = !this.isSelected;
       // Add vibration for mobile on selection on long press end
+      window.navigator.vibrate(500); // Vibrate for 50ms
       if (this.isSelected && window.innerWidth <= 768) {
-        window.navigator.vibrate(50); // Vibrate for 50ms
+        window.navigator.vibrate(500); // Vibrate for 50ms
       }
       this.$emit('card-selected', this.card.id, this.isSelected);
     },
