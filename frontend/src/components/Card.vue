@@ -162,7 +162,7 @@ export default {
 }
 
 .card.selected {
-  border: 4px solid red;
+  border: 4px solid rgba(255, 42, 42, 0.24);
 }
 .card.selected .card-inner-content {
   filter: blur(4px);
