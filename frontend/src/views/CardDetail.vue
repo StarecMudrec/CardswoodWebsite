@@ -200,7 +200,7 @@ export default {
 
     const saveField = async (field) => {
       try {
-        const response = await fetch(`/api/card_info/${card.value.id}`, {
+        const response = await fetch(`/api/cards/${card.value.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
