@@ -218,14 +218,20 @@ def add_card():
     if not is_auth:
         return jsonify({'error': 'Unauthorized'}), 401
 
-    data = request.get_json()
-    uuid = data.get('uuid')
-    img = data.get('img')
-    category = data.get('category')
-    name = data.get('name')
-    description = data.get('description')
-    season_id = data.get('season_id')
+    uuid = request.form.get('uuid')
+    category = request.form.get('category')
+    name = request.form.get('name')
+    description = request.form.get('description')
+    season_id = request.form.get('season_id')
+    img_file = request.files.get('img')
 
+    img = None
+    if img_file:
+        # Save the image file
+        img_filename = str(uuid) + os.path.splitext(img_file.filename)[1]  # Use card UUID as filename
+        img_path = os.path.join('card_imgs', img_filename)
+        img_file.save(img_path)
+        img = img_filename  # Store just the filename in the database
     if not all([uuid, img, category, name, description, season_id]):
         return jsonify({'error': 'Missing required fields'}), 400
 
