@@ -220,6 +220,9 @@ export default {
 
 /* Исправленная секция заголовка */
 .card-header-section {
+  /* Keep existing styles */
+  margin-top: 50px; /* Add top margin to push content down (adjust value as needed) */
+  /* Add other styling for spacing or alignment */
   position: relative;
   min-height: 150px;
   display: flex;
