@@ -102,7 +102,7 @@ export default {
   transition: transform 0.2s ease;
   text-decoration: none;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-weight: 500;
+  font-family: Georgia, serif;
 }
 
 .add-card-button:hover {
