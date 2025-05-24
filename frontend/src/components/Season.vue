@@ -196,7 +196,7 @@ export default {
 }
 
 .delete-selected-button:hover {
-  background-color: rgba(255, 42, 42, 0.32);
+  /*background-color: rgba(255, 42, 42, 0.32);*/
 }
 
 
