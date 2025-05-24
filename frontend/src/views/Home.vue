@@ -47,7 +47,7 @@
   height: 2px;
   background-color: white;
   border: none;
-  z-index: 2; /* Ensure it's above the background */
+  z-index: 1.5; /* Ensure it's above the background */
   width: 75%;
 }
 
