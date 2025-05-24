@@ -16,7 +16,7 @@
         :card="card || {}"
         @card-selected="handleCardSelected"
         @card-clicked="handleCardClicked"
-        @delete-card="handleCardDeleted(card.uuid)"
+        @delete-card="handleCardDeleted(card.id)"
       />
       <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
         No cards in this season
