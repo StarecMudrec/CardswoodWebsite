@@ -166,7 +166,7 @@ export default {
 }
 .card.selected .card-inner-content {
   filter: blur(4px);
-  filter: opacity(0.5)
+  filter: opacity(0.5);
 }
 .card-content {
   padding: 16px;
@@ -223,10 +223,6 @@ export default {
     .selection-checkbox {
        display: none; /* Ensure checkbox is hidden on mobile */
     }
-  }
-  .card.selected .card-inner-content {
-    filter: blur(15px);
-    filter: opacity(0.5)
   }
 
   .image-wrapper {
