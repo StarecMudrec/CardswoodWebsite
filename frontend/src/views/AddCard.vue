@@ -28,8 +28,8 @@
           <label for="season">Season:</label>
           <select id="season" v-model="card.season" required>
             <option disabled value="">Select a season</option>
-            <option v-for="season in seasons" :key="season.id" :value="season.id">
-              {{ season.name }}
+            <option v-for="seasonId in seasonIds" :key="seasonId" :value="seasonId">
+              Season {{ seasonId }}
             </option>
           </select>
         </div>
@@ -71,22 +71,19 @@ export default {
         season: '',
         image: null
       },
-      seasons: [], // Здесь будут храниться сезоны
+      seasonIds: [], // Будем хранить только ID сезонов
       showErrorModal: false,
       errorMessage: ''
     };
   },
   created() {
-    this.fetchSeasons();
+    this.fetchSeasonIds();
   },
   methods: {
-    async fetchSeasons() {
+    async fetchSeasonIds() {
       try {
         const response = await axios.get('/api/seasons');
-        this.seasons = response.data.map(season => ({
-          id: season.id,
-          name: season.name || `Season ${season.id}`
-        }));
+        this.seasonIds = response.data; // Предполагаем, что API возвращает массив ID
       } catch (error) {
         this.errorMessage = 'Failed to load seasons: ' + (error.response?.data?.message || error.message);
         this.showErrorModal = true;
