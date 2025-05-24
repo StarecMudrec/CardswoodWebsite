@@ -283,10 +283,10 @@ export default {
 /* Остальные стили без изменений */
 .card-description-section {
   padding: 30px 0;
-  text-align: center; 
 }
 
 .card-description {
+  text-align: center; 
   font-size: 18px;
   line-height: 1.6;
   color: var(--text-color);
