@@ -258,10 +258,8 @@ export default {
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 0px;
   /* 🟡 ЦЕНТРИРОВАНИЕ НА ДЕСКТОПЕ */
-  @media (min-width: 1024px) {
-    justify-content: center;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
-  }
+  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
 }
 
 /* Можно добавить hover-эффект для цвета текста, как в Navbar */
