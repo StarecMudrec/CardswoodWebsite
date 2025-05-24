@@ -364,9 +364,6 @@ export default {
   .card-header-section {
     min-height: 120px;
   }
-  .card-header-section h1 {
-    font-size: 60px;
-  }
   .card-detail-image, .image-placeholder {
     max-height: 400px;
   }
