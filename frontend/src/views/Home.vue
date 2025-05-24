@@ -2,6 +2,7 @@
   <div>
     <div class="background-container"></div>
     <img src="/logo_noph.png" alt="Logo" class="background-logo">
+    <hr class="separator-line">
     <div id="seasons-container">
       <div v-if="loading" class="loading">Loading cards...</div>
       <div v-else-if="error" class="error-message">Error loading data: {{ error.message || error }}. Please try again later.</div>
@@ -38,6 +39,15 @@
   max-width: 250px; /* Adjust size as needed */
   max-height: 250px; /* Adjust size as needed */
   z-index: 1; /* Ensure it's behind the content */
+}
+
+.separator-line {
+  position: relative;
+  margin-top: 400px; /* Adjust to be below the background image */
+  height: 1px;
+  background-color: white;
+  border: none;
+  z-index: 2; /* Ensure it's above the background */
 }
 
 #seasons-container {
