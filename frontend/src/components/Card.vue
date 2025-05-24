@@ -85,6 +85,7 @@ export default {
   font-weight: bold;
   z-index: 10; /* Ensure button is above image */
   transition: background-color 0.2s ease;
+  padding:  0px;
 }
 
 .delete-button:hover {
