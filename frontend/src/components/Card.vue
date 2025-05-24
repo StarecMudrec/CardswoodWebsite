@@ -74,6 +74,7 @@ export default {
   object-position: center;
 }
 
+
 /* New styles for delete button */
 .delete-button {
   background: none;
