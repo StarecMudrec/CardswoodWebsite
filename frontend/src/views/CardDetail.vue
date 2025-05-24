@@ -92,11 +92,6 @@ export default {
         const element = cardNameRef.value
         const container = element.parentElement
         
-        // Сброс стилей для чистых измерений
-        element.style.fontSize = ''
-        element.style.whiteSpace = 'nowrap'
-        element.style.display = 'inline-block'
-        
         // Получаем ширины
         const containerWidth = container.clientWidth
         let fontSize = 100 // Начальный размер
