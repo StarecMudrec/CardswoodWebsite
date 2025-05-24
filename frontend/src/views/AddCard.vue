@@ -1,29 +1,32 @@
 <template>
-  <div class="add-card">
-    <h2>Add New Card</h2>
-    <form @submit.prevent="submitForm">
-      <div class="form-group">
-        <label for="name">Card Name:</label>
-        <input type="text" id="name" v-model="card.name" required>
-      </div>
-      <div class="form-group">
-        <label for="description">Description:</label>
-        <textarea id="description" v-model="card.description" required></textarea>
-      </div>
-      <div class="form-group">
-        <label for="category">Category:</label>
-        <input type="text" id="category" v-model="card.category" required>
-      </div>
-      <div class="form-group">
-        <label for="season">Season:</label>
-        <input type="number" id="season" v-model="card.season" required>
-      </div>
-      <div class="form-group">
-        <label for="image">Card Image:</label>
-        <input type="file" id="image" @change="handleFileUpload" accept="image/*" required>
-      </div>
-      <button type="submit">Add Card</button>
-    </form>
+  <div class="add-card-background">
+    <div class="add-card-container">
+      <h1>Add New Card</h1>
+      <form @submit.prevent="submitForm" class="card-form">
+        <div class="form-group">
+          <label for="name">Card Name:</label>
+          <input type="text" id="name" v-model="card.name" required>
+        </div>
+        <div class="form-group">
+          <label for="description">Description:</label>
+          <textarea id="description" v-model="card.description" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="category">Category:</label>
+          <input type="text" id="category" v-model="card.category" required>
+        </div>
+        <div class="form-group">
+          <label for="season">Season:</label>
+          <input type="number" id="season" v-model="card.season" required>
+        </div>
+        <div class="form-group">
+          <label for="image">Card Image:</label>
+          <input type="file" id="image" @change="handleFileUpload" accept="image/*" required>
+        </div>
+        <button type="submit" class="submit-button">Add Card</button>
+      </form>
+      <router-link to="/" class="back-link">← Back to home</router-link>
+    </div>
   </div>
 </template>
 
@@ -55,14 +58,12 @@ export default {
       formData.append('image', this.card.image);
 
       try {
-        // Adjust the URL based on your backend endpoint for adding cards
         const response = await axios.post('/api/add-card', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
         });
         console.log('Card added successfully:', response.data);
-        // Optionally, clear the form or redirect the user
         this.resetForm();
       } catch (error) {
         console.error('Error adding card:', error);
@@ -76,7 +77,6 @@ export default {
         season: null,
         image: null
       };
-      // Clear the file input separately
       const fileInput = document.getElementById('image');
       if (fileInput) {
         fileInput.value = '';
@@ -87,43 +87,146 @@ export default {
 </script>
 
 <style scoped>
-.add-card {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+.add-card-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/background.jpg');
+  background-size: cover;
+  background-position: center 95%;
+  z-index: 1;
+}
+
+.add-card-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 500px;
+  padding: 40px;
+  background-color: var(--card-bg);
+  border-radius: 17px;
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
+
+h1 {
+  color: var(--accent-color);
+  font-weight: 500;
+  margin-bottom: 25px;
+  font-size: 28px;
+}
+
+.card-form {
+  text-align: left;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 8px;
+  color: var(--accent-color);
+  font-weight: 500;
 }
 
 input[type="text"],
 input[type="number"],
 textarea {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-button {
-  background-color: #4CAF50;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
   color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  font-size: 16px;
 }
 
-button:hover {
-  background-color: #45a049;
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 12px 0;
+  color: var(--accent-color);
+}
+
+.submit-button {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: var(--hover-color);
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 25px;
+  color: var(--accent-color);
+  text-decoration: none;
+  font-size: 17px;
+  position: relative;
+  padding-bottom: 2px;
+}
+
+.back-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--accent-color);
+  transition: width 0.3s ease;
+}
+
+.back-link:hover::after {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .add-card-container {
+    padding: 30px 20px;
+    max-width: 90%;
+  }
+  
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  input[type="text"],
+  input[type="number"],
+  textarea {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .submit-button {
+    padding: 12px;
+    font-size: 15px;
+  }
+  
+  .back-link {
+    font-size: 15px;
+  }
 }
 </style>
