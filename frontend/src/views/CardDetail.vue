@@ -282,7 +282,9 @@ export default {
       saveField,
       nameInput,
       descriptionInput,
-      categoryInput
+      categoryInput,
+      toggleEdit,
+      cancelEdit
     }
   }
 }
