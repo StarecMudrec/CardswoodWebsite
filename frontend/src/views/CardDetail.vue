@@ -275,11 +275,11 @@ export default {
   height: 1px;
   width: 100%;
   background-color: var(--card-border-color);
-  margin: 30px 0;
+  margin-top: 30px;
 }
 
 .card-info-section {
-  padding: 20px 0;
+  padding: /*2*/0px 0;
 }
 
 .card-info-columns {
