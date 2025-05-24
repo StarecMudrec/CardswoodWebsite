@@ -176,7 +176,8 @@ export default {
     }
 
     onMounted(() => {
-      window.addEventListener('resize', adjustFontSize);
+      loadData()
+      window.addEventListener('resize', adjustFontSize)
       adjustFontSize();
     })
 
