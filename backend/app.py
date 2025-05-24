@@ -250,6 +250,30 @@ def add_card():
         logging.error(f"Error adding card: {e}")
         return jsonify({'error': 'Error adding card'}), 500
 
+@app.route("/api/cards/<card_id>", methods=["DELETE"])
+def delete_card(card_id):
+    is_auth, user_id = is_authenticated(request, session)
+    if not is_auth:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    card = Card.query.filter_by(uuid=card_id).first()
+
+    if card is None:
+        return jsonify({'error': 'Card not found'}), 404
+
+    try:
+        # Optionally delete the associated image file
+        if card.img and os.path.exists(os.path.join('card_imgs', card.img)):
+            os.remove(os.path.join('card_imgs', card.img))
+
+        db.session.delete(card)
+        db.session.commit()
+        return jsonify({'message': 'Card deleted successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error deleting card: {e}")
+        return jsonify({'error': 'Error deleting card'}), 500
+
 @app.route("/api/card_info/<card_id>")
 def get_card_info(card_id):  
     print(card_id)
