@@ -148,7 +148,7 @@ export default {
     
     // Устанавливаем начальный размер
     element.style.fontSize = `${fontSize}px`;
-    void element.offsetWidth; // Принудительный рефлоу
+    void element.offsetWidth;
     
     // Если текст не помещается - вычисляем оптимальный размер
     if (element.scrollWidth > containerWidth) {
