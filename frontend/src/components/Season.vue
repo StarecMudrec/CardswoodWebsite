@@ -11,6 +11,9 @@
       <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
         No cards in this season
       </div>
+      <button @click="$router.push('/add-card')" class="add-card-button">
+        Add New Card
+      </button>
     </div>
   </div>
 </template>
@@ -83,6 +86,19 @@ export default {
     grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
   }
 }
+.add-card-button {
+  grid-column: 1/-1; /* Make the button span across all columns */
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .cards-container {
     gap: 20px;        /* Сохраняем адекватное расстояние на мобилках */
