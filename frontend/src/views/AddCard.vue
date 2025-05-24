@@ -339,7 +339,7 @@ input[type="file"] {
   color: var(--hover-color);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .add-card-container {
     padding: 30px 20px;
     max-width: 90%;
