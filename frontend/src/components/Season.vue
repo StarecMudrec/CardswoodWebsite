@@ -178,24 +178,41 @@ export default {
 }
 
 .delete-selected-button {
-  background-color: rgba(255, 42, 42, 0);
-  color: red;
+  background: none;
   border: none;
-  padding: 0px;
-  border-radius: 10px;
-  opacity: 0.7;
+  color: var(--text-color); /* Use text color for initial state */
   cursor: pointer;
-  font-size: 1rem;
-  transition: opacity 0.3s ease;
-  margin-left: 15px;
-  font-weight: 750;
   font-size: 20px;
-  letter-spacing: 0.2px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+  padding: 5px 0;
+  position: relative;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+  font-family: var(--font-family-main);
+  margin-left: 15px;
 }
 
+.delete-selected-button::after {
+ content: '';
+  position: absolute;
+  bottom: 0;
+ left: 0;
+ width: 0;
+ height: 1px;
+ background-color: red; /* Red underline on hover */
+ transition: width 0.3s ease;
+}
 
 .delete-selected-button:hover {
-  background-color: rgba(255, 42, 42, 0);
+  color: red; /* Red text on hover */
+ -webkit-text-stroke: 0.15px darkred; /* Darker red stroke on hover */
+}
+
+.delete-selected-button:hover::after {
+ width: 100%;
 }
 
 
