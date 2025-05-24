@@ -165,9 +165,7 @@ export default {
           }
         }
       });
-    }
-  }
-};
+    };
 
     const loadData = async () => {
       try {
