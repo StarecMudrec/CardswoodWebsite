@@ -16,8 +16,8 @@
       <div class="card-meta">
         <p class="card-category">{{ card.category }}</p>
       </div>
+      <button class="delete-button" @click.stop="deleteCard"><i class="fas fa-trash-alt"></i></button>
     </div>
-    <button class="delete-button" @click.stop="deleteCard"><i class="fas fa-trash-alt"></i></button>
   </div>
 </template>
 
