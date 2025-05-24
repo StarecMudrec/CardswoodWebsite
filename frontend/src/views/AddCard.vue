@@ -148,7 +148,7 @@ export default {
   padding: 40px;
   background-color: var(--card-bg);
   border-radius: 17px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--card-bg);
   text-align: center;
 }
 
@@ -174,7 +174,7 @@ export default {
   max-width: 400px;
   width: 90%;
   text-align: center;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--card-bg);
 }
 
 .error-title {
@@ -247,7 +247,7 @@ input[type="number"],
 textarea {
   width: 100%;
   padding: 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--card-bg);
   border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.1);
   color: white;
@@ -268,7 +268,7 @@ input[type="file"] {
 .submit-button {
   width: 100%;
   padding: 14px;
-  background-color: var(--border-color);
+  background-color: var(--card-bg);
   color: white;
   border: none;
   border-radius: 8px;
