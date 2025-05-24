@@ -380,7 +380,6 @@ export default {
   }
 
   .card-header-section h1 {
-    font-size: min(9vw, 42px); /* Dynamic scaling with max size */
     white-space: normal;
     word-wrap: break-word;
     line-height: 1.2;
