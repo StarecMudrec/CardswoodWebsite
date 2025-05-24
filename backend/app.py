@@ -279,7 +279,35 @@ def get_card_info(card_id):
     print(card_id)
     card = Card.query.filter_by(uuid=card_id).first_or_404()
     return jsonify(card.present()), 200
+@app.route("/api/card_info/<int:card_id>", methods=["PUT"])
+def update_card(card_id):
+    is_auth, user_id = is_authenticated(request, session)
+    if not is_auth:
+        return jsonify({'error': 'Unauthorized'}), 401
 
+    card = Card.query.filter_by(id=card_id).first()
+    if not card:
+        return jsonify({'error': 'Card not found'}), 404
+
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+
+    try:
+        if 'name' in data:
+            card.name = data['name']
+        if 'description' in data:
+            card.description = data['description']
+        if 'category' in data:
+            card.category = data['category']
+
+        db.session.commit()
+        return jsonify({'message': 'Card updated successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error updating card: {e}")
+        return jsonify({'error': 'Error updating card'}), 500
+        
 @app.route("/api/season_info/<int:season_id>")
 def get_season_info(season_id):  
     season = Season.query.filter_by(id=season_id).first_or_404()
