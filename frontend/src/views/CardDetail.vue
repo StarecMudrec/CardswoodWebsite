@@ -338,34 +338,9 @@ export default {
   color: #aaa;
 }
 
-/* Адаптивные стили */
-@media (max-width: 1200px) {
-  .card-header-section {
-    min-height: 160px;
-  }
-  .card-header-section h1 {
-    font-size: 80px;
-  }
-}
-
-@media (max-width: 992px) {
-  .card-header-section {
-    min-height: 110px;
-  }
-  .card-header-section h1 {
-    font-size: 70px;
-  }
-}
-
 @media (max-width: 768px) {
   .card-detail {
     grid-template-columns: 1fr;
-  }
-  .card-header-section {
-    min-height: 120px;
-  }
-  .card-header-section h1 {
-    font-size: 60px;
   }
   .card-detail-image, .image-placeholder {
     max-height: 400px;
