@@ -151,6 +151,7 @@ export default {
     }
 
     const deleteCard = async () => {
+      console.log('Clicked delete button')
       if (confirm('Are you sure you want to delete this card?')) {
         try {
           // Use the card's UUID for deletion
