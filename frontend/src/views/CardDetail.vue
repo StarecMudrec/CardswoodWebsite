@@ -339,6 +339,10 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .card-header-section {
+    margin-top: 0px;
+    min-height: 15px;
+  }
   .card-detail {
     grid-template-columns: 1fr;
   }
