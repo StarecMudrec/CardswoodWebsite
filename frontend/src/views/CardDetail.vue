@@ -152,7 +152,6 @@ export default {
     
     // Если текст не помещается - вычисляем оптимальный размер
     if (element.scrollWidth > containerWidth) {
-      // Более мягкое уменьшение (сохраняем 85% от расчетного размера)
       const ratio = containerWidth / element.scrollWidth;
       fontSize = Math.max(
         28, // Минимальный размер
