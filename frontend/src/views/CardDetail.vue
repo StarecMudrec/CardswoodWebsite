@@ -286,10 +286,10 @@ export default {
 }
 
 .card-description {
-  text-align: center; 
   font-size: 18px;
   line-height: 1.6;
   color: var(--text-color);
+  text-align: center; 
 }
 
 .secondary-divider {
