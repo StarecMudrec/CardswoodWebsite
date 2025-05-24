@@ -98,6 +98,8 @@ export default {
   cursor: pointer;
   font-size: 16px;
   text-align: center;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
 }
 
 @media (max-width: 768px) {
