@@ -103,9 +103,6 @@ export default {
   color: var(--accent-color);
   text-decoration: none;
   letter-spacing: 1px;
-  padding: 5px 0;
-  transition: color 0.3s ease, box-shadow 0.3s ease; /* Add box-shadow to transition */
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Semi-transparent dark shadow */
 }
 
 @media (max-width: 768px) {
