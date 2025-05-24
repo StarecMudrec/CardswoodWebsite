@@ -201,7 +201,7 @@ export default {
     margin: 8px 4px;
 
     .selection-checkbox {
-       display: none; /* Ensure checkbox is hidden on mobile */
+      display: block; /* Ensure checkbox is visible on mobile */
     }
   }
 
@@ -216,7 +216,7 @@ export default {
     margin: 8px auto;
 
     .selection-checkbox {
-       display: none; /* Ensure checkbox is hidden on mobile */
+      display: block; /* Ensure checkbox is visible on mobile */
     }
   }
 }
