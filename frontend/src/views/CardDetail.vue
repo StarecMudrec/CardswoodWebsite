@@ -391,5 +391,10 @@ export default {
     left: -5%;
     width: 110%;
   }
+
+  .image-placeholder {
+    border-radius: 15px;
+    border: 5px solid var(--card-border-color);
+  }
 }
 </style>
