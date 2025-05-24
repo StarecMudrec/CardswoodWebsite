@@ -7,6 +7,7 @@
         class="card-image"
         @error="handleImageError"
       >
+    </div>
     <div class="card-content">
       <div class="card-info">
         <h3 class="card-title">{{ card.name }}</h3>
