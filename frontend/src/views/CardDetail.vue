@@ -361,9 +361,6 @@ export default {
   .card-detail {
     grid-template-columns: 1fr;
   }
-  .card-header-section {
-    min-height: 120px;
-  }
   .card-detail-image, .image-placeholder {
     max-height: 400px;
   }
