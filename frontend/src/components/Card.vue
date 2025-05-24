@@ -1,20 +1,22 @@
 <template>
   <div class="card" :class="{ 'selected': isSelected }" v-if="card" @click="toggleSelection">
-    <div class="image-wrapper">
-      <img 
-        :src="card.img ? `/card_imgs/${card.img}` : '/placeholder.jpg'"
-        :alt="card.name"
-        class="card-image"
-        @error="handleImageError"
-      >
-    </div>
-    <div class="card-content">
-      <div class="card-info">
-        <h3 class="card-title">{{ card.name }}</h3>
-        <span class="card-rarity">{{ card.rarity }}</span>
+    <div class="card-inner-content">
+      <div class="image-wrapper">
+        <img
+          :src="card.img ? `/card_imgs/${card.img}` : '/placeholder.jpg'"
+          :alt="card.name"
+          class="card-image"
+          @error="handleImageError"
+        >
       </div>
-      <div class="card-meta">
-        <p class="card-category">{{ card.category }}</p>
+      <div class="card-content">
+        <div class="card-info">
+          <h3 class="card-title">{{ card.name }}</h3>
+          <span class="card-rarity">{{ card.rarity }}</span>
+        </div>
+        <div class="card-meta">
+          <p class="card-category">{{ card.category }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -44,7 +46,7 @@ export default {
     },
     deleteCard() {
       this.$emit('delete-card', this.card.id);
-    }
+    },
   }
 }
 </script>
@@ -58,7 +60,7 @@ export default {
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative; /* Added for absolute positioning of the button */
-  transition: transform 0.2s ease, border 0.2s ease; /* Added border transition */
+  transition: transform 0.2s ease, border 0.2s ease;
   margin: 15px;
 }
 
@@ -80,9 +82,15 @@ export default {
   object-position: center;
 }
 
+.card-inner-content {
+  transition: filter 0.2s ease; /* Add transition for blur */
+}
+
 .card.selected {
-  border: 2px solid var(--accent-color); /* Example style for selected card */
-  filter: blur(2px); /* Add blur effect */
+  border: 2px solid var(--accent-color);
+}
+.card.selected .card-inner-content {
+  filter: blur(2px);
 }
 .card-content {
   padding: 16px;
