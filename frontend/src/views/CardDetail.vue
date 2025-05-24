@@ -140,6 +140,26 @@ export default {
       })
     }
 
+    const loadData = async () => {
+      try {
+        loading.value = true
+        card.value = await fetchCardInfo(props.uuid)
+        
+        const season = await fetchSeasonInfo(card.value.season_id)
+        seasonName.value = season.name
+        
+        comments.value = await fetchComments(card.value.id)
+        
+        // Вызываем после полного рендеринга
+        setTimeout(adjustFontSize, 0)
+      } catch (err) {
+        error.value = err.message || 'Failed to load card details'
+        console.error('Error loading card:', err)
+      } finally {
+        loading.value = false
+      }
+    }
+
     onMounted(() => {
       window.addEventListener('resize', adjustFontSize)
       loadData()
