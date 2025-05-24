@@ -58,7 +58,7 @@ export default {
       formData.append('image', this.card.image);
 
       try {
-        const response = await axios.post('/api/add-card', formData, {
+        const response = await axios.post('/api/cards', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
