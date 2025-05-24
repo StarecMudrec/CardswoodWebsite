@@ -164,9 +164,19 @@ export default {
 .card.selected {
   border: 4px solid rgba(255, 42, 42, 0.32);
 }
+.card.selected::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 42, 42, 0.24);
+  z-index: 0; /* Lower than checkbox and potential future delete button */
+}
 .card.selected .card-inner-content {
   filter: blur(4px);
-  filter: opacity(0.5);
+  filter: opacity(0.5)
 }
 .card-content {
   padding: 16px;
@@ -184,16 +194,16 @@ export default {
 
 /* New styles for card info layout */
 .card-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 8px;
 }
 
 .card-title {
-  font-size: 1.1rem;
-  margin: 0;
-  color: var(--accent-color);
+ font-size: 1.1rem;
+ margin: 0;
+ color: var(--accent-color);
 }
 
 .card-rarity {
