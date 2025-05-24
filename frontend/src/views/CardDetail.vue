@@ -371,6 +371,9 @@ export default {
     flex-direction: column;
     gap: 20px;
   }
+  .title-container {
+    width: 70%;
+  }
 }
 
 @media (max-width: 576px) {
