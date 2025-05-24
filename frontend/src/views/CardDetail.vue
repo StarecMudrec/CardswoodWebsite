@@ -232,7 +232,7 @@ export default {
 
 .title-container {
   position: absolute;
-  bottom: 10px; /* Расстояние до разделителя */
+  bottom: 17px; /* Расстояние до разделителя */
   width: 100%;
 }
 
@@ -247,6 +247,8 @@ export default {
   vertical-align: bottom;
   transform-origin: left bottom;
   transition: font-size 0.2s ease;
+  transition: color 0.3s ease, box-shadow 0.3s ease; /* Add box-shadow to transition */
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Semi-transparent dark shadow */
 }
 
 .main-divider {
