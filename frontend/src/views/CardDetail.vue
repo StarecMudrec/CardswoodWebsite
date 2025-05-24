@@ -94,6 +94,7 @@ export default {
         
         // Сброс стилей для чистых измерений
         element.style.fontSize = ''
+        element.style.display = 'inline-block'
         
         // Получаем ширины
         const containerWidth = container.clientWidth
