@@ -88,7 +88,7 @@ export default {
   }
 }
 .add-card-button {
-  grid-column: 1/-1; /* Make the button span across all columns */
+  grid-column: 1/-1;
   margin-top: 20px;
   padding: 10px 20px;
   background-color: var(--card-bg);
@@ -99,24 +99,29 @@ export default {
   font-size: 16px;
   text-align: center;
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-  position: relative; /* Добавляем для позиционирования псевдоэлемента */
-  text-decoration: none; /* Убираем стандартное подчеркивание */
+  transition: transform 0.2s ease, color 0.3s ease; /* Добавляем transition для цвета */
+  position: relative;
+  text-decoration: none;
+  overflow: hidden; /* Чтобы линия не выходила за границы кнопки */
 }
 
 .add-card-button::after {
   content: '';
   position: absolute;
-  bottom: 5px; /* Регулируем расстояние от текста */
-  left: 20px; /* Совпадает с padding-left кнопки */
-  width: calc(100% - 40px); /* Учитываем padding кнопки */
+  bottom: 5px;
+  left: 20px;
+  width: 0; /* Начальная ширина 0 */
   height: 1px;
-  background-color: transparent;
-  transition: background-color 0.3s ease;
+  background-color: var(--hover-color);
+  transition: width 0.3s ease; /* Анимация изменения ширины */
+}
+
+.add-card-button:hover {
+  color: var(--hover-color);
 }
 
 .add-card-button:hover::after {
-  background-color: var(--hover-color); /* Используем тот же цвет, что и в Navbar */
+  width: calc(100% - 40px); /* Полная ширина с учетом padding */
 }
 
 /* Можно добавить hover-эффект для цвета текста, как в Navbar */
