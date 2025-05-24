@@ -228,10 +228,15 @@ def add_card():
     img = None
     if img_file:
         # Save the image file
+        # Check if the file is an allowed image type
+        allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
+        if '.' not in img_file.filename or img_file.filename.rsplit('.', 1)[1].lower() not in allowed_extensions:
+            return jsonify({'error': 'Unsupported file type'}), 400
+
         img_filename = str(uuid) + os.path.splitext(img_file.filename)[1]  # Use card UUID as filename
         img_path = os.path.join('card_imgs', img_filename)
         img_file.save(img_path)
-        img = img_filename  # Store just the filename in the database
+        img = img_filename # Store just the filename in the database
     if not all([uuid, img, category, name, description, season_id]):
         return jsonify({'error': 'Missing required fields'}), 400
 
