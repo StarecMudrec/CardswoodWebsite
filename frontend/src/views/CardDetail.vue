@@ -358,18 +358,40 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .card-detail {
-    grid-template-columns: 1fr;
+  .card-header-section {
+    min-height: 100px;
+    width: 100%;
+    overflow: hidden;
   }
-  .card-detail-image, .image-placeholder {
-    max-height: 400px;
+  
+  .card-header-section h1 {
+    font-size: 12vw; /* Динамический размер относительно ширины экрана */
+    white-space: normal; /* Разрешаем перенос слов */
+    word-break: break-word; /* Перенос длинных слов */
+    line-height: 1.1;
+    padding-bottom: 5px;
   }
-  .card-info-columns {
-    flex-direction: column;
-    gap: 20px;
-  }
+
   .title-container {
-    width: 70%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-header-section h1 {
+    font-size: 11vw; /* Ещё меньше на очень маленьких экранах */
+    line-height: 1.15;
+  }
+}
+
+/* Дополнительная адаптация для очень длинных названий */
+@media (max-width: 768px) {
+  .card-header-section h1.long-name {
+    font-size: 10vw;
+    word-break: break-all; /* Более агрессивный перенос */
   }
 }
 
