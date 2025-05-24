@@ -182,7 +182,7 @@ export default {
       });
     };
     
-    
+
     const toggleEdit = (field) => {
       if (editing.value[field]) {
         cancelEdit(field)
@@ -331,16 +331,17 @@ export default {
   text-align: center;
 }
 
+
 /* Стили для полей ввода при редактировании */
 .edit-input {
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid var(--accent-color);
-  color: white;
-  font-size: 20px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  width: 100%;
-  outline: none;
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--accent-color);
+  border-radius: 4px;
+  padding: 5px;
+  width: 80%;
 }
 .edit-input:focus {
   border-color: white;
