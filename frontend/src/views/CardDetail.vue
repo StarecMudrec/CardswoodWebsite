@@ -20,15 +20,32 @@
           <!-- Название карточки и главная разделительная линия -->
           <div class="card-header-section">
             <div class="title-container">
-              <h1 ref="cardNameRef">{{ card.name }}</h1>
+              <div class="editable-field">
+                <h1 v-if="!editingName" ref="cardNameRef">{{ card.name }}</h1>
+                <input v-else type="text" v-model="editedName"
+                  @blur="saveName" @keyup.enter="saveName" @keyup.esc="cancelEditingName">
+                <span v-if="!editingName" class="edit-icon" @click="startEditingName">Edit</span>
+                <input v-else type="text" v-model="editedName">
+                <span class="edit-icon" @click="startEditingName">Edit</span>
+                <button v-if="editingName" @click="saveName">Save</button>
+                <button v-if="editingName" @click="cancelEditingName">Cancel</button>
+              </div>
             </div>
             <div class="main-divider"></div>
           </div>
           
           <!-- Описание карточки -->
           <div class="card-description-section">
-            <div class="card-description">
-              <p>{{ card.description }}</p>
+            <div class="card-description editable-field">
+              <p v-if="!editingDescription">{{ card.description }}</p>
+              <textarea v-else v-model="editedDescription"
+                @blur="saveDescription" @keyup.enter="saveDescription" @keyup.esc="cancelEditingDescription"></textarea>
+
+              <span v-if="!editingDescription" class="edit-icon" @click="startEditingDescription">Edit</span>
+              <!-- Buttons can be added here if needed, but blur/enter save is common for textareas -->
+              <!-- <button v-if="editingDescription" @click="saveDescription">Save</button> -->
+              <button v-if="editingDescription" @click="cancelEditingDescription">Cancel</button>
+
             </div>
             <div class="secondary-divider"></div>
           </div>
@@ -38,9 +55,28 @@
             <div class="card-info-columns">
               <div class="card-info-column">
                 <h3>Category:</h3>
-                <p>{{ card.category }}</p>
+                <div class="editable-field">
+                  <p v-if="!editingCategory">{{ card.category }}</p>
+                  <input v-else type="text" v-model="editedCategory">
+
+                  <span v-if="!editingCategory" class="edit-icon" @click="startEditingCategory">Edit</span>
+                  <span class="edit-icon" @click="startEditingCategory">Edit</span>
+                  <button v-if="editingCategory" @click="saveCategory">Save</button>
+                  <button v-if="editingCategory" @click="cancelEditingCategory">Cancel</button>
+                </div>
+
               </div>
               <div class="card-info-column">
+                <h3>Rarity:</h3>
+                <div class="editable-field">
+                  <p v-if="!editingRarity">{{ card.rarity }}</p>
+                  <input v-else type="text" v-model="editedRarity">
+                  <span class="edit-icon" @click="startEditingRarity">Edit</span>
+                  <span v-if="!editingRarity" class="edit-icon" @click="startEditingRarity">Edit</span>
+
+                  <button v-if="editingRarity" @click="saveRarity">Save</button>
+                  <button v-if="editingRarity" @click="cancelEditingRarity">Cancel</button>
+                </div>
                 <h3>Season:</h3>
                 <p>{{ seasonName }}</p>
               </div>
@@ -66,7 +102,7 @@
 </template>
 
 <script>
-import { fetchCardInfo, fetchSeasonInfo, fetchComments } from '@/api'
+import { fetchCardInfo, fetchSeasonInfo, fetchComments, updateCard } from '@/api'
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 
 export default {
@@ -84,6 +120,16 @@ export default {
     const error = ref(null)
     const imageError = ref(false)
     const cardNameRef = ref(null)
+
+    // Editing state variables
+    const editingName = ref(false)
+    const editingDescription = ref(false)
+    const editingCategory = ref(false)
+    const editingRarity = ref(false)
+
+    // Edited value variables
+    const editedName = ref('')
+    const editedDescription = ref('')
     const isMobile = ref(false)
 
     const adjustFontSize = () => {
@@ -135,6 +181,10 @@ export default {
         seasonName.value = season.name
         
         comments.value = await fetchComments(card.value.id)
+
+        editedName.value = card.value.name;
+        editedDescription.value = card.value.description;
+        // Initialize other edited fields as needed
         
         // Вызываем после полного рендеринга
         setTimeout(adjustFontSize, 0)
@@ -157,14 +207,99 @@ export default {
 
     watch(() => props.uuid, loadData)
 
+    // Editing functions
+    const startEditingName = () => {
+      editedName.value = card.value.name;
+      editingName.value = true;
+       nextTick(() => { // Focus the input after it becomes visible
+         // Assuming the input is a direct sibling or child you can reference
+         // A more robust way might be to use template refs
+         document.querySelector('.title-container input[type="text"]')?.focus();
+       });
+    };
+    const saveName = async () => {
+      if (editedName.value !== card.value.name) {
+        try {
+          // Assuming updateCard expects an object with the field to update
+          await updateCard(card.value.uuid, { name: editedName.value });
+          card.value.name = editedName.value; // Update local state
+        } catch (err) {
+          console.error('Error saving name:', err);
+          // Optionally display an error message to the user
+        }
+      }
+      editingName.value = false;
+      // Re-adjust font size after saving
+      nextTick(adjustFontSize);
+    };
+    const cancelEditingName = () => {
+      editingName.value = false;
+       // Re-adjust font size after cancelling
+      nextTick(adjustFontSize);
+    };
+
+    const startEditingDescription = () => {
+      editedDescription.value = card.value.description;
+      editingDescription.value = true;
+       nextTick(() => {
+         document.querySelector('.card-description-section textarea')?.focus();
+       });
+    };
+    const saveDescription = async () => {
+      if (editedDescription.value !== card.value.description) {
+        try {
+          await updateCard(card.value.uuid, { description: editedDescription.value });
+          card.value.description = editedDescription.value; // Update local state
+        } catch (err) {
+          console.error('Error saving description:', err);
+        }
+      }
+      editingDescription.value = false;
+    };
+    const cancelEditingDescription = () => {
+      editingDescription.value = false;
+    };
+
+    const startEditingCategory = () => {
+      editedCategory.value = card.value.category;
+      editingCategory.value = true;
+    };
+    const saveCategory = async () => {
+       if (editedCategory.value !== card.value.category) {
+        try {
+          await updateCard(card.value.uuid, { category: editedCategory.value });
+          card.value.category = editedCategory.value; // Update local state
+        } catch (err) {
+          console.error('Error saving category:', err);
+        }
+      }
+      editingCategory.value = false;
+    };
+    const cancelEditingCategory = () => {
+      editingCategory.value = false;
+    };
+
+    const startEditingRarity = () => {
+      editedRarity.value = card.value.rarity;
+      editingRarity.value = true;
+    };
+    const saveRarity = async () => {
+      // Similar save logic for rarity
+      editingRarity.value = false;
+    };
+    const cancelEditingRarity = () => {
+      editingRarity.value = false;
+    };
+
     return {
       card,
       seasonName,
       comments,
       loading,
       error,
-      imageError,
+      imageError: imageError,\
       cardNameRef
+      ,\n\n      // Editing state and values\n      editingName,\n      editingDescription,\n      editingCategory,\n      editingRarity,\n      editedName,\n      editedDescription,\n      editedCategory,\n      editedRarity,\n\n      // Editing functions\n      startEditingName,\n      saveName,\n      cancelEditingName,\n      startEditingDescription,\n      saveDescription,\n      cancelEditingDescription,\n      startEditingCategory,\n      saveCategory,\n      cancelEditingCategory,\n      startEditingRarity,\n      saveRarity,\n      cancelEditingRarity\n
     }
   }
 }
