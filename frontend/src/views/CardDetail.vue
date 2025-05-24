@@ -232,7 +232,7 @@ export default {
 
 .title-container {
   position: absolute;
-  bottom: 20px; /* Расстояние до разделителя */
+  bottom: 10px; /* Расстояние до разделителя */
   width: 100%;
 }
 
