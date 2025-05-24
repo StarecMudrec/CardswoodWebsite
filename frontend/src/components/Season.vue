@@ -1,6 +1,9 @@
 <template>
   <div class="season">
     <h2 class="season-title">{{ season.name }}</h2>
+    <button @click="$router.push('/add-card')" class="add-card-button">
+      Add New Card
+    </button>
     <div class="cards-container">
       <Card 
         v-for="card in cards" 
@@ -11,9 +14,6 @@
       <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
         No cards in this season
       </div>
-      <button @click="$router.push('/add-card')" class="add-card-button">
-        Add New Card
-      </button>
     </div>
   </div>
 </template>
@@ -75,6 +75,14 @@ export default {
   font-weight: 500;
   padding-bottom: 10px;
   border-bottom: 1px solid #333;
+}
+
+.season-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
 }
 
 .cards-container {
