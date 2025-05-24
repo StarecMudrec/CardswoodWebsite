@@ -20,7 +20,23 @@
           <!-- Название карточки и главная разделительная линия -->
           <div class="card-header-section">
             <div class="title-container">
-              <h1 ref="cardNameRef">{{ card.name }}</h1>
+              <h1 ref="cardNameRef">
+                <span v-if="!editing.name">{{ card.name }}</span>
+                <input 
+                  v-else
+                  v-model="editableCard.name"
+                  @blur="saveField('name')"
+                  @keyup.enter="saveField('name')"
+                  ref="nameInput"
+                  class="edit-input"
+                >
+                <span class="edit-icon" @click="startEditing('name')">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </span>
+              </h1>
             </div>
             <div class="main-divider"></div>
           </div>
@@ -28,7 +44,21 @@
           <!-- Описание карточки -->
           <div class="card-description-section">
             <div class="card-description">
-              <p>{{ card.description }}</p>
+              <p v-if="!editing.description">{{ card.description }}</p>
+              <textarea
+                v-else
+                v-model="editableCard.description"
+                @blur="saveField('description')"
+                @keyup.enter="saveField('description')"
+                ref="descriptionInput"
+                class="edit-textarea"
+              ></textarea>
+              <span class="edit-icon" @click="startEditing('description')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </span>
             </div>
             <div class="secondary-divider"></div>
           </div>
@@ -37,8 +67,24 @@
           <div class="card-info-section">
             <div class="card-info-columns">
               <div class="card-info-column">
-                <h3>Category:</h3>
-                <p>{{ card.category }}</p>
+                <h3>
+                  Category:
+                  <span class="edit-icon" @click="startEditing('category')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </span>
+                </h3>
+                <p v-if="!editing.category">{{ card.category }}</p>
+                <input
+                  v-else
+                  v-model="editableCard.category"
+                  @blur="saveField('category')"
+                  @keyup.enter="saveField('category')"
+                  ref="categoryInput"
+                  class="edit-input"
+                >
               </div>
               <div class="card-info-column">
                 <h3>Season:</h3>
@@ -78,6 +124,7 @@ export default {
   },
   setup(props) {
     const card = ref({})
+    const editableCard = ref({})
     const seasonName = ref('')
     const comments = ref([])
     const loading = ref(true)
@@ -85,58 +132,106 @@ export default {
     const imageError = ref(false)
     const cardNameRef = ref(null)
     const isMobile = ref(false)
+    const editing = ref({
+      name: false,
+      description: false,
+      category: false
+    })
+    const nameInput = ref(null)
+    const descriptionInput = ref(null)
+    const categoryInput = ref(null)
 
     const adjustFontSize = () => {
-  nextTick(() => {
-    if (!cardNameRef.value) return;
-    
-    const element = cardNameRef.value;
-    const container = element.parentElement;
-    
-    // Сброс стилей
-    element.style.fontSize = '';
-    element.style.whiteSpace = 'nowrap';
-    
-    const containerWidth = container.clientWidth;
-    let fontSize = 100; // Начальный размер
-    
-    // Устанавливаем начальный размер
-    element.style.fontSize = `${fontSize}px`;
-    void element.offsetWidth; // Принудительный рефлоу
-    
-    // Если текст не помещается - вычисляем оптимальный размер
-    if (element.scrollWidth > containerWidth) {
-      // Более мягкое уменьшение (сохраняем 85% от расчетного размера)
-      const ratio = containerWidth / element.scrollWidth;
-      fontSize = Math.max(
-        28, // Минимальный размер
-        Math.min( // Не уменьшаем резко
-          fontSize, 
-          Math.floor(fontSize * ratio * 0.85) // Сохраняем 15% запаса
-        )
-      );
-      element.style.fontSize = `${fontSize}px`;
+      nextTick(() => {
+        if (!cardNameRef.value) return;
+        
+        const element = cardNameRef.value;
+        const container = element.parentElement;
+        
+        // Сброс стилей
+        element.style.fontSize = '';
+        element.style.whiteSpace = 'nowrap';
+        
+        const containerWidth = container.clientWidth;
+        let fontSize = 100; // Начальный размер
+        
+        // Устанавливаем начальный размер
+        element.style.fontSize = `${fontSize}px`;
+        void element.offsetWidth; // Принудительный рефлоу
+        
+        // Если текст не помещается - вычисляем оптимальный размер
+        if (element.scrollWidth > containerWidth) {
+          const ratio = containerWidth / element.scrollWidth;
+          fontSize = Math.max(
+            28,
+            Math.min(
+              fontSize, 
+              Math.floor(fontSize * ratio * 0.85)
+            )
+          );
+          element.style.fontSize = `${fontSize}px`;
+          
+          if (element.scrollWidth > containerWidth * 1.05) {
+            element.style.whiteSpace = 'normal';
+            element.style.lineHeight = '1.2';
+          }
+        }
+      });
+    };
+
+    const startEditing = (field) => {
+      editing.value = { ...editing.value, [field]: true }
+      editableCard.value = { ...card.value }
       
-      // Если после мягкого уменьшения всё ещё не влезает - переносим
-      if (element.scrollWidth > containerWidth * 1.05) {
-        element.style.whiteSpace = 'normal';
-        element.style.lineHeight = '1.2';
+      nextTick(() => {
+        switch(field) {
+          case 'name':
+            nameInput.value?.focus()
+            break
+          case 'description':
+            descriptionInput.value?.focus()
+            break
+          case 'category':
+            categoryInput.value?.focus()
+            break
+        }
+      })
+    }
+    
+
+    const saveField = async (field) => {
+      try {
+        const response = await fetch(`/api/cards/${card.value.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            [field]: editableCard.value[field]
+          })
+        })
+
+        if (!response.ok) throw new Error('Failed to update card')
+
+        card.value = { ...card.value, [field]: editableCard.value[field] }
+        editing.value = { ...editing.value, [field]: false }
+      } catch (err) {
+        console.error('Error updating card:', err)
+        error.value = err.message || 'Failed to update card'
       }
     }
-  });
-};
 
     const loadData = async () => {
       try {
         loading.value = true
         card.value = await fetchCardInfo(props.uuid)
+        editableCard.value = { ...card.value }
         
         const season = await fetchSeasonInfo(card.value.season_id)
         seasonName.value = season.name
         
         comments.value = await fetchComments(card.value.id)
         
-        // Вызываем после полного рендеринга
         setTimeout(adjustFontSize, 0)
       } catch (err) {
         error.value = err.message || 'Failed to load card details'
@@ -159,18 +254,75 @@ export default {
 
     return {
       card,
+      editableCard,
       seasonName,
       comments,
       loading,
       error,
       imageError,
-      cardNameRef
+      cardNameRef,
+      editing,
+      startEditing,
+      saveField,
+      nameInput,
+      descriptionInput,
+      categoryInput
     }
   }
 }
 </script>
 
 <style scoped>
+/* Добавляем стили для иконки редактирования */
+.edit-icon {
+  margin-left: 10px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.edit-icon:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.edit-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Стили для полей ввода при редактировании */
+.edit-input {
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--accent-color);
+  border-radius: 4px;
+  padding: 5px;
+  width: 80%;
+}
+
+.edit-textarea {
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--accent-color);
+  border-radius: 4px;
+  padding: 10px;
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Остальные существующие стили без изменений */
 .background-container {
   position: absolute;
   top: 0;
@@ -226,11 +378,8 @@ export default {
   flex-direction: column;
 }
 
-/* Исправленная секция заголовка */
 .card-header-section {
-  /* Keep existing styles */
-  margin-top: 64px; /* Add top margin to push content down (adjust value as needed) */
-  /* Add other styling for spacing or alignment */
+  margin-top: 64px;
   position: relative;
   min-height: 150px;
   display: flex;
@@ -240,7 +389,7 @@ export default {
 
 .title-container {
   position: absolute;
-  bottom: 17px; /* Расстояние до разделителя */
+  bottom: 17px;
   width: 100%;
 }
 
@@ -255,8 +404,8 @@ export default {
   vertical-align: bottom;
   transform-origin: left bottom;
   transition: font-size 0.2s ease;
-  transition: color 0.3s ease, box-shadow 0.3s ease; /* Add box-shadow to transition */
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Semi-transparent dark shadow */
+  transition: color 0.3s ease, box-shadow 0.3s ease;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
 }
 
 .main-divider {
@@ -265,10 +414,9 @@ export default {
   background-color: var(--card-border-color);
   top: 20%;
   position: relative;
-  bottom: -20px; /* Позиционируем ниже текста */
+  bottom: -20px;
 }
 
-/* Остальные стили без изменений */
 .card-description-section {
   padding: 30px 0;
 }
@@ -278,6 +426,7 @@ export default {
   line-height: 1.6;
   color: var(--text-color);
   text-align: center; 
+  position: relative;
 }
 
 .secondary-divider {
@@ -288,7 +437,7 @@ export default {
 }
 
 .card-info-section {
-  padding: /*2*/0px 0;
+  padding: 0px 0;
 }
 
 .card-info-columns {
@@ -299,12 +448,16 @@ export default {
 .card-info-column {
   flex: 1;
   text-align: center;
+  position: relative;
 }
 
 .card-info-column h3 {
   font-size: 25px;
   margin-bottom: 10px;
   color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card-info-column p {
@@ -370,7 +523,7 @@ export default {
   }
 
   .card-header-section h1 {
-    font-size: 100px; /* Начальный размер */
+    font-size: 100px;
     line-height: 1.1;
     margin: 0;
     padding: 0;
@@ -395,6 +548,10 @@ export default {
   .card-detail-image {
     border-radius: 15px;
     border: 10px solid var(--bg-color);
+  }
+
+  .edit-input {
+    width: 100%;
   }
 }
 </style>
