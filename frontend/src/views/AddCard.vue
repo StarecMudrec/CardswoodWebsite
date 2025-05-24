@@ -32,7 +32,9 @@
           <label for="image">Card Image:</label>
           <input type="file" id="image" @change="handleFileUpload" accept="image/*" required>
         </div>
-        <button type="submit" class="submit-button">Add Card</button>
+        <button type="submit" class="submit-button">
+          <span class="submit-button-text">Add Card</span>
+        </button>
       </form>
       <router-link to="/" class="back-link">← Back to home</router-link>
     </div>
@@ -271,19 +273,39 @@ input[type="file"] {
 .submit-button {
   width: 100%;
   padding: 14px;
-  background-color: var(--card-bg);
-  color: white;
+  background: none;
+  color: var(--text-color);
   border: none;
   border-radius: 8px;
   font-size: 24px;
   font-weight: 500;
   cursor: pointer;
   margin-top: 10px;
-  transition: background-color 0.3s ease;
+  position: relative;
+}
+
+.submit-button-text {
+  position: relative;
+  display: inline-block;
+}
+
+.submit-button-text::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--hover-color);
+  transition: width 0.3s ease;
+}
+
+.submit-button:hover .submit-button-text::after {
+  width: 100%;
 }
 
 .submit-button:hover {
-  background-color: var(--hover-color);
+  color: var(--hover-color);
 }
 
 .back-link {
@@ -338,8 +360,7 @@ input[type="file"] {
   }
   
   .submit-button {
-    padding: 12px;
-    font-size: 15px;
+    font-size: 20px;
   }
   
   .back-link {
