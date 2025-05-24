@@ -133,39 +133,40 @@ export default {
     const isMobile = ref(false)
 
     const adjustFontSize = () => {
-  nextTick(() => {
-    if (!cardNameRef.value) return;
-    
-    const element = cardNameRef.value;
-    const container = element.parentElement;
-    
-    // Сброс стилей
-    element.style.fontSize = '';
-    element.style.whiteSpace = 'nowrap';
-    
-    const containerWidth = container.clientWidth;
-    let fontSize = 100; // Начальный размер
-    element.style.fontSize = `${fontSize}px`;
-    void element.offsetWidth;
-    
-    if (element.scrollWidth > containerWidth) {
-      const ratio = containerWidth / element.scrollWidth;
-      fontSize = Math.max(
-        28, // Минимальный размер
-        Math.min( // Не уменьшаем резко
-          fontSize, 
-          Math.floor(fontSize * ratio * 0.85) // Сохраняем 15% запаса
-        )
-      );
-      element.style.fontSize = `${fontSize}px`;
-      
-      // Если после мягкого уменьшения всё ещё не влезает - переносим
-      if (element.scrollWidth > containerWidth * 1.05) {
-        element.style.whiteSpace = 'normal';
-        element.style.lineHeight = '1.2';
-      }
+      nextTick(() => {
+        if (!cardNameRef.value) return;
+        
+        const element = cardNameRef.value;
+        const container = element.parentElement;
+        
+        element.style.fontSize = '';
+        element.style.whiteSpace = 'nowrap';
+        
+        const containerWidth = container.clientWidth;
+        let fontSize = 100;
+        element.style.fontSize = `${fontSize}px`;
+        void element.offsetWidth;
+        
+        if (element.scrollWidth > containerWidth) {
+          const ratio = containerWidth / element.scrollWidth;
+          fontSize = Math.max(
+            28, // Минимальный размер
+            Math.min( // Не уменьшаем резко
+              fontSize, 
+              Math.floor(fontSize * ratio * 0.85) // Сохраняем 15% запаса
+            )
+          );
+          element.style.fontSize = `${fontSize}px`;
+          
+          // Если после мягкого уменьшения всё ещё не влезает - переносим
+          if (element.scrollWidth > containerWidth * 1.05) {
+            element.style.whiteSpace = 'normal';
+            element.style.lineHeight = '1.2';
+          }
+        }
+      });
     }
-  });
+  }
 };
 
     const loadData = async () => {
