@@ -381,7 +381,7 @@ export default {
   }
 
   .card-header-section h1 {
-    font-size: 52px; /* Начальный размер */
+    font-size: 520px; /* Начальный размер */
     line-height: 1.1;
     margin: 0;
     padding: 0;
