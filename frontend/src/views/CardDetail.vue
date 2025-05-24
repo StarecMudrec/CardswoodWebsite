@@ -130,7 +130,9 @@ export default {
     // Edited value variables
     const editedName = ref('')
     const editedDescription = ref('')
-    const isMobile = ref(false)
+    const editedCategory = ref('')
+    const editedRarity = ref('')
+
 
     const adjustFontSize = () => {
       nextTick(() => {
@@ -179,6 +181,8 @@ export default {
 
         editedName.value = card.value.name;
         editedDescription.value = card.value.description;
+        editedCategory.value = card.value.category;
+        editedRarity.value = card.value.rarity;
         // Initialize other edited fields as needed
         
         // Вызываем после полного рендеринга
@@ -279,8 +283,14 @@ export default {
       editingRarity.value = true;
     };
     const saveRarity = async () => {
-      // Similar save logic for rarity
-      editingRarity.value = false;
+      if (editedRarity.value !== card.value.rarity) {
+        try {
+          await updateCard(card.value.uuid, { rarity: editedRarity.value });
+          card.value.rarity = editedRarity.value; // Update local state
+        } catch (err) {
+          console.error('Error saving rarity:', err);
+        }
+      }
     };
     const cancelEditingRarity = () => {
       editingRarity.value = false;
