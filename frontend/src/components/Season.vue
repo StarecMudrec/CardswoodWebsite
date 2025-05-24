@@ -12,7 +12,7 @@
         :key="card.uuid" 
         :card="card || {}"
         @click="$emit('card-clicked', card.uuid)"
-        @card-deleted="handleCardDeleted"
+        @card-deleted="handleCardDeleted(card.uuid)"
       />
       <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
         No cards in this season
@@ -24,7 +24,7 @@
 <script>
 import Card from './Card.vue'
 import { fetchCardsForSeason } from '@/api'
-
+import { deleteCard } from '@/api'
 export default {
   components: {
     Card
@@ -52,6 +52,22 @@ export default {
     } finally {
       this.loading = false
     }
+  },
+  methods: {
+    async handleCardDeleted(cardId) {
+      try {
+        this.loading = true;
+        await deleteCard(cardId);
+        // Refetch cards after successful deletion
+        this.cards = await fetchCardsForSeason(this.season.uuid);
+      } catch (err) {
+        this.error = err;
+        console.error('Error deleting card:', err);
+      } finally {
+        this.loading = false;
+      }
+    }
+
   }
 }
 </script>
