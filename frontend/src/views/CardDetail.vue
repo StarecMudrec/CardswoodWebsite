@@ -228,14 +228,14 @@ export default {
 }
 
 .title-container {
-  position: relative; /* Меняем на относительное позиционирование */
+  position: absolute;
+  bottom: 20px; /* Расстояние до разделителя */
   width: 100%;
-  margin-bottom: 10px; /* Отступ между текстом и линией */
 }
 
 .card-header-section h1 {
   margin: 0;
-  padding: 0 0 10px 0; /* Добавляем отступ снизу */
+  padding: 0;
   white-space: nowrap;
   font-size: 100px;
   line-height: 1;
