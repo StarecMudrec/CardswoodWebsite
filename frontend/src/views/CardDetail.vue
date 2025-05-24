@@ -87,58 +87,44 @@ export default {
     const isMobile = ref(false)
 
     const adjustFontSize = () => {
-      nextTick(() => {
-        if (!cardNameRef.value) return
-        
-        const element = cardNameRef.value
-        const container = element.parentElement
-        isMobile.value = window.innerWidth <= 768
-
-        // Сброс стилей
-        element.style.fontSize = ''
-        element.style.whiteSpace = 'nowrap'
-        element.style.lineHeight = '1.1'
-        element.classList.remove('force-wrap')
-
-        if (!isMobile.value) {
-          // Десктопная логика
-          const containerWidth = container.clientWidth
-          let fontSize = 100
-          
-          element.style.fontSize = `${fontSize}px`
-          void element.offsetWidth
-          
-          if (element.scrollWidth > containerWidth) {
-            const ratio = containerWidth / element.scrollWidth
-            fontSize = Math.floor(fontSize * ratio * 0.95)
-            fontSize = Math.max(20, fontSize)
-            element.style.fontSize = `${fontSize}px`
-          }
-          return
-        }
-
-        // Мобильная логика
-        const containerWidth = container.offsetWidth
-        let fontSize = 42 // Стартовый размер
-        const minFontSize = 28 // Минимальный размер
-        
-        // Проверяем, помещается ли текст
-        element.style.fontSize = `${fontSize}px`
-        void element.offsetWidth
-        
-        // Уменьшаем шрифт пока не поместится или достигнем минимума
-        while (element.scrollWidth > containerWidth && fontSize > minFontSize) {
-          fontSize -= 1
-          element.style.fontSize = `${fontSize}px`
-          void element.offsetWidth
-        }
-
-        // Если достигли минимума и всё ещё не влезает - разрешаем перенос
-        if (element.scrollWidth > containerWidth && fontSize <= minFontSize) {
-          element.classList.add('force-wrap')
-        }
-      })
+  nextTick(() => {
+    if (!cardNameRef.value) return;
+    
+    const element = cardNameRef.value;
+    const container = element.parentElement;
+    
+    // Сброс стилей
+    element.style.fontSize = '';
+    element.style.whiteSpace = 'nowrap';
+    
+    const containerWidth = container.clientWidth;
+    let fontSize = 100; // Начальный размер
+    
+    // Устанавливаем начальный размер
+    element.style.fontSize = `${fontSize}px`;
+    void element.offsetWidth; // Принудительный рефлоу
+    
+    // Если текст не помещается - вычисляем оптимальный размер
+    if (element.scrollWidth > containerWidth) {
+      // Более мягкое уменьшение (сохраняем 85% от расчетного размера)
+      const ratio = containerWidth / element.scrollWidth;
+      fontSize = Math.max(
+        28, // Минимальный размер
+        Math.min( // Не уменьшаем резко
+          fontSize, 
+          Math.floor(fontSize * ratio * 0.85) // Сохраняем 15% запаса
+        )
+      );
+      element.style.fontSize = `${fontSize}px`;
+      
+      // Если после мягкого уменьшения всё ещё не влезает - переносим
+      if (element.scrollWidth > containerWidth * 1.05) {
+        element.style.whiteSpace = 'normal';
+        element.style.lineHeight = '1.2';
+      }
     }
+  });
+};
 
     const loadData = async () => {
       try {
