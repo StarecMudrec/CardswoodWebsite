@@ -85,36 +85,55 @@ export default {
     const imageError = ref(false)
     const cardNameRef = ref(null)
 
-    const adjustFontSize = () => {
-      nextTick().then(() => {
-        if (!cardNameRef.value) return
+    const checkTitleLength = () => {
+      nextTick(() => {
+        if (!cardNameRef.value || window.innerWidth > 768) return;
         
-        const element = cardNameRef.value
-        const container = element.parentElement
+        const element = cardNameRef.value;
+        const container = element.parentElement;
+        element.classList.remove('long-title');
         
-        // Сброс стилей для чистых измерений
-        element.style.fontSize = ''
-        element.style.display = 'inline-block'
-        
-        // Получаем ширины
-        const containerWidth = container.clientWidth
-        let fontSize = 100 // Начальный размер
-        
-        // Устанавливаем начальный размер
-        element.style.fontSize = `${fontSize}px`
-        void element.offsetWidth // Принудительный рефлоу
-        
-        // Если текст не помещается - вычисляем оптимальный размер
-        if (element.scrollWidth > containerWidth) {
-          const ratio = containerWidth / element.scrollWidth
-          fontSize = Math.floor(fontSize * ratio * 0.95) // 5% запаса
-          fontSize = Math.max(20, fontSize) // Минимум 20px
-          element.style.fontSize = `${fontSize}px`
+        // Check if text overflows
+        if (element.scrollWidth > container.offsetWidth * 1.1) {
+          element.classList.add('long-title');
         }
-        
-        // Восстанавливаем стандартное отображение
-        element.style.display = ''
-      })
+      });
+    };
+
+    const adjustFontSize = () => {
+      if (window.innerWidth > 768) {
+        nextTick().then(() => {
+          if (!cardNameRef.value) return
+          
+          const element = cardNameRef.value
+          const container = element.parentElement
+          
+          // Сброс стилей для чистых измерений
+          element.style.fontSize = ''
+          element.style.display = 'inline-block'
+          
+          // Получаем ширины
+          const containerWidth = container.clientWidth
+          let fontSize = 100 // Начальный размер
+          
+          // Устанавливаем начальный размер
+          element.style.fontSize = `${fontSize}px`
+          void element.offsetWidth // Принудительный рефлоу
+          
+          // Если текст не помещается - вычисляем оптимальный размер
+          if (element.scrollWidth > containerWidth) {
+            const ratio = containerWidth / element.scrollWidth
+            fontSize = Math.floor(fontSize * ratio * 0.95) // 5% запаса
+            fontSize = Math.max(20, fontSize) // Минимум 20px
+            element.style.fontSize = `${fontSize}px`
+          }
+          
+          // Восстанавливаем стандартное отображение
+          element.style.display = ''
+        })
+      } else {
+        checkTitleLength();
+      }
     }
 
     const loadData = async () => {
@@ -138,8 +157,10 @@ export default {
     }
 
     onMounted(() => {
-      loadData()
       window.addEventListener('resize', adjustFontSize)
+      loadData().then(() => {
+        setTimeout(adjustFontSize, 100);
+      });
     })
 
     onUnmounted(() => {
