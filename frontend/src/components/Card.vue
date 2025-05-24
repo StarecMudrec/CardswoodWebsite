@@ -7,7 +7,6 @@
         class="card-image"
         @error="handleImageError"
       >
-      <button class="delete-button" @click.stop="deleteCard">X</button>
     </div>
     <div class="card-content">
       <div class="card-info">
@@ -17,9 +16,8 @@
       <div class="card-meta">
         <p class="card-category">{{ card.category }}</p>
       </div>
-
-
     </div>
+    <button class="delete-button" @click.stop="deleteCard"><i class="fas fa-trash-alt"></i></button>
   </div>
 </template>
 
@@ -76,19 +74,11 @@ export default {
 
 /* New styles for delete button */
 .delete-button {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background-color: rgba(255, 0, 0, 0.7);
-  color: white;
+  background: none;
+  color: red;
   border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   cursor: pointer;
+  font-size: 1.2rem;
   font-size: 0.8rem;
   font-weight: bold;
   z-index: 10; /* Ensure button is above image */
@@ -96,7 +86,7 @@ export default {
 }
 
 .delete-button:hover {
-  background-color: rgba(255, 0, 0, 1);
+  color: darkred;
 }
 
 .card-content {
