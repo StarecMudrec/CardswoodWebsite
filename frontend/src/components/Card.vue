@@ -132,6 +132,13 @@ export default {
   /* Hide on mobile by default */
   display: none;
 }
+
+/* Show on desktop */
+@media (min-width: 769px) { /* Adjust breakpoint as needed */
+  .selection-checkbox {
+    display: block;
+  }
+}
 .image-wrapper {
   position: relative;
   width: 100%;
