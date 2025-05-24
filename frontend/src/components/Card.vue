@@ -52,7 +52,9 @@ export default {
       isSelected: false
       ,
       touchTimer: null,
-      isLongPress: false
+      isLongPress: false,
+      lastTapTime: 0
+      lastTapTime: 0
     };
   },
   methods: {
@@ -85,10 +87,15 @@ export default {
     handleTouchEnd() {
       clearTimeout(this.touchTimer);
       if (!this.isLongPress) {
-         // If it's a short tap on mobile, emit card-clicked
-         // Only if it wasn't a long press
-        if (window.innerWidth <= 768) { // Adjust breakpoint as needed
-           this.$emit('card-clicked', this.card.uuid);
+        const currentTime = new Date().getTime();
+        const timeDiff = currentTime - this.lastTapTime;
+
+        if (window.innerWidth <= 768 && timeDiff < 300) { // Adjust breakpoint as needed
+          // Double tap on mobile
+          this.toggleSelection();
+          this.isLongPress = false; // Prevent accidental navigation after double tap
+        } else if (window.innerWidth <= 768) {
+          this.$emit('card-clicked', this.card.uuid);
         }
       }
     },
@@ -98,6 +105,7 @@ export default {
       if (this.isSelected && window.innerWidth <= 768) {
         window.navigator.vibrate(500); // Vibrate for 50ms
       }
+      this.lastTapTime = new Date().getTime(); // Update last tap time on any successful tap/selection action
       this.$emit('card-selected', this.card.id, this.isSelected);
     },
     deleteCard() {
