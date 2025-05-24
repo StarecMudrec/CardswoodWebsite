@@ -69,7 +69,7 @@ export default {
       this.isSelected = event.target.checked;
       this.$emit('card-selected', this.card.uuid, this.isSelected);
     },
-   handleTouchEnd() {
+    handleTouchEnd() {
       // Add double tap logic here later if needed
       const currentTime = new Date().getTime();
       const timeDiff = currentTime - this.lastTapTime;
@@ -82,8 +82,7 @@ export default {
       this.lastTapTime = currentTime; // Update last tap time after every touch end
     },
     toggleSelection() {
-        this.isSelected = !this.isSelected; // Toggle selection state
-      }
+      this.isSelected = !this.isSelected; // Toggle selection mapState
       this.$emit('card-selected', this.card.id, this.isSelected);
     },
     deleteCard() {
