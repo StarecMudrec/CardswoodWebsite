@@ -57,10 +57,8 @@ export default {
       if (event.target.classList.contains('selection-checkbox')) {
         return;
       }
-      // Desktop click handled here, mobile tap handled in handleTouchEnd
-      if (window.innerWidth > 768) { // Only navigate on desktop
-        this.$emit('card-clicked', this.card.uuid);
-      }
+      // Navigate on any click unless it's the checkbox
+      this.$emit('card-clicked', this.card.uuid);
     },
     handleCheckboxChange(event) {
       this.isSelected = event.target.checked;
