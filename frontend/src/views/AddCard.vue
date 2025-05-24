@@ -189,7 +189,7 @@ export default {
 .modal-content p {
   color: white;
   margin-bottom: 20px;
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .modal-button {
