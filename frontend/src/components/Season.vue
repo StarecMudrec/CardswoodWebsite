@@ -5,7 +5,7 @@
       <button v-if="selectedCards.length > 0" @click="deleteSelectedCards" class="delete-selected-button">
         <i class="bi bi-trash"></i> ({{ selectedCards.length }})
       </button>
-      <button @click="$router.push('/add-card')" class="add-card-button">
+      <button @click="$router.push('/add-card')" class="add-card-button desktop-only">
         + Add New Card
       </button>
     </div>
@@ -19,6 +19,9 @@
       />
       <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
         No cards in this season
+      </div>
+      <div class="add-card-as-card mobile-only" @click="$router.push('/add-card')">
+        + Add New Card
       </div>
     </div>
   </div>
@@ -216,6 +219,35 @@ export default {
 }
 
 
+.add-card-as-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-color);
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  min-height: 80px; /* Adjust height as needed */
+  margin: 15px; /* Match card margin */
+  border: 2px dashed #555; /* Dashed border to indicate it's an interactive area */
+}
+
+.add-card-as-card:hover {
+ transform: translateY(-5px);
+ border-color: var(--accent-color);
+ color: var(--accent-color);
+}
+
+.desktop-only {
+  display: block;
+}
+.mobile-only {
+  display: none;
+}
 
 .cards-container {
   display: grid;
@@ -231,6 +263,15 @@ export default {
 /* Можно добавить hover-эффект для цвета текста, как в Navbar */
 .add-card-button:hover {
   color: var(--hover-color);
+}
+
+@media (max-width: 768px) {
+ .desktop-only {
+    display: none;
+ }
+ .mobile-only {
+    display: flex; /* Show as flex to center content */
+ }
 }
 
 @media (max-width: 768px) {
