@@ -390,12 +390,35 @@ textarea {
   color: var(--hover-color);
 }
 
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--card-bg);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 14px;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  cursor: pointer;
+}
+select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+option {
+  background-color: var(--card-bg);
+  color: white;
+}
 @media (max-width: 768px) {
   .add-card-container {
     padding: 25px 20px;
     max-width: 90%;
   }
-  
   h1 {
     font-size: 24px;
     margin-bottom: 15px;
@@ -404,6 +427,10 @@ textarea {
   .error-title {
     font-size: 24px;
   }
+  select {
+    padding: 8px;
+    font-size: 14px;
+  }
   
   input[type="text"],
   input[type="number"],
@@ -411,7 +438,6 @@ textarea {
     padding: 8px;
     font-size: 14px;
   }
-  
   .submit-button {
     font-size: 16px;
     padding: 10px;
@@ -420,7 +446,6 @@ textarea {
   .back-link {
     font-size: 13px;
   }
-  
   .modal-content {
     padding: 20px;
   }
@@ -428,7 +453,6 @@ textarea {
   .modal-content p {
     font-size: 14px;
   }
-  
   .modal-button {
     font-size: 15px;
   }
