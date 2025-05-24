@@ -394,7 +394,7 @@ export default {
 
   .card-detail-image {
     border-radius: 15px;
-    border: 5px solid var(--card-border-color);
+    border: 5px solid var(--bg-color);
   }
 }
 </style>
