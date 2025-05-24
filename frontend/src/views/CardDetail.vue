@@ -353,9 +353,9 @@ export default {
     flex-direction: column;
     gap: 20px;
   }
-  .card-header-section {
-    margin: 20px 0 10px 0;
-    padding: 0 15px;
+  .card-header-section { */
+    min-height: 15px;
+    text-align: center;
   }
 
   .card-content-wrapper {
