@@ -362,11 +362,19 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .card-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
   .card-header-section {
     margin: 20px 0 10px 0;
     padding: 0 15px;
   }
 
+  .card-content-wrapper {
+    padding: 0 15px;
+  }
   .title-container {
     width: 100%;
     overflow: hidden;
@@ -381,7 +389,6 @@ export default {
     transition: all 0.3s ease;
     word-break: break-word;
   }
-
   .card-header-section h1.force-wrap {
     white-space: normal;
     line-height: 1.3;
