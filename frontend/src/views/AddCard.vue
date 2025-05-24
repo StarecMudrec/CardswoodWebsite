@@ -1,5 +1,14 @@
 <template>
   <div class="add-card-background">
+    <!-- Модальное окно для ошибок -->
+    <div v-if="showErrorModal" class="modal-overlay">
+      <div class="modal-content">
+        <h3>Ошибка</h3>
+        <p>{{ errorMessage }}</p>
+        <button @click="closeModal" class="modal-button">OK</button>
+      </div>
+    </div>
+
     <div class="add-card-container">
       <h1>Add New Card</h1>
       <form @submit.prevent="submitForm" class="card-form">
@@ -42,7 +51,9 @@ export default {
         category: '',
         season: null,
         image: null
-      }
+      },
+      showErrorModal: false,
+      errorMessage: ''
     };
   },
   methods: {
@@ -51,12 +62,15 @@ export default {
       if (file && file.type.startsWith('image/')) {
         this.card.image = file;
       } else {
-        // If not an image, clear the file input and reset the card.image
-        alert('Please select an image file (JPEG, PNG, GIF, etc.).');
+        this.errorMessage = 'Please select an image file (JPEG, PNG, GIF, etc.).';
+        this.showErrorModal = true;
         event.target.value = '';
         this.card.image = null;
       }
-
+    },
+    closeModal() {
+      this.showErrorModal = false;
+      this.errorMessage = '';
     },
     async submitForm() {
       const formData = new FormData();
@@ -77,6 +91,8 @@ export default {
         console.log('Card added successfully:', response.data);
         this.resetForm();
       } catch (error) {
+        this.errorMessage = 'Error adding card: ' + (error.response?.data?.message || error.message);
+        this.showErrorModal = true;
         console.error('Error adding card:', error);
       }
     },
@@ -95,7 +111,6 @@ export default {
     }
   },
   setup() {
-    // Function to generate a random UUID (v4)
     const uuidv4 = () => {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -137,6 +152,59 @@ export default {
   text-align: center;
 }
 
+/* Стили для модального окна */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--card-bg);
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  border: 1px solid var(--border-color);
+}
+
+.modal-content h3 {
+  color: var(--accent-color);
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+.modal-content p {
+  color: white;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.modal-button {
+  padding: 10px 25px;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal-button:hover {
+  background-color: var(--hover-color);
+}
+
+/* Остальные стили остаются без изменений */
 h1 {
   color: var(--accent-color);
   font-weight: 500;
@@ -250,6 +318,23 @@ input[type="file"] {
   
   .back-link {
     font-size: 15px;
+  }
+  
+  .modal-content {
+    padding: 20px;
+  }
+  
+  .modal-content h3 {
+    font-size: 20px;
+  }
+  
+  .modal-content p {
+    font-size: 14px;
+  }
+  
+  .modal-button {
+    padding: 8px 20px;
+    font-size: 14px;
   }
 }
 </style>
