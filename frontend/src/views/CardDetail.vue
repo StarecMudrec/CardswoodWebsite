@@ -198,9 +198,10 @@ export default {
       })
     }
 
+
     const saveField = async (field) => {
       try {
-        const response = await fetch(`/api/cards/${card.value.id}`, {
+        const response = await fetch(`/api/cards/${card.value.uuid}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -210,7 +211,10 @@ export default {
           })
         })
 
-        if (!response.ok) throw new Error('Failed to update card')
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Failed to update card')
+        }
 
         card.value = { ...card.value, [field]: editableCard.value[field] }
         editing.value = { ...editing.value, [field]: false }
