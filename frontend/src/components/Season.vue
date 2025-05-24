@@ -123,9 +123,6 @@ export default {
 }
 
 .add-card-button:hover::after {
-  bottom: 5px; /* Регулируем расстояние от текста */
-  left: 20px; /* Совпадает с padding-left кнопки */
-  width: calc(100% - 40px); /* Учитываем padding кнопки */
   width: 100%;
 }
 
