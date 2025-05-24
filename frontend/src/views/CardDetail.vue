@@ -345,6 +345,9 @@ export default {
   .card-header-section h1{
     white-space: pre-wrap;
   }
+  .title-container {
+    position: relative;
+  }
   .card-detail {
     grid-template-columns: 1fr;
   }
