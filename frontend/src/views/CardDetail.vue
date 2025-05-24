@@ -292,7 +292,7 @@ export default {
       comments,
       loading,
       error,
-      imageError: imageError,\
+      imageError: imageError,
       cardNameRef,
       editingName,
       editingDescription,
