@@ -386,6 +386,7 @@ export default {
     margin-top: 15px;
   }
   .card-description {
+    position: relative;
     left: -5%;
     width: 110%;
   }
