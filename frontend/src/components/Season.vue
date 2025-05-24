@@ -114,9 +114,9 @@ export default {
 .add-card-button::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
+  bottom: 5px; /* Регулируем расстояние от текста */
+  left: 20px; /* Совпадает с padding-left кнопки */
+  width: calc(100% - 40px); /* Учитываем padding кнопки */
   height: 1px;
   background-color: var(--hover-color);
   transition: width 0.3s ease;
