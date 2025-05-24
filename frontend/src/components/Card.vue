@@ -99,6 +99,7 @@ export default {
   line-height: 1;
   opacity: 0; /* Hidden by default */
   transition: opacity 0.2s ease;
+  z-index: 10; /* Ensure button is above other card content */
 }
 
 
