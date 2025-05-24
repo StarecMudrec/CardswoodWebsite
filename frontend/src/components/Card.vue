@@ -46,7 +46,7 @@ export default {
   data() {
     return {
       isSelected: false,
-    };
+ };
   },
   methods: {
     handleImageError(e) {
@@ -58,12 +58,16 @@ export default {
         return;
       }
       // Navigate on any click unless it's the checkbox
-      this.$emit('card-clicked', this.card.id);
+      // This handler is primarily for desktop, mobile is handled by handleCardContentClick
+      if (window.innerWidth > 768) {
+        this.$emit('card-clicked', this.card.uuid);
+      }
     },
     handleCheckboxChange(event) {
       this.isSelected = event.target.checked;
-      this.lastTapTime = currentTime; // Update last tap time after every touch end
+      this.$emit('card-selected', this.card.uuid, this.isSelected);
     },
+
     toggleSelection() {
       this.isSelected = !this.isSelected; // Toggle selection mapState
       this.$emit('card-selected', this.card.id, this.isSelected);
