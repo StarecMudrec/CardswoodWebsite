@@ -221,21 +221,21 @@ export default {
 /* Исправленная секция заголовка */
 .card-header-section {
   position: relative;
-  min-height: 150px;
+  min-height: 180px; /* Увеличиваем минимальную высоту */
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  margin-bottom: 30px; /* Добавляем отступ снизу */
 }
 
 .title-container {
-  position: absolute;
-  bottom: 20px; /* Расстояние до разделителя */
+  position: relative; /* Меняем на относительное позиционирование */
   width: 100%;
+  margin-bottom: 10px; /* Отступ между текстом и линией */
 }
 
 .card-header-section h1 {
   margin: 0;
-  padding: 0;
+  padding: 0 0 10px 0; /* Добавляем отступ снизу */
   white-space: nowrap;
   font-size: 100px;
   line-height: 1;
@@ -250,7 +250,9 @@ export default {
   height: 2px;
   width: 100%;
   background-color: var(--card-border-color);
-  margin-top: 20px;
+  margin: 0; /* Убираем margin */
+  position: absolute; /* Абсолютное позиционирование */
+  bottom: -20px; /* Позиционируем ниже текста */
 }
 
 /* Остальные стили без изменений */
@@ -334,7 +336,7 @@ export default {
 /* Адаптивные стили */
 @media (max-width: 1200px) {
   .card-header-section {
-    min-height: 130px;
+    min-height: 160px;
   }
   .card-header-section h1 {
     font-size: 80px;
@@ -355,7 +357,7 @@ export default {
     grid-template-columns: 1fr;
   }
   .card-header-section {
-    min-height: 90px;
+    min-height: 120px;
   }
   .card-header-section h1 {
     font-size: 60px;
