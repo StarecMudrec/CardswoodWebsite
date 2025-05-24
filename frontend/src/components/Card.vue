@@ -12,9 +12,6 @@
       <h3 class="card-title">{{ card.name }}</h3>
       <p class="card-category">{{ card.category }}</p>
     </div>
-    <button @click.stop="deleteCard" class="delete-button">
-      &#x1F5D1; <!-- Trash bin icon -->
-    </button>
   </div>
 </template>
 
@@ -30,9 +27,6 @@ export default {
   methods: {
     handleImageError(e) {
       e.target.src = '/placeholder.jpg'
-    },
-    deleteCard() {
-      this.$emit('card-deleted', this.card.uuid);
     }
   }
 }
@@ -83,23 +77,6 @@ export default {
   font-size: 0.9rem;
   color: #888;
   margin: 0;
-}
-
-.delete-button {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background-color: rgba(255, 0, 0, 0.7); /* Semi-transparent red */
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 4px 8px;
-  cursor: pointer;
-  font-size: 1.1rem;
-  line-height: 1;
-  opacity: 0; /* Hidden by default */
-  transition: opacity 0.2s ease;
-  z-index: 10; /* Ensure button is above other card content */
 }
 
 
