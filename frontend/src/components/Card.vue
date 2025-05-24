@@ -1,5 +1,13 @@
 <template>
-  <div class="card" :class="{ 'selected': isSelected }" v-if="card" @click="toggleSelection">
+  <div
+    class="card"
+    :class="{ 'selected': isSelected }"
+    v-if="card"
+    @click="handleCardClick"
+    @touchstart="handleTouchStart"
+    @touchend="handleTouchEnd"
+    @touchcancel="handleTouchEnd"
+  >
     <div class="card-inner-content">
       <div class="image-wrapper">
         <img
@@ -19,6 +27,14 @@
         </div>
       </div>
     </div>
+    <input
+      type="checkbox"
+      class="selection-checkbox"
+      :checked="isSelected"
+      @change="handleCheckboxChange"
+      @click.stop
+    >
+
   </div>
 </template>
 
@@ -34,11 +50,47 @@ export default {
   data() {
     return {
       isSelected: false
+      ,
+      touchTimer: null,
+      isLongPress: false
     };
   },
   methods: {
     handleImageError(e) {
       e.target.src = '/placeholder.jpg';
+    },
+    handleCardClick(event) {
+      // Prevent triggering on checkbox click
+      if (event.target.classList.contains('selection-checkbox')) {
+        return;
+      }
+      // Only navigate on desktop (or if not a long press on mobile)
+      if (!this.isLongPress && window.innerWidth > 768) { // Adjust breakpoint as needed
+         this.$emit('card-clicked', this.card.uuid);
+      }
+    },
+    handleCheckboxChange(event) {
+      this.isSelected = event.target.checked;
+      this.$emit('card-selected', this.card.uuid, this.isSelected);
+    },
+    handleTouchStart(event) {
+      // Prevent default touch behavior initially (e.g., scrolling)
+      // event.preventDefault(); // May interfere with other interactions, use cautiously
+      this.isLongPress = false;
+      this.touchTimer = setTimeout(() => {
+        this.isLongPress = true;
+        this.toggleSelection(); // Toggle selection on long press
+      }, 500); // Adjust long press duration (milliseconds)
+    },
+    handleTouchEnd() {
+      clearTimeout(this.touchTimer);
+      if (!this.isLongPress) {
+         // If it's a short tap on mobile, emit card-clicked
+         // Only if it wasn't a long press
+        if (window.innerWidth <= 768) { // Adjust breakpoint as needed
+           this.$emit('card-clicked', this.card.uuid);
+        }
+      }
     },
     toggleSelection() {
       this.isSelected = !this.isSelected;
@@ -58,7 +110,7 @@ export default {
   background: var(--card-bg);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Use consistent shadow */
   position: relative; /* Added for absolute positioning of the button */
   transition: transform 0.2s ease, border 0.2s ease;
   margin: 15px;
@@ -68,6 +120,18 @@ export default {
   transform: translateY(-5px);
 }
 
+/* Style for the selection checkbox */
+.selection-checkbox {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1; /* Ensure it's above the image */
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  /* Hide on mobile by default */
+  display: none;
+}
 .image-wrapper {
   position: relative;
   width: 100%;
@@ -87,7 +151,7 @@ export default {
 }
 
 .card.selected {
-  border: 4px solid var(--accent-color);
+  border: 4px solid red;
 }
 .card.selected .card-inner-content {
   filter: blur(4px);
@@ -143,6 +207,10 @@ export default {
   .card {
     --card-width: 48vw;
     margin: 8px 4px;
+
+    .selection-checkbox {
+       display: none; /* Ensure checkbox is hidden on mobile */
+    }
   }
 
   .image-wrapper {
@@ -154,6 +222,10 @@ export default {
   .card {
     --card-width: 90vw;
     margin: 8px auto;
+
+    .selection-checkbox {
+       display: none; /* Ensure checkbox is hidden on mobile */
+    }
   }
 }
 </style>
