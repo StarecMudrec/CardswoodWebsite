@@ -348,6 +348,8 @@ export default {
   padding: 5px;
   width: 80%;
   text-align: inherit;
+  transition: inherit;
+  text-shadow: inherit;
 }
 .edit-input:focus {
   border-color: white;
