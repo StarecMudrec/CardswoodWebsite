@@ -101,8 +101,7 @@ export default {
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
   text-decoration: none;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-family: Georgia, serif;
+  font-family: Geneva;
 }
 
 .add-card-button:hover {
