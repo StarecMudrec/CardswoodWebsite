@@ -74,15 +74,3 @@ export const deleteCard = async (cardId) => {
   if (!response.ok) throw new Error('Failed to delete card');
   // No return value needed for successful deletion
 };
-
-// Update a card
-export const updateCard = async (cardUuid, updatedData) => {
-  const response = await fetch(`/api/cards/${cardUuid}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(updatedData),
-  });
-  if (!response.ok) throw new Error('Failed to update card');
-};

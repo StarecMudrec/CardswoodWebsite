@@ -18,29 +18,17 @@
         
         <div class="card-content-wrapper">
           <!-- Название карточки и главная разделительная линия -->
- <div class="card-header-section">
+          <div class="card-header-section">
             <div class="title-container">
- <div class="editable-field">
- <h1 v-if="!editingName" ref="cardNameRef">{{ card.name }}</h1>
- <input v-else type="text" v-model="editedName">
- <span class="edit-icon" @click="startEditingName">Edit</span>
- <button v-if="editingName" @click="saveName">Save</button>
- <button v-if="editingName" @click="cancelEditingName">Cancel</button>
- </div>
+              <h1 ref="cardNameRef">{{ card.name }}</h1>
             </div>
             <div class="main-divider"></div>
           </div>
           
           <!-- Описание карточки -->
           <div class="card-description-section">
- <div class="card-description editable-field">
- <p v-if="!editingDescription">{{ card.description }}</p>
- <textarea v-else v-model="editedDescription"></textarea>
+            <div class="card-description">
               <p>{{ card.description }}</p>
- <span class="edit-icon" @click="startEditingDescription">Edit</span>
- <button v-if="editingDescription" @click="saveDescription">Save</button>
- <button v-if="editingDescription" @click="cancelEditingDescription">Cancel</button>
-
             </div>
             <div class="secondary-divider"></div>
           </div>
@@ -50,23 +38,9 @@
             <div class="card-info-columns">
               <div class="card-info-column">
                 <h3>Category:</h3>
- <div class="editable-field">
- <p v-if="!editingCategory">{{ card.category }}</p>
- <input v-else type="text" v-model="editedCategory">
- <span class="edit-icon" @click="startEditingCategory">Edit</span>
- <button v-if="editingCategory" @click="saveCategory">Save</button>
- <button v-if="editingCategory" @click="cancelEditingCategory">Cancel</button>
- </div>
+                <p>{{ card.category }}</p>
               </div>
               <div class="card-info-column">
- <h3>Rarity:</h3>
- <div class="editable-field">
- <p v-if="!editingRarity">{{ card.rarity }}</p>
- <input v-else type="text" v-model="editedRarity">
- <span class="edit-icon" @click="startEditingRarity">Edit</span>
- <button v-if="editingRarity" @click="saveRarity">Save</button>
- <button v-if="editingRarity" @click="cancelEditingRarity">Cancel</button>
- </div>
                 <h3>Season:</h3>
                 <p>{{ seasonName }}</p>
               </div>
