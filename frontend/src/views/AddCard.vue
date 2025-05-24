@@ -3,7 +3,7 @@
     <!-- Модальное окно для ошибок -->
     <div v-if="showErrorModal" class="modal-overlay">
       <div class="modal-content">
-        <h3>Ошибка</h3>
+        <h3 class="error-title">Ошибка</h3>
         <p>{{ errorMessage }}</p>
         <button @click="closeModal" class="modal-button">OK</button>
       </div>
@@ -74,7 +74,7 @@ export default {
     },
     async submitForm() {
       const formData = new FormData();
-      const cardUuid = this.uuidv4(); // Generate UUID
+      const cardUuid = this.uuidv4();
       formData.append('uuid', cardUuid);
       formData.append('name', this.card.name);
       formData.append('description', this.card.description);
@@ -177,10 +177,11 @@ export default {
   border: 1px solid var(--border-color);
 }
 
-.modal-content h3 {
+.error-title {
   color: var(--accent-color);
+  font-weight: 500;
   margin-bottom: 15px;
-  font-size: 22px;
+  font-size: 28px;
 }
 
 .modal-content p {
@@ -190,21 +191,34 @@ export default {
 }
 
 .modal-button {
-  padding: 10px 25px;
-  background-color: var(--accent-color);
-  color: white;
+  display: inline-block;
+  margin-top: 25px;
+  color: var(--accent-color);
+  text-decoration: none;
+  font-size: 17px;
+  background: none;
   border: none;
-  border-radius: 6px;
-  font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  position: relative;
+  padding-bottom: 2px;
 }
 
-.modal-button:hover {
-  background-color: var(--hover-color);
+.modal-button::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--accent-color);
+  transition: width 0.3s ease;
 }
 
-/* Остальные стили остаются без изменений */
+.modal-button:hover::after {
+  width: 100%;
+}
+
+/* Остальные стили формы */
 h1 {
   color: var(--accent-color);
   font-weight: 500;
@@ -304,6 +318,10 @@ input[type="file"] {
     margin-bottom: 20px;
   }
   
+  .error-title {
+    font-size: 24px;
+  }
+  
   input[type="text"],
   input[type="number"],
   textarea {
@@ -324,17 +342,12 @@ input[type="file"] {
     padding: 20px;
   }
   
-  .modal-content h3 {
-    font-size: 20px;
-  }
-  
   .modal-content p {
     font-size: 14px;
   }
   
   .modal-button {
-    padding: 8px 20px;
-    font-size: 14px;
+    font-size: 15px;
   }
 }
 </style>
