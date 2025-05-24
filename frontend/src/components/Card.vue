@@ -50,6 +50,7 @@ export default {
   data() {
     return {
       isSelected: false,
+      lastTapTime: 0,
     };
   },
   methods: {
@@ -68,18 +69,19 @@ export default {
       this.isSelected = event.target.checked;
       this.$emit('card-selected', this.card.uuid, this.isSelected);
     },
-    handleTouchEnd() {
+   handleTouchEnd() {
       // Add double tap logic here later if needed
-    },
-    toggleSelection() {
+      const currentTime = new Date().getTime();
+      const timeDiff = currentTime - this.lastTapTime;
+
       if (window.innerWidth <= 768 && timeDiff < 300) { // Adjust breakpoint as needed
-        this.isSelected = !this.isSelected; // Toggle selection state
-      }
-      else if (window.innerWidth <= 768) { // If not a double tap on mobile, navigate
+        this.toggleSelection();
+      } else if (window.innerWidth <= 768) { // If not a double tap on mobile, navigate
         this.$emit('card-clicked', this.card.uuid);
       }
-      if (this.isSelected && window.innerWidth <= 768 && navigator.vibrate) {
-        window.navigator.vibrate(500); // Vibrate for 50ms
+      this.lastTapTime = currentTime; // Update last tap time after every touch end
+    },
+    toggleSelection() {
         this.isSelected = !this.isSelected; // Toggle selection state
       }
       this.$emit('card-selected', this.card.id, this.isSelected);
