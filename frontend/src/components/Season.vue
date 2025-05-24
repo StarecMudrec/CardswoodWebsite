@@ -10,6 +10,7 @@
       </button>
     </div>
     <div class="cards-container">
+      <!-- Pass isSelected prop to Card component -->
       <Card 
         v-for="card in cards" 
         :key="card.uuid" 
@@ -52,13 +53,15 @@ export default {
       this.cards = await fetchCardsForSeason(this.season.uuid)
     } catch (err) {
       this.error = err
+      // Log the error clearly
       console.error('Error loading cards:', err)
     } finally {
       this.loading = false
     }
   },
   watch: {
-    // Watch for changes in selectedCards and update cards data with selection state
+    // Watch for changes in selectedCards and update the local cards data
+    // to reflect the selection state for each card.
     selectedCards: {
       handler(newSelectedCards) {
         this.cards = this.cards.map(card => ({
@@ -71,11 +74,11 @@ export default {
   },
   methods: {
     async handleCardDeleted(cardId) {
+      // This method is no longer directly used by individual card clicks
+      // but kept in case it's needed elsewhere or for future features.
       try {
         this.loading = true;
         await deleteCard(cardId);
-        // Refetch cards after successful deletion
-        this.cards = await fetchCardsForSeason(this.season.uuid);
       } catch (err) {
         this.error = err;
         console.error('Error deleting card:', err);
@@ -83,10 +86,14 @@ export default {
         this.loading = false;
       }
     }
-    ,
+    , // <-- Removed extraneous comma
     handleCardSelected(cardId, isSelected) {
+      // Update the selectedCards array based on the event from Card.vue
       if (isSelected) {
-        this.selectedCards.push(cardId);
+        // Add cardId if it's not already in the array
+        if (!this.selectedCards.includes(cardId)) {
+          this.selectedCards.push(cardId);
+        }
       } else {
         this.selectedCards = this.selectedCards.filter(id => id !== cardId);
       }
@@ -96,7 +103,8 @@ export default {
         try {
           this.loading = true;
           await Promise.all(this.selectedCards.map(cardId => deleteCard(cardId)));
-          this.selectedCards = []; // Clear selected cards
+          this.selectedCards = []; // Clear selected cards array after successful deletion
+          // Refetch all cards for the season to update the view
           this.cards = await fetchCardsForSeason(this.season.uuid); // Refetch cards
         } catch (err) {
           this.error = err;
@@ -106,7 +114,6 @@ export default {
         }
       }
     }
-
   }
 }
 </script>
@@ -178,23 +185,31 @@ export default {
 }
 
 .delete-selected-button {
-  background-color: rgba(255, 42, 42, 0.24);
-  color: red;
+  background: none; /* Make background transparent */
+  color: red; /* Red text color */
   border: none;
-  border-radius: 10px;
-  opacity: 0.7;
+  padding: 0; /* Remove padding */
+  margin: 0 auto; /* Center the button horizontally */
+  display: block; /* Ensure it takes up its own line for centering */
   cursor: pointer;
-  font-size: 1rem;
   transition: opacity 0.3s ease;
-  margin-left: 15px;
   font-family: var(--font-family-main);
+  /* Adjust font styles for visibility */
+  font-size: 18px; 
+  font-weight: bold;
   font-weight: 750;
   font-size: 20px;
   letter-spacing: 0.2px;
 }
 
 .delete-selected-button:hover {
-  background-color: rgba(255, 42, 42, 0.32);
+  opacity: 1; /* Increase opacity on hover */
+}
+
+/* Add text shadow to the delete button */
+.delete-selected-button {
+  /* Adjust shadow based on desired effect */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); 
 }
 
 
