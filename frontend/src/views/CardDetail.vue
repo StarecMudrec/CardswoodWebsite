@@ -45,7 +45,6 @@
                 <p>{{ seasonName }}</p>
               </div>
             </div>
-            <button @click="deleteCard" class="delete-button">Delete Card</button>
           </div>
           
           <!-- Комментарии -->
@@ -68,8 +67,7 @@
 
 <script>
 import { fetchCardInfo, fetchSeasonInfo, fetchComments } from '@/api'
-import { ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 
 export default {
   props: {
@@ -86,12 +84,10 @@ export default {
     const error = ref(null)
     const imageError = ref(false)
     const cardNameRef = ref(null)
-    const isAuthenticated = computed(() => this.$store.state.isAuthenticated); // Access auth state
     const isMobile = ref(false)
-    const router = useRouter()
 
     const adjustFontSize = () => {
-    nextTick(() => {
+  nextTick(() => {
     if (!cardNameRef.value) return;
     
     const element = cardNameRef.value;
@@ -147,23 +143,6 @@ export default {
         console.error('Error loading card:', err)
       } finally {
         loading.value = false
-      }
-    }
-
-    const deleteCard = async () => {
-      console.log('Clicked delete button')
-      if (confirm('Are you sure you want to delete this card?')) {
-        try {
-          // Use the card's UUID for deletion
-          await axios.delete(`/api/cards/${card.value.uuid}`);
-          console.log('Card deleted successfully');
-          // Redirect to home page after successful deletion
-          router.push('/');
-        } catch (err) {
-          error.value = err.message || 'Failed to delete card'
-          console.error('Error deleting card:', err);
-          alert('Failed to delete card: ' + (err.response?.data?.error || err.message));
-        }
       }
     }
 
