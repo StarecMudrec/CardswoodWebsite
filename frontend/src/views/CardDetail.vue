@@ -283,13 +283,13 @@ export default {
 /* Остальные стили без изменений */
 .card-description-section {
   padding: 30px 0;
-  text-allign: center; 
 }
 
 .card-description {
   font-size: 18px;
   line-height: 1.6;
   color: var(--text-color);
+  text-allign: center; 
 }
 
 .secondary-divider {
