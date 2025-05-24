@@ -22,7 +22,6 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
 import Card from './Card.vue'
 import { fetchCardsForSeason } from '@/api'
 
@@ -30,44 +29,30 @@ export default {
   components: {
     Card
   },
-  setup(props, { emit }) {
-    const cards = ref([]);
-    const loading = ref(false);
-    const error = ref(null);
-
-    const loadCards = async () => {
-      loading.value = true;
-      try {
-        cards.value = await fetchCardsForSeason(props.season.uuid);
-      } catch (err) {
-        error.value = err;
-        console.error('Error loading cards:', err);
-      } finally {
-        loading.value = false;
-      }
-    };
-  },
   props: {
     season: {
       type: Object,
       required: true
     }
   },
-    const handleCardDeleted = (cardUuid) => {
-      emit('card-deleted', cardUuid);
-    };
-
-    onMounted(() => {
-      loadCards();
-    });
-
+  data() {
     return {
-      cards,
-      loading,
-      error,
-      handleCardDeleted,
-      season: props.season, // Return season prop for template access
+      cards: [],
+      loading: false,
+      error: null
     }
+  },
+  async created() {
+    this.loading = true
+    try {
+      this.cards = await fetchCardsForSeason(this.season.uuid)
+    } catch (err) {
+      this.error = err
+      console.error('Error loading cards:', err)
+    } finally {
+      this.loading = false
+    }
+  }
 }
 </script>
 
