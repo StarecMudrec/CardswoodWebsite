@@ -231,7 +231,7 @@ h1 {
   font-weight: 500;
   margin: 0px;
   margin-bottom: 22px;
-  font-size: 28px;
+  font-size: 32px;
 }
 
 .card-form {
@@ -279,7 +279,7 @@ input[type="file"] {
   color: var(--text-color);
   border: none;
   border-radius: 8px;
-  font-size: 37px;
+  font-size: 32px;
   font-weight: 500;
   cursor: pointer;
   position: relative;
