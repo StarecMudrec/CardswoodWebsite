@@ -176,8 +176,7 @@ export default {
   filter: blur(4px);
 }
 .card.selected .card-inner-content {
-  filter: blur(4px);
-  filter: opacity(0.5);
+  filter: blur(4px) opacity(0.5);
 }
 .card-content {
   padding: 16px;
