@@ -249,7 +249,7 @@ textarea {
   padding: 12px;
   border: 1px solid var(--card-bg);
   border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: --border-color;
   color: white;
   font-size: 16px;
 }
