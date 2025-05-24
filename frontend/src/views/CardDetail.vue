@@ -27,10 +27,11 @@
                   v-model="editableCard.name"
                   @blur="saveField('name')"
                   @keyup.enter="saveField('name')"
+                  @keyup.esc="cancelEditing('name')"
                   ref="nameInput"
                   class="edit-input"
                 >
-                <span class="edit-icon" @click="startEditing('name')">
+                <span class="edit-icon" @click="toggleEditing('name')">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -50,10 +51,11 @@
                 v-model="editableCard.description"
                 @blur="saveField('description')"
                 @keyup.enter="saveField('description')"
+                @keyup.esc="cancelEditing('description')"
                 ref="descriptionInput"
                 class="edit-textarea"
               ></textarea>
-              <span class="edit-icon" @click="startEditing('description')">
+              <span class="edit-icon" @click="toggleEditing('description')">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -69,21 +71,22 @@
               <div class="card-info-column">
                 <h3>
                   Category:
-                  <span class="edit-icon" @click="startEditing('category')">
+                  <span class="edit-icon" @click="toggleEditing('category')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
                   </span>
                 </h3>
-                <p v-if="!editing.category">{{ card.category }}</p>
+                <p v-if="!editing.category" class="category-text">{{ card.category }}</p>
                 <input
                   v-else
                   v-model="editableCard.category"
                   @blur="saveField('category')"
                   @keyup.enter="saveField('category')"
+                  @keyup.esc="cancelEditing('category')"
                   ref="categoryInput"
-                  class="edit-input"
+                  class="category-input"
                 >
               </div>
               <div class="card-info-column">
@@ -131,7 +134,6 @@ export default {
     const error = ref(null)
     const imageError = ref(false)
     const cardNameRef = ref(null)
-    const isMobile = ref(false)
     const editing = ref({
       name: false,
       description: false,
@@ -148,18 +150,15 @@ export default {
         const element = cardNameRef.value;
         const container = element.parentElement;
         
-        // Сброс стилей
         element.style.fontSize = '';
         element.style.whiteSpace = 'nowrap';
         
         const containerWidth = container.clientWidth;
-        let fontSize = 100; // Начальный размер
+        let fontSize = 100;
         
-        // Устанавливаем начальный размер
         element.style.fontSize = `${fontSize}px`;
-        void element.offsetWidth; // Принудительный рефлоу
+        void element.offsetWidth;
         
-        // Если текст не помещается - вычисляем оптимальный размер
         if (element.scrollWidth > containerWidth) {
           const ratio = containerWidth / element.scrollWidth;
           fontSize = Math.max(
@@ -178,6 +177,14 @@ export default {
         }
       });
     };
+
+    const toggleEditing = (field) => {
+      if (editing.value[field]) {
+        cancelEditing(field)
+      } else {
+        startEditing(field)
+      }
+    }
 
     const startEditing = (field) => {
       editing.value = { ...editing.value, [field]: true }
@@ -198,20 +205,35 @@ export default {
       })
     }
 
+    const cancelEditing = (field) => {
+      editing.value = { ...editing.value, [field]: false }
+    }
 
     const saveField = async (field) => {
       try {
-        const response = await fetch(`/api/cards/${card.value.id}`, {
+        const response = await fetch(`/api/cards/${card.value.uuid}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json'
           },
+          credentials: 'include',
           body: JSON.stringify({
             [field]: editableCard.value[field]
           })
         })
 
-        if (!response.ok) throw new Error('Failed to update card')
+        const contentType = response.headers.get('content-type')
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await response.text()
+          throw new Error(text || 'Invalid server response')
+        }
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to update card')
+        }
 
         card.value = { ...card.value, [field]: editableCard.value[field] }
         editing.value = { ...editing.value, [field]: false }
@@ -262,7 +284,9 @@ export default {
       imageError,
       cardNameRef,
       editing,
+      toggleEditing,
       startEditing,
+      cancelEditing,
       saveField,
       nameInput,
       descriptionInput,
@@ -273,67 +297,6 @@ export default {
 </script>
 
 <style scoped>
-/* Добавляем стили для иконки редактирования */
-.edit-icon {
-  margin-left: 10px;
-  cursor: pointer;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-}
-
-.category-text {
-  font-size: 20px;
-  color: white; /* Белый текст */
-  margin: 10px 0;
-  padding: 8px 12px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  display: inline-block;
-  min-width: 200px;
-}
-
-.edit-icon:hover {
-  opacity: 1;
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.edit-icon svg {
-  width: 16px;
-  height: 16px;
-}
-
-/* Стили для полей ввода при редактировании */
-.edit-input {
-  font-size: inherit;
-  font-family: inherit;
-  color: inherit;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid var(--accent-color);
-  border-radius: 4px;
-  padding: 5px;
-  width: 80%;
-}
-
-.edit-textarea {
-  font-size: inherit;
-  font-family: inherit;
-  color: inherit;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid var(--accent-color);
-  border-radius: 4px;
-  padding: 10px;
-  width: 100%;
-  min-height: 100px;
-  resize: vertical;
-}
-
-/* Остальные существующие стили без изменений */
 .background-container {
   position: absolute;
   top: 0;
@@ -436,7 +399,7 @@ export default {
   font-size: 18px;
   line-height: 1.6;
   color: var(--text-color);
-  text-align: center; 
+  text-align: center;
   position: relative;
 }
 
@@ -454,21 +417,52 @@ export default {
 .card-info-columns {
   display: flex;
   justify-content: space-around;
+  gap: 20px;
 }
 
 .card-info-column {
   flex: 1;
   text-align: center;
   position: relative;
+  padding: 20px;
+  background-color: rgba(30, 30, 30, 0.7);
+  border-radius: 12px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .card-info-column h3 {
   font-size: 25px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   color: var(--accent-color);
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.category-text {
+  font-size: 22px;
+  color: white;
+  margin: 10px 0;
+  padding: 10px 15px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  display: inline-block;
+  min-width: 200px;
+}
+
+.category-input {
+  font-size: 22px;
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--accent-color);
+  border-radius: 8px;
+  padding: 10px 15px;
+  width: 100%;
+  max-width: 300px;
+  margin: 10px 0;
 }
 
 .card-info-column p {
@@ -511,12 +505,62 @@ export default {
   color: #aaa;
 }
 
+.edit-icon {
+  margin-left: 10px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.edit-icon:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: scale(1.1);
+}
+
+.edit-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.edit-input {
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--accent-color);
+  border-radius: 4px;
+  padding: 5px;
+  width: 80%;
+}
+
+.edit-textarea {
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--accent-color);
+  border-radius: 4px;
+  padding: 10px;
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+}
+
 @media (max-width: 768px) {
   .card-detail {
     display: flex;
     flex-direction: column;
     gap: 20px;
   }
+  
   .card-header-section {
     text-align: center;
     margin-top: -10px;
@@ -526,6 +570,7 @@ export default {
   .card-content-wrapper {
     padding: 0 15px;
   }
+  
   .title-container {
     width: 100%;
     overflow: hidden;
@@ -542,6 +587,7 @@ export default {
     transition: all 0.3s ease;
     word-break: break-word;
   }
+  
   .card-header-section h1.force-wrap {
     white-space: normal;
     line-height: 1.3;
@@ -550,6 +596,7 @@ export default {
   .main-divider {
     margin-top: 15px;
   }
+  
   .card-description {
     position: relative;
     left: -5%;
@@ -561,8 +608,19 @@ export default {
     border: 10px solid var(--bg-color);
   }
 
-  .edit-input {
+  .card-info-columns {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .card-info-column {
+    min-height: auto;
+    padding: 15px;
+  }
+
+  .category-input {
     width: 100%;
+    max-width: none;
   }
 }
 </style>
