@@ -87,10 +87,10 @@ export default {
 }
 
 .card.selected {
-  border: 2px solid var(--accent-color);
+  border: 4px solid var(--accent-color);
 }
 .card.selected .card-inner-content {
-  filter: blur(2px);
+  filter: blur(4px);
 }
 .card-content {
   padding: 16px;
