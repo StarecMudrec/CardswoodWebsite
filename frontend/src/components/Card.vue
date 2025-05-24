@@ -58,7 +58,7 @@ export default {
         return;
       }
       // Navigate on any click unless it's the checkbox
-      this.$emit('card-clicked', this.card.uuid);
+      this.$emit('card-clicked', this.card.id);
     },
     handleCheckboxChange(event) {
       this.isSelected = event.target.checked;
