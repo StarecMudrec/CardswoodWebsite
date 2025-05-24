@@ -205,7 +205,7 @@ export default {
   max-height: 600px;
   object-fit: contain;
   border-radius: 17px;
-  border: 15px solid var(--bg-color);
+  border: 10px solid var(--bg-color);
   background-color: #1e1e1e;
 }
 
@@ -394,7 +394,7 @@ export default {
 
   .card-detail-image {
     border-radius: 15px;
-    border: 5px solid var(--bg-color);
+    border: 10px solid var(--bg-color);
   }
 }
 </style>
