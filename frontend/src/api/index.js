@@ -65,3 +65,12 @@ export const checkAuth = async () => {
     return { isAuthenticated: false, userId: null }
   }
 }
+
+// Delete a card
+export const deleteCard = async (cardId) => {
+  const response = await fetch(`/api/cards/${cardId}`, {
+    method: 'DELETE'
+  });
+  if (!response.ok) throw new Error('Failed to delete card');
+  // No return value needed for successful deletion
+};
