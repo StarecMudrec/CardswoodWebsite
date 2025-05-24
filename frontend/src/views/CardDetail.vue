@@ -392,7 +392,7 @@ export default {
     width: 110%;
   }
 
-  .image-placeholder {
+  .card-detail-image {
     border-radius: 15px;
     border: 5px solid var(--card-border-color);
   }
