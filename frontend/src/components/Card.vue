@@ -162,10 +162,11 @@ export default {
 }
 
 .card.selected {
-  border: 4px solid rgba(255, 42, 42, 0.24);
+  border: 4px solid rgba(255, 42, 42, 0.32);
 }
 .card.selected .card-inner-content {
   filter: blur(4px);
+  filter: opacity(0.5)
 }
 .card-content {
   padding: 16px;
