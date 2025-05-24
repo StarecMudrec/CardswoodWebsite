@@ -189,7 +189,7 @@ export default {
   margin-left: 15px;
   font-family: var(--font-family-main);
   font-weight: 750;
-  font-size: 24px;
+  font-size: 20px;
   letter-spacing: 0.2px;
 }
 
