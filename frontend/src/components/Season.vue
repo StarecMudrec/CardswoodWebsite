@@ -3,7 +3,7 @@
     <div class="season-header">
       <h2 class="season-title">{{ season.name }}</h2>
       <button v-if="selectedCards.length > 0" @click="deleteSelectedCards" class="delete-selected-button">
-        DELETE ({{ selectedCards.length }})
+        <i class="bi bi-trash"></i> ({{ selectedCards.length }})
       </button>
       <button @click="$router.push('/add-card')" class="add-card-button">
         + Add New Card
@@ -187,7 +187,6 @@ export default {
   font-size: 1rem;
   transition: opacity 0.3s ease;
   margin-left: 15px;
-  font-family: var(--font-family-main);
   font-weight: 750;
   font-size: 20px;
   letter-spacing: 0.2px;
