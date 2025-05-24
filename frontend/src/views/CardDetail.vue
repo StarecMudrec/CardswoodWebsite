@@ -350,13 +350,4 @@ export default {
     gap: 20px;
   }
 }
-
-@media (max-width: 576px) {
-  .card-header-section {
-    min-height: 70px;
-  }
-  .card-header-section h1 {
-    font-size: 40px;
-  }
-}
 </style>
