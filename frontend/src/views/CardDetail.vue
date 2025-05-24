@@ -145,8 +145,6 @@ export default {
     
     const containerWidth = container.clientWidth;
     let fontSize = 100; // Начальный размер
-    
-    // Устанавливаем начальный размер
     element.style.fontSize = `${fontSize}px`;
     void element.offsetWidth;
     
