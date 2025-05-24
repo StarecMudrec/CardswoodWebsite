@@ -263,8 +263,8 @@ export default {
   height: 2px;
   width: 100%;
   background-color: var(--card-border-color);
-  margin: 0; /* Убираем margin */
-  position: absolute; /* Абсолютное позиционирование */
+  top: 20%;
+  position: relative;
   bottom: -20px; /* Позиционируем ниже текста */
 }
 
