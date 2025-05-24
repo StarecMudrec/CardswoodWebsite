@@ -355,6 +355,7 @@ export default {
   }
   .card-header-section {
     text-align: center;
+    margin-top: -10px;
   }
 
   .card-content-wrapper {
@@ -363,6 +364,8 @@ export default {
   .title-container {
     width: 100%;
     overflow: hidden;
+    position: relative;
+    bottom: auto;
   }
 
   .card-header-section h1 {
