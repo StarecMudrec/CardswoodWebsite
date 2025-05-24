@@ -316,7 +316,7 @@ export default {
 }
 
 .category-container {
-  background-color: rgba(255, 255, 255, 0.1);
+  background: none;
   padding: 12px 20px;
   border-radius: 8px;
   margin-top: 8px;
