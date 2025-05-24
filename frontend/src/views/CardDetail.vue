@@ -84,81 +84,65 @@ export default {
     const error = ref(null)
     const imageError = ref(false)
     const cardNameRef = ref(null)
-
-    const checkTitleLength = () => {
-      nextTick(() => {
-        if (!cardNameRef.value || window.innerWidth > 768) return;
-        
-        const element = cardNameRef.value;
-        const container = element.parentElement;
-        element.classList.remove('long-title');
-        
-        // Check if text overflows
-        if (element.scrollWidth > container.offsetWidth * 1.1) {
-          element.classList.add('long-title');
-        }
-      });
-    };
+    const isMobile = ref(false)
 
     const adjustFontSize = () => {
-      if (window.innerWidth > 768) {
-        nextTick().then(() => {
-          if (!cardNameRef.value) return
-          
-          const element = cardNameRef.value
-          const container = element.parentElement
-          
-          // Сброс стилей для чистых измерений
-          element.style.fontSize = ''
-          element.style.display = 'inline-block'
-          
-          // Получаем ширины
+      nextTick(() => {
+        if (!cardNameRef.value) return
+        
+        const element = cardNameRef.value
+        const container = element.parentElement
+        isMobile.value = window.innerWidth <= 768
+
+        // Сброс стилей
+        element.style.fontSize = ''
+        element.style.whiteSpace = 'nowrap'
+        element.style.lineHeight = '1.1'
+        element.classList.remove('force-wrap')
+
+        if (!isMobile.value) {
+          // Десктопная логика
           const containerWidth = container.clientWidth
-          let fontSize = 100 // Начальный размер
+          let fontSize = 100
           
-          // Устанавливаем начальный размер
           element.style.fontSize = `${fontSize}px`
-          void element.offsetWidth // Принудительный рефлоу
+          void element.offsetWidth
           
-          // Если текст не помещается - вычисляем оптимальный размер
           if (element.scrollWidth > containerWidth) {
             const ratio = containerWidth / element.scrollWidth
-            fontSize = Math.floor(fontSize * ratio * 0.95) // 5% запаса
-            fontSize = Math.max(20, fontSize) // Минимум 20px
+            fontSize = Math.floor(fontSize * ratio * 0.95)
+            fontSize = Math.max(20, fontSize)
             element.style.fontSize = `${fontSize}px`
           }
-          
-          // Восстанавливаем стандартное отображение
-          element.style.display = ''
-        })
-      } else {
-        checkTitleLength();
-      }
-    }
+          return
+        }
 
-    const loadData = async () => {
-      try {
-        loading.value = true
-        card.value = await fetchCardInfo(props.uuid)
+        // Мобильная логика
+        const containerWidth = container.offsetWidth
+        let fontSize = 42 // Стартовый размер
+        const minFontSize = 28 // Минимальный размер
         
-        const season = await fetchSeasonInfo(card.value.season_id)
-        seasonName.value = season.name
+        // Проверяем, помещается ли текст
+        element.style.fontSize = `${fontSize}px`
+        void element.offsetWidth
         
-        comments.value = await fetchComments(card.value.id)
-        
-        // Вызываем после полного рендеринга
-        setTimeout(adjustFontSize, 0)
-      } catch (err) {
-        error.value = err.message || 'Failed to load card details'
-        console.error('Error loading card:', err)
-      } finally {
-        loading.value = false
-      }
+        // Уменьшаем шрифт пока не поместится или достигнем минимума
+        while (element.scrollWidth > containerWidth && fontSize > minFontSize) {
+          fontSize -= 1
+          element.style.fontSize = `${fontSize}px`
+          void element.offsetWidth
+        }
+
+        // Если достигли минимума и всё ещё не влезает - разрешаем перенос
+        if (element.scrollWidth > containerWidth && fontSize <= minFontSize) {
+          element.classList.add('force-wrap')
+        }
+      })
     }
 
     onMounted(() => {
-      loadData()
       window.addEventListener('resize', adjustFontSize)
+      loadData()
     })
 
     onUnmounted(() => {
@@ -357,48 +341,35 @@ export default {
   color: #aaa;
 }
 
-/* Mobile-specific fixes */
 @media (max-width: 768px) {
-  .card-detail {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
   .card-header-section {
-    position: relative;
-    min-height: auto;
     margin: 20px 0 10px 0;
     padding: 0 15px;
   }
 
   .title-container {
-    position: static;
     width: 100%;
-    display: flex;
-    justify-content: center;
+    overflow: hidden;
   }
 
   .card-header-section h1 {
-    font-size: min(9vw, 42px); /* Dynamic scaling with max size */
-    white-space: normal;
-    word-wrap: break-word;
-    line-height: 1.2;
-    text-align: center;
+    font-size: 42px; /* Начальный размер */
+    line-height: 1.1;
+    margin: 0;
     padding: 0;
-    margin: 0 0 15px 0;
-    display: inline;
-    transition: font-size 0.3s ease;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    word-break: break-word;
+  }
+
+  .card-header-section h1.force-wrap {
+    white-space: normal;
+    line-height: 1.3;
+    font-size: 28px !important;
   }
 
   .main-divider {
-    position: static;
-    margin: 10px 0;
-  }
-
-  /* Additional scaling for very long titles */
-  .card-header-section h1.long-title {
-    font-size: min(7vw, 36px);
-    line-height: 1.3;
+    margin-top: 15px;
   }
 }
 </style>
