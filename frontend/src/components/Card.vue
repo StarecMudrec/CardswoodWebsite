@@ -184,16 +184,16 @@ export default {
 
 /* New styles for card info layout */
 .card-info {
- display: flex;
- justify-content: space-between;
- align-items: center;
- margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 .card-title {
- font-size: 1.1rem;
- margin: 0;
- color: var(--accent-color);
+  font-size: 1.1rem;
+  margin: 0;
+  color: var(--accent-color);
 }
 
 .card-rarity {
@@ -223,6 +223,10 @@ export default {
     .selection-checkbox {
        display: none; /* Ensure checkbox is hidden on mobile */
     }
+  }
+  .card.selected .card-inner-content {
+    filter: blur(15px);
+    filter: opacity(0.5)
   }
 
   .image-wrapper {
