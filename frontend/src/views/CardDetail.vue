@@ -68,7 +68,7 @@
 
 <script>
 import { fetchCardInfo, fetchSeasonInfo, fetchComments } from '@/api'
-import { ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick, computed, useRouter } from 'vue'
 
 export default {
   props: {
@@ -87,6 +87,7 @@ export default {
     const cardNameRef = ref(null)
     const isAuthenticated = computed(() => this.$store.state.isAuthenticated); // Access auth state
     const isMobile = ref(false)
+    const router = useRouter()
 
     const adjustFontSize = () => {
   nextTick(() => {
@@ -155,7 +156,7 @@ export default {
           await axios.delete(`/api/cards/${card.value.uuid}`);
           console.log('Card deleted successfully');
           // Redirect to home page after successful deletion
-          this.$router.push('/');
+          router.push('/');
         } catch (err) {
           error.value = err.message || 'Failed to delete card'
           console.error('Error deleting card:', err);
