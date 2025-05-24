@@ -218,7 +218,7 @@ export default {
   background-color: #1e1e1e;
   color: #666;
   border-radius: 17px;
-  border: 10px solid var(--card-border-color);
+  border: 10px solid var(--bg-color);
 }
 
 .card-content-wrapper {
