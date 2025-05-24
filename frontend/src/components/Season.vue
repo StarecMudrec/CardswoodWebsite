@@ -191,6 +191,8 @@ export default {
   font-weight: 750;
   font-size: 20px;
   letter-spacing: 0.2px;
+  transition: color 0.3s ease, box-shadow 0.3s ease; /* Add box-shadow to transition */
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Semi-transparent dark shadow */
 }
 
 .delete-selected-button:hover {
