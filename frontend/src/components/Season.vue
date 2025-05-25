@@ -184,6 +184,7 @@ export default {
         this.loading = true;
         await updateSeason(this.season.uuid, { name: this.editableSeasonName });
         this.$emit('season-updated', { ...this.season, name: this.editableSeasonName });
+        this.season.name = this.editableSeasonName; // Update the local season object's name
         this.editingSeasonName = false;
       } catch (err) {
         this.error = err;
