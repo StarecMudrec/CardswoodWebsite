@@ -33,6 +33,7 @@
       :checked="isSelected"
       @change="handleCheckboxChange"
       @click.stop
+      v-if="allowSelection"
     >
 
   </div>
