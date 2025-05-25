@@ -467,6 +467,7 @@ export default {
 .edit-input-select:focus {
   outline: none;
   box-shadow: none;
+  background-color: transparent;
 }
 
 /* Остальные существующие стили без изменений */
