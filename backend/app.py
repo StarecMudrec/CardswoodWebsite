@@ -400,7 +400,8 @@ def update_card(card_id):
         if 'category' in data:
             card.category = data['category']
         if 'season_uuid' in data:
-            card.season_uuid = data['season_uuid'] # Убедитесь, что эта строка выполняется
+            season_id = Season.query.filter_by(uuid=data['season_uuid']).first().id
+            card.season_id = data['season_id'] # Убедитесь, что эта строка выполняется
 
         db.session.commit()
         return jsonify({'message': 'Card updated successfully'}), 200
