@@ -69,8 +69,13 @@
   color: #ff5555; /* Red color for errors */
 }
 
-/* Удаляем все старые стили для этой кнопки и заменяем на: */
+/* Добавляем в секцию <style scoped> */
+
 .add-new-season-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -82,22 +87,22 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  min-height: 80px;
-  margin: 10px auto 80px;
+  min-height: 60px;
+  padding: 0 20px;
   border: 2px dashed #555;
   max-width: 300px;
-  width: 90%;
-  position: relative;
+  width: auto;
+  z-index: 100;
 }
 .add-new-season-btn:hover {
-  transform: translateY(-5px);
+  transform: translateX(-50%) translateY(-5px);
   border-color: var(--accent-color);
   color: var(--accent-color);
 }
 
-/* Принудительно задаем отступ для контейнера */
+/* Добавляем отступ для основного контента */
 #seasons-container {
-  padding-bottom: 20px;
+  padding-bottom: 100px; /* Чтобы контент не перекрывался кнопкой */
 }
 
 </style>
@@ -126,6 +131,10 @@ export default {
     updateUserAllowedStatus(isAllowed) {
       console.log('Received user allowed status:', isAllowed);
       this.isUserAllowed = isAllowed;
+    },
+    navigateToAddCard() {
+      // Реализуйте навигацию к странице добавления карточки
+      this.$router.push('/add-card');
     },
     navigateToAddSeason() {
       // Add navigation logic for adding a new season
