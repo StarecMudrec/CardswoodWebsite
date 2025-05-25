@@ -471,7 +471,7 @@ export default {
 
 .edit-input-select:focus {
   outline: none;
-  border: none; /* Example focus border color */
+  border-color: #60a5fa; /* Example focus border color */
   box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.5); /* Example focus shadow */
 }
 
