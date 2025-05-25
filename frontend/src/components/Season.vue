@@ -176,7 +176,7 @@ export default {
       if (this.deletingItemType === 'season') {
         this.deleteSeason();
         this.deletingItemType = null; // Сбросить тип удаляемого элемента
-      },
+      }
     },
     confirmSeasonDelete() {
       this.deletingItemType = 'season';
