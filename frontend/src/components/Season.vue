@@ -3,8 +3,7 @@
     <!-- Модальное окно подтверждения удаления -->
     <div v-if="showDeleteConfirmation" class="modal-overlay">
       <div class="modal-content">
-        <h3 class="modal-title">Confirm Deletion</h3>
-        <p>Are you sure you want to delete {{ selectedCards.length }} selected cards?</p>
+        <h3 class="modal-title">Are you sure?</h3>
         <div class="modal-buttons">
           <button @click="confirmDelete" class="delete-button">
             <span class="button-text">Delete</span>
@@ -183,6 +182,7 @@ export default {
   display: flex;
   justify-content: center;
   gap: 20px;
+  grid-template-columns: repeat(1, 1fr);
 }
 
 /* Стили для кнопки Delete (как в шапке сезона) */
