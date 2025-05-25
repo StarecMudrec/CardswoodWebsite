@@ -286,7 +286,17 @@ def delete_card(card_id):
         db.session.rollback()
         logging.error(f"Error deleting card: {e}")
         return jsonify({'error': 'Error deleting card'}), 500
+@app.route('/api/check_permission', methods=['GET'])
+def check_permission():
+    username = request.args.get('username')
+    if not username:
+        return jsonify({'error': 'Username not provided'}), 400
 
+    user = AllowedUser.query.filter_by(username=username).first()
+    is_allowed = user is not None
+
+    return jsonify({'is_allowed': is_allowed})
+    
 @app.route("/api/card_info/<card_id>")
 def get_card_info(card_id):  
     print(card_id)

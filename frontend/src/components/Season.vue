@@ -48,6 +48,7 @@
 import Card from './Card.vue'
 import { fetchCardsForSeason } from '@/api'
 import { deleteCard } from '@/api'
+import { checkUserPermission  } from '@/api'
 export default {
   components: {
     Card
@@ -65,17 +66,27 @@ export default {
       selectedCards: [],
       error: null,
       showDeleteConfirmation: false
+      isUserAllowed: false // Initialize to false
     }
   },
   async created() {
-    this.loading = true
+    this.loading = true;
     try {
-      this.cards = await fetchCardsForSeason(this.season.uuid)
+      this.cards = await fetchCardsForSeason(this.season.uuid);
+
+      // **Add this logic to check user permissions**
+      const username = 'current_username'; // <--- Replace with actual username
+      if (username) {
+        const permissionResponse = await checkUserPermission(username);
+        this.isUserAllowed = permissionResponse.is_allowed;
+      }
+      // **End of added logic**
+
     } catch (err) {
-      this.error = err
-      console.error('Error loading cards:', err)
+      this.error = err;
+      console.error('Error loading cards:', err);
     } finally {
-      this.loading = false
+      this.loading = false;
     }
   },
   watch: {

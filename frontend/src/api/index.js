@@ -74,3 +74,16 @@ export const deleteCard = async (cardId) => {
   if (!response.ok) throw new Error('Failed to delete card');
   // No return value needed for successful deletion
 };
+
+// Check user permission
+export const checkUserPermission = async (username) => {
+  try {
+    const response = await fetch(`/api/check_permission?username=${username}`);
+    if (!response.ok) throw new Error('Permission check failed');
+    const data = await response.json();
+    return data.is_allowed;
+  } catch (error) {
+    console.error('Permission check error:', error);
+    return false; // Assume not allowed on error
+  }
+};
