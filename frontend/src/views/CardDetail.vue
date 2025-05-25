@@ -13,6 +13,7 @@
             class="card-detail-image"
             @error="imageError = true"
           />
+          <button v-if="isUserAllowed" class="replace-image-button">Replace Image</button>
           <div v-else class="image-placeholder">No image available</div>
         </div>
         
@@ -473,6 +474,20 @@ export default {
   outline: none;
   box-shadow: none;
   background-color: transparent;
+}
+
+.replace-image-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
 }
 
 /* Остальные существующие стили без изменений */
