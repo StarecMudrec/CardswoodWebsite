@@ -32,6 +32,7 @@
                   @keyup.enter="saveField('name')"
                   ref="nameInput"
                   class="edit-input"
+ maxlength="100"
                 >
                 <span v-if="isUserAllowed" class="edit-icon" @click="startEditing('name')">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -41,6 +42,7 @@
                 </span>
               </h1>
             </div>
+            <div v-if="nameError" class="error-message">{{ nameError }}</div>
             <div class="main-divider"></div>
           </div>
           
@@ -54,6 +56,7 @@
                 @blur="saveField('description')"
                 @keyup.enter="saveField('description')"
                 ref="descriptionInput"
+ maxlength="1000"
                 class="edit-textarea"
               ></textarea>
               <span v-if="isUserAllowed" class="edit-icon" @click="startEditing('description')">
@@ -63,6 +66,7 @@
                 </svg>
               </span>
             </div>
+            <div v-if="descriptionError" class="error-message">{{ descriptionError }}</div>
             <div class="secondary-divider"></div>
           </div>
           
@@ -91,10 +95,17 @@
                     class="edit-input"
                   >
                 </div>
+                <div v-if="categoryError" class="error-message">{{ categoryError }}</div>
               </div>
               <div class="card-info-column">
                 <h3>
                   Season:
+                  <span v-if="isUserAllowed" class="edit-icon" @click.stop="toggleEdit('season')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </span>
                 </h3>
                 <div v-if="!isUserAllowed">
                   <p>{{ seasonName }}</p>
@@ -164,6 +175,9 @@ export default {
     const error = ref(null)
     const imageError = ref(false)
     const saveError = ref(null); // New ref for save errors
+    const nameError = ref(null); // New ref for name errors
+    const descriptionError = ref(null); // New ref for description errors
+    const categoryError = ref(null); // New ref for category errors
     const cardNameRef = ref(null)
     const isUserAllowed = ref(false)
     const editing = ref({
@@ -233,7 +247,12 @@ export default {
         switch(field) {
           case 'name':
             nameInput.value?.focus()
+            nameInput.value?.select()
             break
+          case 'category':
+            categoryInput.value?.focus()
+            categoryInput.value?.select()
+            break;
           case 'description':
             descriptionInput.value?.focus()
             break
@@ -247,8 +266,8 @@ export default {
     const saveField = async (field) => {
       saveError.value = null; // Clear previous save errors
       try {
-        console.log('Saving field:', field, 'with data:', editableCard.value);
-        
+        // console.log('Saving field:', field, 'with data:', editableCard.value);
+
         let dataToSend = {};
         
         // Особый случай для сезона
@@ -256,6 +275,13 @@ export default {
           dataToSend = {
             season_uuid: editableCard.value.season_uuid
           };
+        } else if (field === 'category') {
+            // Проверка длины для категории перед сохранением
+            if (editableCard.value.category && editableCard.value.category.length > 20) {
+                categoryError.value = 'Category cannot exceed 20 characters.';
+                throw new Error('Validation failed on frontend.'); // Prevent saving if validation fails
+            }
+             dataToSend = { [field]: editableCard.value[field] };
         } else {
           dataToSend = {
             [field]: editableCard.value[field]
@@ -384,14 +410,41 @@ export default {
 
     watch(() => props.uuid, loadData)
 
+    watch(() => editableCard.value.name, (newName) => {
+      if (newName && newName.length > 100) {
+        nameError.value = 'Name cannot exceed 100 characters.';
+      } else {
+        nameError.value = null;
+      }
+    });
+
+    watch(() => editableCard.value.description, (newDescription) => {
+      if (newDescription && newDescription.length > 1000) {
+        descriptionError.value = 'Description cannot exceed 1000 characters.';
+      } else {
+        descriptionError.value = null;
+      }
+    });
+
+    watch(() => editableCard.value.category, (newCategory) => {
+      if (newCategory && newCategory.length > 20) {
+        categoryError.value = 'Category cannot exceed 20 characters.';
+      } else {
+        categoryError.value = null;
+      }
+    });
+
     return {
       card,
       editableCard,
       seasonName,
+      categoryError, // Return categoryError
       allSeasons,
       comments,
       loading,
       error,
+      nameError, // Return nameError
+      descriptionError, // Return descriptionError
       saveError, // Return saveError
       imageError,
       cardNameRef,
