@@ -157,7 +157,7 @@ export default {
 
 .modal-content {
   background-color: var(--card-bg);
-  padding: 30px;
+  padding: 17px;
   border-radius: 12px;
   max-width: 400px;
   width: 90%;
