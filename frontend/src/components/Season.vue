@@ -32,6 +32,13 @@
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
           </svg>
         </span>
+        <!-- Кнопка удаления сезона -->
+        <span v-if="isUserAllowed" class="edit-icon delete-season-icon" @click="confirmSeasonDelete">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6h18"></path>
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+          </svg>
+        </span>
       </h2>
       <button v-if="selectedCards.length > 0" @click="showDeleteConfirmation = true" class="delete-selected-button">
         <i class="bi bi-trash"></i> ({{ selectedCards.length }})
@@ -62,7 +69,7 @@
 
 <script>
 import Card from './Card.vue'
-import { fetchCardsForSeason, deleteCard, checkUserPermission, fetchUserInfo, updateSeason } from '@/api'
+import { fetchCardsForSeason, deleteCard, checkUserPermission, fetchUserInfo, updateSeason, deleteSeason } from '@/api'
 export default {
   components: {
     Card
@@ -158,10 +165,24 @@ export default {
     },
     confirmDelete() {
       this.showDeleteConfirmation = false;
-      this.deleteSelectedCards();
+      if (this.deletingItemType === 'cards') {
+        this.deleteSelectedCards();
+      } else if (this.deletingItemType === 'season') {
+        this.deleteSeason();
+      }
+      this.deletingItemType = null; // Сбросить тип удаляемого элемента
+    },
+    confirmSeasonDelete() {
+      this.deletingItemType = 'season';
+      this.showDeleteConfirmation = true;
     },
     cancelDelete() {
       this.showDeleteConfirmation = false;
+      this.deletingItemType = null; // Сбросить тип удаляемого элемента
+    },
+    async deleteSeason() {
+      // This method will be implemented to call the API and emit an event
+      console.log('Deleting season with UUID:', this.season.uuid);
     },
     toggleSeasonNameEdit() {
       if (this.editingSeasonName) {
@@ -182,9 +203,22 @@ export default {
 
       try {
         this.loading = true;
-        await updateSeason(this.season.uuid, { name: this.editableSeasonName });
-        this.$emit('season-updated', { ...this.season, name: this.editableSeasonName });
+        const updatedSeason = await updateSeason(this.season.uuid, { name: this.editableSeasonName });
+        this.season.name = updatedSeason.name; // Update the local season object's name
         this.season.name = this.editableSeasonName; // Update the local season object's name
+        // This line is redundant as the above line already updates the name from the API response.
+        // Removing the emit for simplicity if not used by parent, otherwise keep it.
+        // this.$emit('season-updated', { ...this.season, name: this.editableSeasonName });
+
+        this.editingSeasonName = false;
+      } catch (err) {
+        this.error = err;
+        console.error('Error updating season name:', err);
+      } finally {
+        this.loading = false;
+      }
+    },
+    async deleteSeason() {
         this.editingSeasonName = false;
       } catch (err) {
         this.error = err;

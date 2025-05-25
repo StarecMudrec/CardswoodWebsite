@@ -258,6 +258,29 @@ def update_season(season_uuid):
         db.session.rollback()
         logging.error(f"Error updating season: {e}")
         return jsonify({'error': 'Error updating season'}), 500
+@app.route("/api/seasons/<season_uuid>", methods=["DELETE"])
+def delete_season(season_uuid):
+    is_auth, user_id = is_authenticated(request, session)
+    if not is_auth:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    # Check if the current user is allowed to delete seasons
+    current_user_username = session.get('telegram_username')
+    if not current_user_username or not AllowedUser.query.filter_by(username=current_user_username).first():
+        return jsonify({'error': 'You are not allowed to delete seasons'}), 403
+
+    season = Season.query.filter_by(uuid=season_uuid).first()
+    if not season:
+        return jsonify({'error': 'Season not found'}), 404
+
+    try:
+        db.session.delete(season)
+        db.session.commit()
+        return jsonify({'message': 'Season deleted successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error deleting season: {e}")
+        return jsonify({'error': 'Error deleting season'}), 500
 @app.route("/api/cards/<season_id>")
 def get_cards(season_id):  
     season = Season.query.filter_by(uuid=season_id).first_or_404()

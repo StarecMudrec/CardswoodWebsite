@@ -115,3 +115,11 @@ export const createSeason = async () => {
   if (!response.ok) throw new Error('Failed to create season');
   return response.json();
 };
+
+// Delete a season
+export const deleteSeason = async (seasonUuid) => {
+  const response = await fetch(`/api/seasons/${seasonUuid}`, {
+    method: 'DELETE'
+  });
+  if (!response.ok) throw new Error('Failed to delete season');
+};
