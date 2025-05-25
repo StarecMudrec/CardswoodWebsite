@@ -181,8 +181,16 @@ export default {
       this.deletingItemType = null; // Сбросить тип удаляемого элемента
     },
     async deleteSeason() {
-      // This method will be implemented to call the API and emit an event
-      console.log('Deleting season with UUID:', this.season.uuid);
+      try {
+        this.loading = true;
+        await deleteSeason(this.season.uuid);
+        this.$emit('season-deleted', this.season.uuid);
+      } catch (err) {
+        this.error = err;
+        console.error('Error deleting season:', err);
+      } finally {
+        this.loading = false;
+      }
     },
     toggleSeasonNameEdit() {
       if (this.editingSeasonName) {
@@ -218,15 +226,6 @@ export default {
         this.loading = false;
       }
     },
-    async deleteSeason() {
-        this.editingSeasonName = false;
-      } catch (err) {
-        this.error = err;
-        console.error('Error updating season name:', err);
-      } finally {
-        this.loading = false;
-      }
-    }
   }
 }
 </script>
