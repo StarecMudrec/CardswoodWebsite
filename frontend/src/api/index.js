@@ -48,6 +48,19 @@ export const fetchSeasonInfo = async (seasonId) => {
   return response.json()
 }
 
+// Update season info
+export const updateSeason = async (seasonId, data) => {
+  const response = await fetch(`/api/seasons/${seasonId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+  if (!response.ok) throw new Error('Failed to update season')
+  return response.json()
+}
+
 // Fetch comments for a card
 export const fetchComments = async (cardId) => {
   const response = await fetch(`/api/comments/${cardId}`)
@@ -72,7 +85,6 @@ export const deleteCard = async (cardId) => {
     method: 'DELETE'
   });
   if (!response.ok) throw new Error('Failed to delete card');
-  // No return value needed for successful deletion
 };
 
 // Check user permission

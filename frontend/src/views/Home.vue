@@ -117,7 +117,34 @@ page-container {
 #seasons-container {
   padding-bottom: 0px; /* Чтобы контент не перекрывался кнопкой */
 }
+.add-season-footer {
+  padding: 20px 0 80px;
+  text-align: center;
+}
 
+.add-new-season-btn {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-color);
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 60px;
+  padding: 0 30px;
+  border: 2px dashed #555;
+  margin: 0 auto;
+}
+
+.add-new-season-btn:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
 </style>
 
 <script>
@@ -145,27 +172,12 @@ export default {
       console.log('Received user allowed status:', isAllowed);
       this.isUserAllowed = isAllowed;
     },
-    navigateToAddCard() {
-      // Реализуйте навигацию к странице добавления карточки
-      // this.$router.push('/add-card'); // This method seems unused based on template. Leaving as comment.
-    },
-    async navigateToAddSeason() {
-      try {
-        // Assuming createSeason is imported from your api file
-        const { createSeason } = await import('@/api'); // Import dynamically if not already imported
-        const newSeason = await createSeason();
-        console.log('New season created:', newSeason);
-        await this.fetchSeasons(); // Refresh the list of seasons
-        // Removed automatic navigation after season creation
-        // this.$router.push(`/season/${newSeason.uuid}`); // Navigate to the new season's page
-      } catch (error) {
-        console.error('Error creating new season:', error);
-        alert('Failed to create new season.'); // Provide user feedback
-      }
+    navigateToAddSeason() {
+      this.$router.push('/add-season');
     }
   },
   mounted() {
     this.fetchSeasons()
-  },
+  }
 }
 </script>
