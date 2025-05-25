@@ -74,6 +74,10 @@ export default {
       e.target.src = '/placeholder.jpg';
     },
     handleCardClick(event) {
+      // Если карточка выделена, не выполняем никаких действий (кроме обработки клика по чекбоксу, которая уже есть)
+      if (this.isSelected) {
+        return;
+      }
       // Prevent triggering on checkbox click
       if (event.target.classList.contains('selection-checkbox')) {
         return;
