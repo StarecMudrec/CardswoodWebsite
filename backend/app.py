@@ -359,7 +359,8 @@ def get_user_info():
             "id": session.get('telegram_id'),
             "first_name": session.get('telegram_first_name'),
             "last_name": session.get('telegram_last_name'),
-            "photo_url": session.get('telegram_photo_url')
+            "photo_url": session.get('telegram_photo_url'),
+            "username": session.get('telegram_username') # Add username
         }
         return jsonify(user_data), 200
     return jsonify({'error': 'User not authenticated'}), 401

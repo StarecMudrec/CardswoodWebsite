@@ -87,3 +87,10 @@ export const checkUserPermission = async (username) => {
     return false; // Assume not allowed on error
   }
 };
+
+// Fetch user information
+export const fetchUserInfo = async () => {
+  const response = await fetch('/api/user');
+  if (!response.ok) throw new Error('Failed to fetch user info');
+  return response.json();
+};

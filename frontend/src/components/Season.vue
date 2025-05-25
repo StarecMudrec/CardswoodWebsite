@@ -18,16 +18,16 @@
     <div class="season-header">
       <h2 class="season-title">{{ season.name }}</h2>
       <button v-if="selectedCards.length > 0" @click="showDeleteConfirmation = true" class="delete-selected-button">
-        <i class="bi bi-trash"></i> ({{ selectedCards.length }})
+        <i class="bi bi-trash"></i> ({{ selectedCards.length }})\
       </button>
       <button v-if="isUserAllowed" @click="$router.push('/add-card')" class="add-card-button desktop-only">
         + Add New Card
       </button>
     </div>
     <div class="cards-container">
-      <Card 
-        v-for="card in cards" 
-        :key="card.uuid" 
+      <Card
+        v-for="card in cards"
+        :key="card.uuid"
         :card="card || {}"
         @card-selected="handleCardSelected"
         @card-clicked="handleCardClicked"
@@ -46,9 +46,7 @@
 
 <script>
 import Card from './Card.vue'
-import { fetchCardsForSeason } from '@/api'
-import { deleteCard } from '@/api'
-import { checkUserPermission  } from '@/api'
+import { fetchCardsForSeason, deleteCard, checkUserPermission, fetchUserInfo  } from '@/api'
 export default {
   components: {
     Card
@@ -74,13 +72,14 @@ export default {
     try {
       this.cards = await fetchCardsForSeason(this.season.uuid);
 
-      // **Add this logic to check user permissions**
-      const username = 'current_username'; // <--- Replace with actual username
+      // Fetch user info to get the Telegram username
+      const userInfo = await fetchUserInfo();
+      const username = userInfo ? userInfo.telegram_username : null;
+
       if (username) {
         const permissionResponse = await checkUserPermission(username);
         this.isUserAllowed = permissionResponse.is_allowed;
       }
-      // **End of added logic**
 
     } catch (err) {
       this.error = err;
@@ -279,20 +278,20 @@ export default {
   .modal-content {
     padding: 20px;
   }
-  
+
   .modal-title {
     font-size: 24px;
   }
-  
+
   .modal-content p {
     font-size: 16px;
   }
-  
+
   .modal-buttons {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .delete-button,
   .cancel-button {
     font-size: 18px;
@@ -417,7 +416,7 @@ export default {
   transition: transform 0.2s ease;
   min-height: 80px; /* Adjust height as needed */
   margin: 15px; /* Match card margin */
-  border: 2px dashed #555; /* Dashed border to indicate it's an interactive area */
+  border: 2px dashed #555; /* Dashed border to indicate it\'s an interactive area */
 }
 
 .add-card-as-card:hover {
