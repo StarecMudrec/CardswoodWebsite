@@ -6,8 +6,12 @@
         <h3 class="modal-title">Confirm Deletion</h3>
         <p>Are you sure you want to delete {{ selectedCards.length }} selected cards?</p>
         <div class="modal-buttons">
-          <button @click="confirmDelete" class="modal-button delete-button">Delete</button>
-          <button @click="cancelDelete" class="modal-button cancel-button">Cancel</button>
+          <button @click="confirmDelete" class="delete-button">
+            <span class="button-text">Delete</span>
+          </button>
+          <button @click="cancelDelete" class="cancel-button">
+            <span class="button-text">Cancel</span>
+          </button>
         </div>
       </div>
     </div>
@@ -137,7 +141,7 @@ export default {
 </script>
 
 <style scoped>
-/* Добавляем стили для модального окна подтверждения удаления */
+/* Стили модального окна */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -178,34 +182,110 @@ export default {
 .modal-buttons {
   display: flex;
   justify-content: center;
-  gap: 15px;
+  gap: 20px;
 }
 
-.modal-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
+/* Стили для кнопки Delete (как в шапке сезона) */
 .delete-button {
-  background-color: #ff4444;
-  color: white;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 5px 0;
+  position: relative;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-family: var(--font-family-main);
+}
+
+.delete-button .button-text {
+  position: relative;
+}
+
+.delete-button .button-text::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: red;
+  transition: width 0.3s ease;
 }
 
 .delete-button:hover {
-  background-color: #cc0000;
+  color: red;
+  -webkit-text-stroke: 0.15px darkred;
 }
 
+.delete-button:hover .button-text::after {
+  width: 100%;
+}
+
+/* Стили для кнопки Cancel (как Back to home в AddCard) */
 .cancel-button {
-  background-color: #666;
-  color: white;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 5px 0;
+  position: relative;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-family: var(--font-family-main);
+}
+
+.cancel-button .button-text {
+  position: relative;
+}
+
+.cancel-button .button-text::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--hover-color);
+  transition: width 0.3s ease;
 }
 
 .cancel-button:hover {
-  background-color: #444;
+  color: var(--hover-color);
+}
+
+.cancel-button:hover .button-text::after {
+  width: 100%;
+}
+
+/* Адаптивные стили для мобильных устройств */
+@media (max-width: 768px) {
+  .modal-content {
+    padding: 20px;
+  }
+  
+  .modal-title {
+    font-size: 24px;
+  }
+  
+  .modal-content p {
+    font-size: 16px;
+  }
+  
+  .modal-buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .delete-button,
+  .cancel-button {
+    font-size: 18px;
+    padding: 8px 0;
+  }
 }
 .season {
   background-color: var(--card-bg);
