@@ -169,6 +169,7 @@ export default {
   color: var(--text-color);
   font-weight: 500;
   margin-bottom: 15px;
+  margin-top: 15px;
   font-size: 28px;
 }
 
@@ -182,7 +183,6 @@ export default {
   display: flex;
   justify-content: center;
   gap: 20px;
-  grid-template-columns: repeat(1, 1fr);
 }
 
 /* Стили для кнопки Delete (как в шапке сезона) */
