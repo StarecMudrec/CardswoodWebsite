@@ -426,7 +426,6 @@ export default {
   color: inherit;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid var(--accent-color);
-  color: white;
   border-radius: 4px;
   padding: 5px;
   width: 80%;
