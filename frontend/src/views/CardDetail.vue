@@ -305,7 +305,7 @@ export default {
 
       try {
         const response = await fetch(`/api/cards/${card.value.uuid}/image`, {
-          method: 'POST',
+          method: 'PUT',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('authToken')}`
           },
