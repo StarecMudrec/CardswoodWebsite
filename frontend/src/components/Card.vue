@@ -46,6 +46,11 @@ export default {
       type: Object,
       required: true,
       validator: card => 'name' in card && 'img' in card
+    },
+    // Add this new prop:
+    allowSelection: {
+      type: Boolean,
+      default: false // Or whatever default value makes sense
     }
   },
   data() {
