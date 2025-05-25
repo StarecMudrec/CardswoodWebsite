@@ -20,7 +20,7 @@
       <button v-if="selectedCards.length > 0" @click="showDeleteConfirmation = true" class="delete-selected-button">
         <i class="bi bi-trash"></i> ({{ selectedCards.length }})
       </button>
-      <button @click="$router.push('/add-card')" class="add-card-button desktop-only">
+      <button v-if="isUserAllowed" @click="$router.push('/add-card')" class="add-card-button desktop-only">
         + Add New Card
       </button>
     </div>
@@ -36,7 +36,7 @@
       <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
         No cards in this season
       </div>
-      <div class="add-card-as-card mobile-only" @click="$router.push('/add-card')">
+      <div v-if="isUserAllowed" class="add-card-as-card mobile-only" @click="$router.push('/add-card')">
         + Add New Card
       </div>
     </div>
