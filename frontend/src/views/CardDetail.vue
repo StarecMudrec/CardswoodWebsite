@@ -441,9 +441,9 @@ export default {
 .edit-input-select {
   width: 100%;
   padding: 10px 15px;
-  border: 1px solid #3b82f6; /* Example border color, adjust as needed */
+  border: none; /* Example border color, adjust as needed */
   border-radius: 5px;
-  background-color: #1f2937; /* Example background, adjust as needed */
+  background-color: var(--bg-color); /* Example background, adjust as needed */
   color: white;
   font-size: 1rem;
   cursor: pointer;
