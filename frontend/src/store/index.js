@@ -28,7 +28,10 @@ export default createStore({
     },
     SET_ERROR(state, error) {
       state.error = error
-    }
+    },
+    REMOVE_SEASON(state, seasonUuid) {
+      state.seasons = state.seasons.filter(season => season.uuid !== seasonUuid);
+    },
   },
   actions: {
     async checkAuth({ commit }) {

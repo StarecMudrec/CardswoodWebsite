@@ -123,7 +123,7 @@ page-container {
 
 <script>
 import Season from '@/components/Season.vue'
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapMutations } from 'vuex' // Import mapMutations
 
 export default {
   components: {
@@ -139,7 +139,8 @@ export default {
   },
   methods: {
     ...mapActions(['fetchSeasons']),
-    navigateToCard(cardUuid) {
+    ...mapMutations(['REMOVE_SEASON']), // Add mapMutations
+    navigateToCard(cardUuid) { // Deprecated - use @card-clicked on card component directly
       this.$router.push(`/card/${cardUuid}`);
     },
     updateUserAllowedStatus(isAllowed) {
@@ -170,8 +171,8 @@ export default {
   },
   // Add a new method to handle season deletion
   handleSeasonDeleted(deletedSeasonUuid) {
-    console.log('Season deleted:', deletedSeasonUuid); // For debugging
-    this.seasons = this.seasons.filter(season => season.uuid !== deletedSeasonUuid);
+    // Call the mutation to remove the season from the VueX store
+    this.REMOVE_SEASON(deletedSeasonUuid);
   }
 }
 </script>
