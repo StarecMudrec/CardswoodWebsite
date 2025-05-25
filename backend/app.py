@@ -378,7 +378,7 @@ def get_card_info(card_id):
     print(card_id)
     card = Card.query.filter_by(uuid=card_id).first_or_404()
     return jsonify(card.present()), 200
-@app.route("/api/cards/<int:card_id>", methods=["PUT"])
+@app.route("/api/cards/<card_id>", methods=["PUT"])
 def update_card(card_id):
     is_auth, user_id = is_authenticated(request, session)
     if not is_auth:
