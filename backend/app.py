@@ -224,7 +224,7 @@ def add_season():
     new_season_uuid = str(uuid.uuid4())
 
     # Create a new Season entry with the UUID as both id and name
-    new_season = Season(uuid=new_season_uuid, name=new_season_uuid) # Using UUID for both for simplicity as requested
+    new_season = Season(uuid=new_season_uuid, name=new_season_uuid)
     db.session.add(new_season)
     db.session.commit()
     return jsonify({'message': 'Season added successfully', 'uuid': new_season.uuid, 'name': new_season.name}), 201
