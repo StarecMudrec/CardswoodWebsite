@@ -68,6 +68,29 @@
             <div class="card-info-columns">
               <div class="card-info-column">
                 <h3>
+                  Category:
+                  <span class="edit-icon" @click.stop="toggleEdit('category')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </span>
+                </h3>
+                <div class="category-container">
+                  <p v-if="!editing.category">{{ card.category }}</p>
+                  <input
+                    v-else
+                    v-model="editableCard.category"
+                    @blur="saveField('category')"
+                    @keyup.enter="saveField('category')"
+                    @keyup.esc="cancelEdit('category')"
+                    ref="categoryInput"
+                    class="edit-input"
+                  >
+                </div>
+              </div>
+              <div class="card-info-column">
+                <h3>
                   Season:
                   <span class="edit-icon" @click.stop="startEditing('season')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -87,31 +110,6 @@
                   ref="seasonInput"
                   class="edit-input"
                 >
-                  <option v-for="season in allSeasons" :key="season.uuid" :value="season.uuid">
-                    {{ season.name }}
-                  </option>
-                </select>
-              </div>
-              <div class="card-info-column">
-                <h3>
-                  Season:
-                  <span class="edit-icon" @click.stop="startEditing('season')"> <!-- Добавляем иконку для начала редактирования -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                  </span>
-                </h3>
-                <div v-if="!editing.season" @click="startEditing('season')"> <!-- Отображаем имя сезона при не-редактировании -->
-                  <p>{{ seasonName }}</p>
-                </div>
-                <select
-                  v-else
-                  v-model="editableCard.season_uuid"
-                  @change="saveField('season')" <!-- Сохраняем при изменении -->
-                  @blur="cancelEdit('season')" <!-- Отменяем редактирование при потере фокуса -->
-                  ref="seasonInput" <!-- Привязываем ref для фокусировки -->
-                  class="edit-input" <!-- Можно переиспользовать стили edit-input или добавить свои -->
                   <option v-for="season in allSeasons" :key="season.uuid" :value="season.uuid">
                     {{ season.name }}
                   </option>
