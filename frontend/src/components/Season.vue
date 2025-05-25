@@ -79,6 +79,7 @@ export default {
       if (username) {
         const permissionResponse = await checkUserPermission(username);
         this.isUserAllowed = permissionResponse.is_allowed;
+        this.$emit('emitUserAllowedStatus', this.isUserAllowed);
       }
 
     } catch (err) {

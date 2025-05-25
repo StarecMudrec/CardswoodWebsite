@@ -15,6 +15,9 @@
         @add-card="navigateToAddCard"
       />
     </div>
+    <div v-if="isUserAllowed" class="add-card-as-card mobile-only" @click="navigateToAddSeason">
+      + Add New Season
+    </div>
   </div>
 
 </template>
@@ -77,10 +80,19 @@ export default {
   computed: {
     ...mapState(['seasons', 'loading', 'error'])
   },
+  data() {
+    return {
+      isUserAllowed: false
+    };
+  },
   methods: {
     ...mapActions(['fetchSeasons']),
     navigateToCard(cardUuid) {
       this.$router.push(`/card/${cardUuid}`)
+    },
+    handleUserAllowedStatus(isAllowed) {
+      // Update the local data property when the event is received
+      this.isUserAllowed = isAllowed;
     }
   },
   mounted() {
