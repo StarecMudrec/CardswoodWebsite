@@ -445,7 +445,7 @@ export default {
   border-radius: 5px;
   background-color: var(--bg-color); /* Example background, adjust as needed */
   color: white;
-  font-size: 1rem;
+  font-size: 20px;
   text-align: center; 
   cursor: pointer;
   appearance: none; /* Remove default dropdown arrow */
