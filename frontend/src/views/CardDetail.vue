@@ -137,7 +137,7 @@
 </template>
 
 <script>
-import { fetchCardInfo, fetchSeasonInfo, fetchComments, checkUserPermission, fetchUserInfo } from '@/api'
+import { fetchCardInfo, fetchSeasonInfo, fetchComments, checkUserPermission, fetchUserInfo, fetchAllSeasons } from '@/api'
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 
 export default {
