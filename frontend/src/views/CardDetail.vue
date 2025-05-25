@@ -161,7 +161,7 @@ export default {
       name: false,
       description: false,
       category: false,
-      season: false // Добавьте эту строку
+      //season: false // Добавьте эту строку
     })
     const nameInput = ref(null)
     const descriptionInput = ref(null)
