@@ -76,7 +76,6 @@ export default {
       const userInfo = await fetchUserInfo();
       const username = userInfo ? userInfo.username : null;
 
-      console.log(username);
       if (username) {
         const permissionResponse = await checkUserPermission(username);
         this.isUserAllowed = permissionResponse.is_allowed;

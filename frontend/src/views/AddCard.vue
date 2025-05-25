@@ -153,8 +153,14 @@ export default {
     // This could involve making an API call to your backend.
     async checkUserPermission() {
       try {
-        const permissionResponse = await checkUserPermission(username);
-        this.isUserAllowed = permissionResponse.is_allowed;
+        // Fetch user info to get the Telegram username
+        const userInfo = await fetchUserInfo();
+        const username = userInfo ? userInfo.username : null;
+
+        if (username) {
+          const permissionResponse = await checkUserPermission(username);
+          this.isUserAllowed = permissionResponse.is_allowed;
+        }
       } catch (error) {
         console.error('Error checking user permission:', error);
         this.isUserAllowed = false; // Assume not allowed on error
