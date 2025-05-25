@@ -54,7 +54,8 @@
         v-for="card in cards"
         :key="card.uuid"
         :card="card || {}"
-        @card-selected="handleCardSelected"
+        :class="{ 'is-selected': selectedCards.includes(card.uuid) }"
+        @card-selected="handleCardSelected(card.uuid, $event)"
         @card-clicked="handleCardClicked"
         @delete-card="handleCardDeleted(card.id)"
         :allow-selection="isUserAllowed"
@@ -131,15 +132,14 @@ export default {
   methods: {
     async handleCardDeleted(cardId) {
       try {
-        this.loading = true;
         await deleteCard(cardId);
         // Refetch cards after successful deletion
         this.cards = await fetchCardsForSeason(this.season.uuid);
+        this.selectedCards = this.selectedCards.filter(uuid => this.cards.some(card => card.uuid === uuid)); // Remove deleted cards from selection
       } catch (err) {
         this.error = err;
         console.error('Error deleting card:', err);
       } finally {
-        this.loading = false;
       }
     },
     handleCardClicked(cardUuid) {
@@ -147,9 +147,11 @@ export default {
     },
     handleCardSelected(cardId, isSelected) {
       if (isSelected) {
-        this.selectedCards.push(cardId);
+        if (!this.selectedCards.includes(cardId)) {
+          this.selectedCards.push(cardId);
+        }
       } else {
-        this.selectedCards = this.selectedCards.filter(id => id !== cardId);
+        this.selectedCards = this.selectedCards.filter(id => id !== cardId); // Используем cardId, который является uuid
       }
     },
     clearSelection() {
@@ -157,7 +159,9 @@ export default {
     },
     async deleteSelectedCards() {
       try {
+        this.showDeleteConfirmation = false; // Скрыть модальное окно перед удалением
         this.loading = true;
+        this.deletingItemType = null; // Reset deleting type
         await Promise.all(this.selectedCards.map(cardId => deleteCard(cardId)));
         this.selectedCards = []; // Clear selected cards
         this.cards = await fetchCardsForSeason(this.season.uuid); // Refetch cards
@@ -169,13 +173,10 @@ export default {
       }
     },
     confirmDelete() {
-      this.showDeleteConfirmation = false;
-      if (this.deletingItemType === 'cards') {
-        this.deleteSelectedCards();
-      } else if (this.deletingItemType === 'season') {
+      if (this.deletingItemType === 'season') {
         this.deleteSeason();
-      }
-      this.deletingItemType = null; // Сбросить тип удаляемого элемента
+        this.deletingItemType = null; // Сбросить тип удаляемого элемента
+      },
     },
     confirmSeasonDelete() {
       this.deletingItemType = 'season';
@@ -185,7 +186,8 @@ export default {
       this.showDeleteConfirmation = false;
       this.deletingItemType = null; // Сбросить тип удаляемого элемента
     },
-    async deleteSeason() {
+
+    async deleteSeason() { // moved from confirmDelete
       try {
         this.loading = true;
         await deleteSeason(this.season.uuid);
