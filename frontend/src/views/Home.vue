@@ -14,6 +14,7 @@
         @card-clicked="navigateToCard" deprecated
         @add-card="navigateToAddCard"
         @emitUserAllowedStatus="updateUserAllowedStatus"
+        @season-deleted="handleSeasonDeleted"
       />
     </div>
     <div v-if="isUserAllowed" class="add-season-footer">
@@ -167,5 +168,10 @@ export default {
   mounted() {
     this.fetchSeasons()
   },
+  // Add a new method to handle season deletion
+  handleSeasonDeleted(deletedSeasonUuid) {
+    console.log('Season deleted:', deletedSeasonUuid); // For debugging
+    this.seasons = this.seasons.filter(season => season.uuid !== deletedSeasonUuid);
+  }
 }
 </script>
