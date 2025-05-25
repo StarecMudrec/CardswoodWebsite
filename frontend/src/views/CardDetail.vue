@@ -253,7 +253,7 @@ export default {
             [field]: editableCard.value[field]
           })
         })
-
+        console.log('saveField called with field:', field);
         if (!response.ok) throw new Error('Failed to update card')
 
         card.value = { ...card.value, [field]: editableCard.value[field] }
