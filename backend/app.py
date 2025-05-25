@@ -415,6 +415,10 @@ def update_card(card_id):
 @app.route("/api/cards/<card_uuid>/image", methods=["PUT"])
 def update_card_image(card_uuid):
     is_auth, user_id = is_authenticated(request, session)
+
+    if request.method != 'PUT':
+        return jsonify({'error': 'Method Not Allowed'}), 405
+
     if not is_auth:
         return jsonify({'error': 'Unauthorized'}), 401
 
