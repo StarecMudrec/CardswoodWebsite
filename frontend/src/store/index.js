@@ -49,6 +49,7 @@ export default createStore({
           credentials: 'include'
         })
         commit('SET_AUTH', { isAuthenticated: false, userId: null })
+        window.location.reload();
       } catch (error) {
         console.error('Logout failed:', error)
       }
