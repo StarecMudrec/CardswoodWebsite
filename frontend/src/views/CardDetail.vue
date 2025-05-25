@@ -103,7 +103,7 @@
                   @change="saveField('season')"
                   @blur="cancelEdit('season')"
                   ref="seasonInput"
-                  class="edit-input-select"
+                  class="season-select"
                 >
                   <option v-for="season in allSeasons" :key="season.uuid" :value="season.uuid">
                     {{ season.name }}
@@ -467,6 +467,45 @@ export default {
   outline: none;
   border-color: #60a5fa; /* Example focus border color */
   box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.5); /* Example focus shadow */
+}
+/* Добавим новый класс для селекта */
+.season-select {
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: transparent;
+  color: white;
+  font-size: 20px;
+  text-align: center;
+  cursor: pointer;
+  appearance: none;
+  margin-top: 8px;
+}
+
+.season-select:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Обновим стили для колонки с сезоном */
+.card-info-column:last-child {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Убедимся, что текст сезона и селект выровнены одинаково */
+.card-info-column p {
+  margin: 0;
+  padding: 12px 20px;
+}
+
+/* Обновим стили для категории, чтобы они совпадали */
+.category-container {
+  padding: 12px 20px;
+  margin-top: 8px;
+  width: 100%;
 }
 
 /* Остальные существующие стили без изменений */
