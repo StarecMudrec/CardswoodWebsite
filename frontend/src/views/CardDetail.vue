@@ -249,14 +249,12 @@ export default {
       try {
         const updatePayload = {};
         if (field === 'season') {
-          card.value.season_uuid = editableCard.value.season_uuid;
-          const selectedSeason = allSeasons.value.find(s => s.uuid === card.value.season_uuid);
-          if (selectedSeason) {
-            seasonName.value = selectedSeason.name;
-          }
+          updatePayload.season_uuid = editableCard.value.season_uuid;
         } else {
-           card.value = { ...card.value, [field]: editableCard.value[field] };
+          updatePayload[field] = editableCard.value[field];
         }
+
+        console.log('updatePayload before sending:', updatePayload); // <-- Добавьте это
 
         // Используем card.value.uuid для URL, как и раньше
         const response = await fetch(`/api/cards/${card.value.uuid}`, {
