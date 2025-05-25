@@ -438,6 +438,22 @@ export default {
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
 }
 
+.edit-input .select {
+  font-size: 20px;
+  font-family: inherit;
+  color: var(--text-color);
+  background: rgba(255, 255, 255, 0.1);
+  background-color: var(--bg-color);
+  border: none;
+  border-radius: 4px;
+  padding: 5px;
+  width: 80%;
+  text-align: inherit;
+  transition: inherit;
+  text-shadow: inherit;
+  letter-spacing: inherit;
+  margin-top: 8px;
+}
 
 .edit-textarea {
   font-size: inherit;
