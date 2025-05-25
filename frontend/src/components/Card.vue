@@ -118,16 +118,16 @@ export default {
 /* Добавляем новые стили для анимации */
 @keyframes float-shake {
   0%, 100% {
-    transform: translateY(-15px) rotate(-1deg);
+    transform: translateY(-20px) rotate(-2deg);
   }
   25% {
-    transform: translateY(-18px) rotate(1deg);
+    transform: translateY(-25px) rotate(2deg);
   }
   50% {
-    transform: translateY(-15px) rotate(0deg);
+    transform: translateY(-20px) rotate(0deg);
   }
   75% {
-    transform: translateY(-18px) rotate(-1deg);
+    transform: translateY(-25px) rotate(-2deg);
   }
 }
 
