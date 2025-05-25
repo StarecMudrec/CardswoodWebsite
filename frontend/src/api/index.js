@@ -1,105 +1,149 @@
 // src/api/index.js
 
+// Base API URL from environment variables
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
+/**
+ * Helper function for API requests
+ */
+const apiRequest = async (endpoint, options = {}) => {
+  const url = `${API_BASE_URL}${endpoint}`;
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    },
+    credentials: 'include'
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `API request failed: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
 // Fetch all seasons
 export const fetchSeasons = async () => {
-  const response = await fetch('/api/seasons')
-  if (!response.ok) throw new Error('Failed to fetch seasons')
-  const seasonIds = await response.json()
-
+  const seasonIds = await apiRequest('/seasons');
   const seasons = await Promise.all(
-    seasonIds.map(async seasonId => {
-      const seasonResponse = await fetch(`/api/season_info/${seasonId}`)
-      if (!seasonResponse.ok) throw new Error('Failed to fetch season info')
-      return seasonResponse.json()
-    })
-  )
-  
-  return seasons
-}
+    seasonIds.map(seasonId => apiRequest(`/season_info/${seasonId}`))
+  );
+  return seasons;
+};
 
 // Fetch cards for a specific season
 export const fetchCardsForSeason = async (seasonUuid) => {
-  const response = await fetch(`/api/cards/${seasonUuid}`)
-  if (!response.ok) throw new Error('Failed to fetch cards')
-  const cardUuids = await response.json()
-  
+  const cardUuids = await apiRequest(`/cards/${seasonUuid}`);
   const cards = await Promise.all(
-    cardUuids.map(async uuid => {
-      const cardResponse = await fetch(`/api/card_info/${uuid}`)
-      if (!cardResponse.ok) throw new Error('Failed to fetch card info')
-      return cardResponse.json()
-    })
-  )
-  
-  return cards
-}
+    cardUuids.map(uuid => apiRequest(`/card_info/${uuid}`))
+  );
+  return cards;
+};
 
 // Fetch detailed card info
 export const fetchCardInfo = async (cardUuid) => {
-  const response = await fetch(`/api/card_info/${cardUuid}`)
-  if (!response.ok) throw new Error('Failed to fetch card info')
-  return response.json()
-}
+  return apiRequest(`/card_info/${cardUuid}`);
+};
 
 // Fetch season info
 export const fetchSeasonInfo = async (seasonId) => {
-  const response = await fetch(`/api/season_info/${seasonId}`)
-  if (!response.ok) throw new Error('Failed to fetch season info')
-  return response.json()
-}
+  return apiRequest(`/season_info/${seasonId}`);
+};
+
+// Update season info
+export const updateSeason = async (seasonUuid, updateData) => {
+  return apiRequest(`/seasons/${seasonUuid}`, {
+    method: 'PUT',
+    body: JSON.stringify(updateData)
+  });
+};
 
 // Fetch comments for a card
 export const fetchComments = async (cardId) => {
-  const response = await fetch(`/api/comments/${cardId}`)
-  if (!response.ok) throw new Error('Failed to fetch comments')
-  return response.json()
-}
+  return apiRequest(`/comments/${cardId}`);
+};
 
+// Authentication check
 export const checkAuth = async () => {
   try {
-    const response = await fetch('/api/check_auth')
-    if (!response.ok) throw new Error('Auth check failed')
-    return await response.json()
+    return await apiRequest('/check_auth');
   } catch (error) {
-    console.error('Auth check error:', error)
-    return { isAuthenticated: false, userId: null }
+    console.error('Auth check error:', error);
+    return { isAuthenticated: false, userId: null };
   }
-} 
+};
+
+// User logout
+export const logout = async () => {
+  return apiRequest('/auth/logout', {
+    method: 'POST'
+  });
+};
 
 // Delete a card
 export const deleteCard = async (cardId) => {
-  const response = await fetch(`/api/cards/${cardId}`, {
+  return apiRequest(`/cards/${cardId}`, {
     method: 'DELETE'
   });
-  if (!response.ok) throw new Error('Failed to delete card');
-  // No return value needed for successful deletion
+};
+
+// Delete multiple cards
+export const deleteCards = async (cardIds) => {
+  return apiRequest('/cards/batch_delete', {
+    method: 'POST',
+    body: JSON.stringify({ cardIds })
+  });
 };
 
 // Check user permission
 export const checkUserPermission = async (username) => {
   try {
-    const response = await fetch(`/api/check_permission?username=${username}`);
-    if (!response.ok) throw new Error('Permission check failed');
-    const data = await response.json();
-    return data;
+    return await apiRequest(`/check_permission?username=${username}`);
   } catch (error) {
     console.error('Permission check error:', error);
-    return false; // Assume not allowed on error
+    return false;
   }
 };
 
 // Fetch user information
 export const fetchUserInfo = async () => {
-  const response = await fetch('/api/user');
-  if (!response.ok) throw new Error('Failed to fetch user info');
-  return response.json();
+  return apiRequest('/user');
 };
 
 // Create a new season
 export const createSeason = async () => {
-  const response = await fetch('/api/seasons', {
+  return apiRequest('/seasons', {
     method: 'POST'
   });
-  if (!response.ok) throw new Error('Failed to create season');
-  return response.json();
+};
+
+// Create a new card
+export const createCard = async (cardData) => {
+  return apiRequest('/cards', {
+    method: 'POST',
+    body: JSON.stringify(cardData)
+  });
+};
+
+// Update card info
+export const updateCard = async (cardUuid, updateData) => {
+  return apiRequest(`/cards/${cardUuid}`, {
+    method: 'PUT',
+    body: JSON.stringify(updateData)
+  });
+};
+
+// Upload card image
+export const uploadCardImage = async (cardUuid, imageFile) => {
+  const formData = new FormData();
+  formData.append('image', imageFile);
+
+  return apiRequest(`/cards/${cardUuid}/image`, {
+    method: 'POST',
+    body: formData,
+    headers: {} // Let browser set Content-Type with boundary
+  });
 };
