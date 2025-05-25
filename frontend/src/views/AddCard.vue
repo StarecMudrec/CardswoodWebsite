@@ -263,7 +263,7 @@ export default {
 
 .modal-button {
   display: inline-block;
-  color: var(--text-color);
+  color: white;
   text-decoration: none;
   font-size: 17px;
   background: none;
@@ -281,22 +281,22 @@ export default {
   left: 0;
   width: 0;
   height: 1px;
-  background-color: var(--text-color);
+  background-color: white;
   transition: width 0.3s ease;
-  color: var(--text-color);
+  color: white;
 }
 
 .modal-button:hover::after {
   width: 100%;
-  color: var(--text-color);
+  color: white;
 }
 .modal-button:hover {
-  color: var(--text-color);
+  color: white;
 }
 
 /* Остальные стили формы */
 h1 {
-  color: var(--text-color);
+  color: white;
   font-weight: 500;
   margin: 0px;
   margin-bottom: 22px;
@@ -383,7 +383,7 @@ textarea {
   width: 100%;
   padding: 12px;
   background: none;
-  color: var(--text-color);
+  color: white;
   border: none;
   border-radius: 8px;
   font-size: 22px;
@@ -406,7 +406,7 @@ textarea {
   left: 0;
   width: 0;
   height: 1px;
-  background-color: var(--text-color);
+  background-color: white;
   transition: width 0.3s ease;
 }
 
@@ -415,13 +415,13 @@ textarea {
 }
 
 .submit-button:hover {
-  color: var(--text-color);
+  color: white;
 }
 
 .back-link {
   display: inline-block;
   margin-top: 20px;
-  color: var(--text-color);
+  color: white;
   text-decoration: none;
   font-size: 14px;
   position: relative;
@@ -435,16 +435,16 @@ textarea {
   left: 0;
   width: 0;
   height: 1px;
-  background-color: var(--text-color);
+  background-color: white;
   transition: width 0.3s ease;
 }
 
 .back-link:hover {
-  color: var(--text-color);
+  color: white;
 }
 .back-link:hover::after {
   width: 100%;
-  color: var(--text-color);
+  color: white;
 }
 
 select {
