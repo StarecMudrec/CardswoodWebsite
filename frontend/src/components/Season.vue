@@ -212,6 +212,7 @@ export default {
   text-decoration: none;
   transition: color 0.3s ease;
   font-family: var(--font-family-main);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .delete-button .button-text {
@@ -251,6 +252,7 @@ export default {
   text-decoration: none;
   transition: color 0.3s ease;
   font-family: var(--font-family-main);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .cancel-button .button-text {
