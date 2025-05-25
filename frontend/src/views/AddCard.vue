@@ -281,17 +281,17 @@ export default {
   left: 0;
   width: 0;
   height: 1px;
-  background-color: var(--hover-color);
+  background-color: var(--text-color);
   transition: width 0.3s ease;
-  color: var(--hover-color);
+  color: var(--text-color);
 }
 
 .modal-button:hover::after {
   width: 100%;
-  color: var(--hover-color);
+  color: var(--text-color);
 }
 .modal-button:hover {
-  color: var(--hover-color);
+  color: var(--text-color);
 }
 
 /* Остальные стили формы */
@@ -386,7 +386,7 @@ textarea {
   color: var(--text-color);
   border: none;
   border-radius: 8px;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 500;
   cursor: pointer;
   position: relative;
@@ -406,7 +406,7 @@ textarea {
   left: 0;
   width: 0;
   height: 1px;
-  background-color: var(--hover-color);
+  background-color: var(--text-color);
   transition: width 0.3s ease;
 }
 
@@ -415,7 +415,7 @@ textarea {
 }
 
 .submit-button:hover {
-  color: var(--hover-color);
+  color: var(--text-color);
 }
 
 .back-link {
