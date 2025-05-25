@@ -144,7 +144,8 @@ export default {
     const editing = ref({
       name: false,
       description: false,
-      category: false
+      category: false,
+      season: false // Добавьте эту строку
     })
     const nameInput = ref(null)
     const descriptionInput = ref(null)
@@ -597,6 +598,7 @@ export default {
   cursor: pointer;
   outline: none;
   margin-top: 5px;
+  font-family: var(--font-family-main);
 }
 .card-info-column select:focus {
   border-color: var(--accent-color);
