@@ -94,6 +94,11 @@
   color: var(--accent-color);
 }
 
+/* Гарантируем, что контейнер сезонов имеет правильный отступ */
+#seasons-container {
+  padding-bottom: 20px !important;
+}
+
 </style>
 
 <script>
