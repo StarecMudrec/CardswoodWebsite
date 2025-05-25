@@ -90,8 +90,30 @@
                 </div>
               </div>
               <div class="card-info-column">
-                <h3>Season:</h3>
-                <p>{{ seasonName }}</p>
+                <h3>
+                  Season:
+                  <span class="edit-icon" @click.stop="startEditing('season')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </span>
+                </h3>
+                <div v-if="!editing.season" @click="startEditing('season')">
+                  <p>{{ seasonName }}</p>
+                </div>
+                <select
+                  v-else
+                  v-model="editableCard.season_uuid"
+                  @change="saveField('season')"
+                  @blur="cancelEdit('season')"
+                  ref="seasonInput"
+                  class="edit-input"
+                >
+                  <option v-for="season in allSeasons" :key="season.uuid" :value="season.uuid">
+                    {{ season.name }}
+                  </option>
+                </select>
               </div>
             </div>
           </div>
@@ -134,16 +156,12 @@ export default {
     const error = ref(null)
     const imageError = ref(false)
     const cardNameRef = ref(null)
-    const isMobile = ref(false)
     const isUserAllowed = ref(false)
     const editing = ref({
       name: false,
       description: false,
       category: false
     })
-    const nameInput = ref(null)
-    const descriptionInput = ref(null)
-    const categoryInput = ref(null)
 
     const adjustFontSize = () => {
       nextTick(() => {
