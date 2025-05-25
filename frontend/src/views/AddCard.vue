@@ -13,53 +13,51 @@
       <p>You do not have permission to add cards.</p>
     </div>
 
-    <div v-if="isUserAllowed" class="add-card-container">
-      <div class="add-card-container">
-        <h1>Add New Card</h1>
-        <form @submit.prevent="submitForm" class="card-form">
-          <div class="form-group">
-            <label for="name">Card Name:</label>
-            <input type="text" id="name" v-model="card.name" required>
-          </div>
-          <div class="form-group">
-            <label for="description">Description:</label>
-            <textarea id="description" v-model="card.description" required></textarea>
-          </div>
-          <div class="form-group">
-            <label for="category">Category:</label>
-            <input type="text" id="category" v-model="card.category" required>
-          </div>
-          <div class="form-group">
-            <label for="season">Season:</label>
-            <select id="season" v-model="card.season" required>
-              <option disabled value="">Select a season</option>
-              <option v-for="seasonId in seasonIds" :key="seasonId" :value="seasonId">
-                Season {{ seasonId }}
-              </option>
-            </select>
-          </div>
-          <div class="form-group file-upload-group">
-            <label for="image" class="file-upload-label">
-              <span class="file-upload-text">
-                {{ card.image ? card.image.name : 'Choose card image...' }}
-              </span>
-              <span class="file-upload-button">Browse</span>
-              <input 
-                type="file" 
-                id="image" 
-                @change="handleFileUpload" 
-                accept="image/*" 
-                required
-                class="file-upload-input"
-              >
-            </label>
-          </div>
-          <button type="submit" class="submit-button">
-            <span class="submit-button-text">Add Card</span>
-          </button>
-        </form>
-        <router-link to="/" class="back-link">← Back to home</router-link>
-      </div>
+    <div v-if="isUserAllowed"  class="add-card-container">
+      <h1>Add New Card</h1>
+      <form @submit.prevent="submitForm" class="card-form">
+        <div class="form-group">
+          <label for="name">Card Name:</label>
+          <input type="text" id="name" v-model="card.name" required>
+        </div>
+        <div class="form-group">
+          <label for="description">Description:</label>
+          <textarea id="description" v-model="card.description" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="category">Category:</label>
+          <input type="text" id="category" v-model="card.category" required>
+        </div>
+        <div class="form-group">
+          <label for="season">Season:</label>
+          <select id="season" v-model="card.season" required>
+            <option disabled value="">Select a season</option>
+            <option v-for="seasonId in seasonIds" :key="seasonId" :value="seasonId">
+              Season {{ seasonId }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group file-upload-group">
+          <label for="image" class="file-upload-label">
+            <span class="file-upload-text">
+              {{ card.image ? card.image.name : 'Choose card image...' }}
+            </span>
+            <span class="file-upload-button">Browse</span>
+            <input 
+              type="file" 
+              id="image" 
+              @change="handleFileUpload" 
+              accept="image/*" 
+              required
+              class="file-upload-input"
+            >
+          </label>
+        </div>
+        <button type="submit" class="submit-button">
+          <span class="submit-button-text">Add Card</span>
+        </button>
+      </form>
+      <router-link to="/" class="back-link">← Back to home</router-link>
     </div>
   </div>
 </template>
