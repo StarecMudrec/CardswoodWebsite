@@ -410,8 +410,58 @@ def update_card(card_id):
     except Exception as e:
         db.session.rollback()
         logging.error(f"Error updating card: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Error updating card'}), 500
         
+@app.route("/api/cards/<card_uuid>/image", methods=["PUT"])
+def update_card_image(card_uuid):
+    is_auth, user_id = is_authenticated(request, session)
+    if not is_auth:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    # Check if the current user is allowed to update cards
+    current_user_username = session.get('telegram_username')
+    if not current_user_username or not AllowedUser.query.filter_by(username=current_user_username).first():
+        return jsonify({'error': 'You are not allowed to update card images'}), 403
+
+    card = Card.query.filter_by(uuid=card_uuid).first()
+    if not card:
+        return jsonify({'error': 'Card not found'}), 404
+
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image file provided'}), 400
+
+    img_file = request.files['image']
+
+    # Check if the file is an allowed image type
+    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
+    if '.' not in img_file.filename or img_file.filename.rsplit('.', 1)[1].lower() not in allowed_extensions:
+        return jsonify({'error': 'Unsupported file type'}), 400
+
+    # Generate a unique filename using the card UUID
+    img_filename = str(card.uuid) + os.path.splitext(img_file.filename)[1].lower()
+    img_path = os.path.join('card_imgs', img_filename)
+
+    try:
+        # Delete the old image file if it exists and is not the new one
+        if card.img and os.path.exists(os.path.join('card_imgs', card.img)) and card.img != img_filename:
+            os.remove(os.path.join('card_imgs', card.img))
+            logging.debug(f"Deleted old image: {card.img}")
+
+        # Save the new image file
+        img_file.save(img_path)
+        logging.debug(f"Saved new image: {img_filename}")
+
+        # Update the card's image field in the database
+        card.img = img_filename
+        db.session.commit()
+        logging.debug(f"Updated card {card.uuid} with new image: {img_filename}")
+
+        return jsonify({'message': 'Card image updated successfully', 'img': img_filename}), 200
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error updating card image: {e}")
+        return jsonify({'error': 'Error updating card image'}), 500
+
 @app.route("/api/season_info/<int:season_id>")
 def get_season_info(season_id):  
     season = Season.query.filter_by(id=season_id).first_or_404()

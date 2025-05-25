@@ -12,6 +12,7 @@
             :alt="card.name" 
             class="card-detail-image"
             @error="imageError = true"
+            @dblclick="handleImageDoubleClick"
           />
           <button v-if="isUserAllowed" class="replace-image-button">Replace Image</button>
           <div v-else class="image-placeholder">No image available</div>
@@ -129,6 +130,7 @@
         </div>
       </div>
     </div>
+  <input type="file" ref="fileInput" @change="handleFileChange" accept="image/*" style="display: none;">
   </div>
 </template>
 
@@ -144,6 +146,7 @@ export default {
     }
   },
   setup(props) {
+    const fileInput = ref(null)
     // Refs для полей ввода
     const nameInput = ref(null)
     const descriptionInput = ref(null)
@@ -285,6 +288,41 @@ export default {
       }
     }
 
+    const handleImageDoubleClick = () => {
+      if (isUserAllowed.value && fileInput.value) {
+        fileInput.value.click();
+      }
+    };
+
+    const handleFileChange = async (event) => {
+      const file = event.target.files[0];
+      if (!file || !isUserAllowed.value) {
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('image', file);
+
+      try {
+        const response = await fetch(`/api/cards/${card.value.id}/image`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          },
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to upload image');
+        }
+
+        // Optionally refresh the card data to show the new image
+        loadData();
+      } catch (err) {
+        console.error('Error uploading image:', err);
+      }
+    };
     const loadData = async () => {
       try {
         loading.value = true;
@@ -358,10 +396,16 @@ export default {
       descriptionInput,
       categoryInput,
       seasonInput,
+      fileInput,
+      handleImageDoubleClick,
+      handleFileChange,
       startEditing,
       saveField,
       toggleEdit,
-      cancelEdit
+      cancelEdit,
+      fileInput,
+      handleImageDoubleClick,
+      handleFileChange
     }
   }
 }
@@ -519,6 +563,7 @@ export default {
 
 .card-image-container {
   position: relative;
+  cursor: pointer; /* Add cursor pointer to indicate it's interactive */
 }
 
 .card-detail-image {
@@ -528,6 +573,7 @@ export default {
   border-radius: 17px;
   border: 10px solid var(--bg-color);
   background-color: #1e1e1e;
+  cursor: pointer; /* Add cursor pointer to indicate it's interactive */
 }
 
 .image-placeholder {
