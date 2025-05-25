@@ -81,7 +81,7 @@ export const checkUserPermission = async (username) => {
     const response = await fetch(`/api/check_permission?username=${username}`);
     if (!response.ok) throw new Error('Permission check failed');
     const data = await response.json();
-    return data.is_allowed;
+    return data;
   } catch (error) {
     console.error('Permission check error:', error);
     return false; // Assume not allowed on error
