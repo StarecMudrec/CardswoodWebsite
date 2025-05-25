@@ -18,7 +18,7 @@
     <div class="season-header">
       <h2 class="season-title">{{ season.name }}</h2>
       <button v-if="selectedCards.length > 0" @click="showDeleteConfirmation = true" class="delete-selected-button">
-        <i class="bi bi-trash"></i> ({{ selectedCards.length }})\
+        <i class="bi bi-trash"></i> ({{ selectedCards.length }})
       </button>
       <button v-if="isUserAllowed" @click="$router.push('/add-card')" class="add-card-button desktop-only">
         + Add New Card
@@ -419,7 +419,7 @@ export default {
   transition: transform 0.2s ease;
   min-height: 80px; /* Adjust height as needed */
   margin: 15px; /* Match card margin */
-  border: 2px dashed #555; /* Dashed border to indicate it\'s an interactive area */
+  border: 2px dashed #555; /* Dashed border to indicate it's an interactive area */
 }
 
 .add-card-as-card:hover {
