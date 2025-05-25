@@ -480,7 +480,6 @@ export default {
   display: block;
   width: 100%;
   padding: 10px;
-  margin-top: 10px;
   background-color: var(--bg-color);
   color: white;
   border: none;
@@ -488,6 +487,7 @@ export default {
   cursor: pointer;
   font-size: 20px;
   font-family: var(--font-family-main);
+  font-weight: 500;
   transition: background-color 0.3s ease;
 }
 
