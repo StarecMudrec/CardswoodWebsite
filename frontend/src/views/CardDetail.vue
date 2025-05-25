@@ -485,7 +485,7 @@ export default {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 26px;
   font-family: var(--font-family-main);
   font-weight: 500;
   transition: background-color 0.3s ease;
