@@ -83,7 +83,7 @@
   cursor: pointer;
   transition: transform 0.2s ease;
   min-height: 80px;
-  margin: 10px auto 80px;  !important; /* Измененные значения: 10px сверху, auto по бокам, 80px снизу */
+  margin: 10px auto 80px !important; /* Измененные значения: 10px сверху, auto по бокам, 80px снизу */
   border: 2px dashed #555;
   max-width: 300px;
   width: 90%;
@@ -92,9 +92,6 @@
   transform: translateY(-5px);
   border-color: var(--accent-color);
   color: var(--accent-color);
-}
-#seasons-container {
-  padding-bottom: 20px !important;
 }
 
 </style>
