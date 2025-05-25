@@ -13,6 +13,7 @@
         :season="season" 
         @card-clicked="navigateToCard"
         @add-card="navigateToAddCard"
+        @emitUserAllowedStatus="handleUserAllowedStatus"
       />
     </div>
     <div v-if="isUserAllowed" class="add-card-as-card mobile-only" @click="navigateToAddSeason">
@@ -91,8 +92,13 @@ export default {
       this.$router.push(`/card/${cardUuid}`)
     },
     handleUserAllowedStatus(isAllowed) {
+      console.log('Received user allowed status:', isAllowed);
       // Update the local data property when the event is received
       this.isUserAllowed = isAllowed;
+    },
+    navigateToAddSeason() {
+      // Add navigation logic for adding a new season
+      // This will likely involve routing to a new component/page
     }
   },
   mounted() {
