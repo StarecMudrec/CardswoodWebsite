@@ -304,7 +304,7 @@ export default {
       formData.append('image', file);
 
       try {
-        const response = await fetch(`/api/cards/${card.value.id}/image`, {
+        const response = await fetch(`/api/cards/${card.value.uuid}/image`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('authToken')}`
