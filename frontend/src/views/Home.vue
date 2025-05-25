@@ -165,6 +165,12 @@ export default {
         alert('Failed to create new season.'); // Provide user feedback
       }
     }
+    ,
+    // Add a new method to handle season deletion
+    handleSeasonDeleted(deletedSeasonUuid) {
+      // Call the mutation to remove the season from the VueX store
+      this.REMOVE_SEASON(deletedSeasonUuid);
+    }
   },
   mounted() {
     this.fetchSeasons()
