@@ -32,7 +32,7 @@
                   @keyup.enter="saveField('name')"
                   ref="nameInput"
                   class="edit-input"
- maxlength="100"
+                  maxlength="100"
                 >
                 <span v-if="isUserAllowed" class="edit-icon" @click="startEditing('name')">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -56,7 +56,7 @@
                 @blur="saveField('description')"
                 @keyup.enter="saveField('description')"
                 ref="descriptionInput"
- maxlength="1000"
+                maxlength="1000"
                 class="edit-textarea"
               ></textarea>
               <span v-if="isUserAllowed" class="edit-icon" @click="startEditing('description')">
@@ -93,6 +93,7 @@
                     @keyup.esc="cancelEdit('category')"
                     ref="categoryInput"
                     class="edit-input"
+                    maxlength="1000"
                   >
                 </div>
                 <div v-if="categoryError" class="error-message">{{ categoryError }}</div>
