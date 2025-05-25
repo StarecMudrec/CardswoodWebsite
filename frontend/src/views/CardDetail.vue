@@ -90,9 +90,25 @@
                 </div>
               </div>
               <div class="card-info-column">
-                <h3>Season:</h3>
-                <!-- Dropdown for selecting season -->
-                <select v-model="editableCard.season_id" @change="saveSeason">
+                <h3>
+                  Season:
+                  <span class="edit-icon" @click.stop="startEditing('season')"> <!-- Добавляем иконку для начала редактирования -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </span>
+                </h3>
+                <div v-if="!editing.season" @click="startEditing('season')"> <!-- Отображаем имя сезона при не-редактировании -->
+                  <p>{{ seasonName }}</p>
+                </div>
+                <select
+                  v-else
+                  v-model="editableCard.season_uuid"
+                  @change="saveField('season')" <!-- Сохраняем при изменении -->
+                  @blur="cancelEdit('season')" <!-- Отменяем редактирование при потере фокуса -->
+                  ref="seasonInput" <!-- Привязываем ref для фокусировки -->
+                  class="edit-input" <!-- Можно переиспользовать стили edit-input или добавить свои -->
                   <option v-for="season in allSeasons" :key="season.uuid" :value="season.uuid">
                     {{ season.name }}
                   </option>
@@ -204,45 +220,69 @@ export default {
 
 
     const startEditing = (field) => {
-      editing.value = { ...editing.value, [field]: true }
-      editableCard.value = { ...card.value }
-      
+      editing.value = { ...editing.value, [field]: true };
+      editableCard.value = { ...card.value };
+
       nextTick(() => {
         switch(field) {
           case 'name':
-            nameInput.value?.focus()
-            break
+            nameInput.value?.focus();
+            break;
           case 'description':
-            descriptionInput.value?.focus()
-            break
+            descriptionInput.value?.focus();
+            break;
           case 'category':
-            categoryInput.value?.focus()
-            break
+            categoryInput.value?.focus();
+            break;
+          case 'season': // Добавляем этот case
+            seasonInput.value?.focus(); // Убедитесь, что у вас есть ref для select элемента, например seasonInput = ref(null)
+            break;
         }
-      })
-    }
+      });
+    };
+
 
     const saveField = async (field) => {
       try {
-        const response = await fetch(`/api/cards/${card.value.id}`, {
+        // Адаптируем данные для отправки в зависимости от поля
+        const updatePayload = {};
+        if (field === 'season') {
+          updatePayload.season_uuid = editableCard.value.season_uuid;
+          // Обновляем season_id в card.value после успешного сохранения
+          // Вам нужно будет обновить seasonName тоже, возможно, перефечив информацию о сезоне
+        } else {
+          updatePayload[field] = editableCard.value[field];
+        }
+
+
+        const response = await fetch(`/api/cards/${card.value.uuid}`, { // Используем card.value.uuid для URL
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            [field]: editableCard.value[field]
-          })
-        })
+          body: JSON.stringify(updatePayload)
+        });
 
-        if (!response.ok) throw new Error('Failed to update card')
+        if (!response.ok) throw new Error('Failed to update card');
 
-        card.value = { ...card.value, [field]: editableCard.value[field] }
-        editing.value = { ...editing.value, [field]: false }
+        // Обновляем локальное состояние только после успешного сохранения
+        if (field === 'season') {
+           // После успешного обновления сезона, возможно, нужно перефечить данные карты
+           // или обновить локально card.value.season_uuid и seasonName
+           // Проще всего, возможно, просто вызвать loadData()
+           loadData();
+        } else {
+           card.value = { ...card.value, [field]: editableCard.value[field] };
+        }
+
+        editing.value = { ...editing.value, [field]: false };
       } catch (err) {
-        console.error('Error updating card:', err)
-        error.value = err.message || 'Failed to update card'
+        console.error('Error updating card:', err);
+        error.value = err.message || 'Failed to update card';
+        // Возможно, стоит откатить изменения в editableCard.value при ошибке
       }
     }
+
 
     // New method to save the selected season
     const saveSeason = async () => {
