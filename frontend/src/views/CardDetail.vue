@@ -309,7 +309,7 @@ export default {
       card,
       editableCard,
       seasonName,
-      allSeasons, // Expose allSeasons to the template
+      allSeasons,
       comments,
       loading,
       error,
@@ -318,7 +318,7 @@ export default {
       editing,
       startEditing,
       saveField,
-      saveSeason, // Expose saveSeason to the template
+      saveSeason,
       nameInput,
       descriptionInput,
       categoryInput,
@@ -587,7 +587,25 @@ export default {
   font-size: 14px;
   color: #aaa;
 }
-
+.card-info-column select {
+  font-size: 18px;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid var(--card-border-color);
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  cursor: pointer;
+  outline: none;
+  margin-top: 5px;
+}
+.card-info-column select:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+.card-info-column select option {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
 @media (max-width: 768px) {
   .card-detail {
     display: flex;
@@ -641,5 +659,5 @@ export default {
   .edit-input {
     width: 100%;
   }
-}\n\n/* Styles for the season select dropdown */\n.card-info-column select {\n  font-size: 18px;\n  padding: 8px;\n  border-radius: 4px;\n  border: 1px solid var(--card-border-color);\n  background-color: var(--card-bg);\n  color: var(--text-color);\n  cursor: pointer;\n  outline: none;\n  margin-top: 5px; /* Adjust spacing as needed */\n}\n\n.card-info-column select:focus {\n  border-color: var(--accent-color);\n  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);\n}\n\n.card-info-column select option {\n    background-color: var(--card-bg);\n    color: var(--text-color);\n}
+}
 </style>
