@@ -16,7 +16,7 @@
         @emitUserAllowedStatus="updateUserAllowedStatus"
       />
     </div>
-    <div v-if="isUserAllowed" class="add-card-as-card add-season-button" @click="navigateToAddSeason">
+    <div v-if="isUserAllowed" class="add-season-button" @click="navigateToAddSeason">
       + Add New Season
     </div>
   </div>
