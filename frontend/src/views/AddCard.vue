@@ -9,51 +9,57 @@
       </div>
     </div>
 
-    <div class="add-card-container">
-      <h1>Add New Card</h1>
-      <form @submit.prevent="submitForm" class="card-form">
-        <div class="form-group">
-          <label for="name">Card Name:</label>
-          <input type="text" id="name" v-model="card.name" required>
-        </div>
-        <div class="form-group">
-          <label for="description">Description:</label>
-          <textarea id="description" v-model="card.description" required></textarea>
-        </div>
-        <div class="form-group">
-          <label for="category">Category:</label>
-          <input type="text" id="category" v-model="card.category" required>
-        </div>
-        <div class="form-group">
-          <label for="season">Season:</label>
-          <select id="season" v-model="card.season" required>
-            <option disabled value="">Select a season</option>
-            <option v-for="seasonId in seasonIds" :key="seasonId" :value="seasonId">
-              Season {{ seasonId }}
-            </option>
-          </select>
-        </div>
-        <div class="form-group file-upload-group">
-          <label for="image" class="file-upload-label">
-            <span class="file-upload-text">
-              {{ card.image ? card.image.name : 'Choose card image...' }}
-            </span>
-            <span class="file-upload-button">Browse</span>
-            <input 
-              type="file" 
-              id="image" 
-              @change="handleFileUpload" 
-              accept="image/*" 
-              required
-              class="file-upload-input"
-            >
-          </label>
-        </div>
-        <button type="submit" class="submit-button">
-          <span class="submit-button-text">Add Card</span>
-        </button>
-      </form>
-      <router-link to="/" class="back-link">← Back to home</router-link>
+    <div v-if="!isUserAllowed" class="permission-denied-message">
+      <p>You do not have permission to add cards.</p>
+    </div>
+
+    <div v-if="isUserAllowed" class="add-card-container">
+      <div class="add-card-container">
+        <h1>Add New Card</h1>
+        <form @submit.prevent="submitForm" class="card-form">
+          <div class="form-group">
+            <label for="name">Card Name:</label>
+            <input type="text" id="name" v-model="card.name" required>
+          </div>
+          <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" v-model="card.description" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="category">Category:</label>
+            <input type="text" id="category" v-model="card.category" required>
+          </div>
+          <div class="form-group">
+            <label for="season">Season:</label>
+            <select id="season" v-model="card.season" required>
+              <option disabled value="">Select a season</option>
+              <option v-for="seasonId in seasonIds" :key="seasonId" :value="seasonId">
+                Season {{ seasonId }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group file-upload-group">
+            <label for="image" class="file-upload-label">
+              <span class="file-upload-text">
+                {{ card.image ? card.image.name : 'Choose card image...' }}
+              </span>
+              <span class="file-upload-button">Browse</span>
+              <input 
+                type="file" 
+                id="image" 
+                @change="handleFileUpload" 
+                accept="image/*" 
+                required
+                class="file-upload-input"
+              >
+            </label>
+          </div>
+          <button type="submit" class="submit-button">
+            <span class="submit-button-text">Add Card</span>
+          </button>
+        </form>
+        <router-link to="/" class="back-link">← Back to home</router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -74,7 +80,8 @@ export default {
       seasonIds: [], // Будем хранить только ID сезонов
       showErrorModal: false,
       errorMessage: ''
-    };
+      isUserAllowed: false, // Add this variable
+    }
   },
   created() {
     this.fetchSeasonIds();
@@ -141,6 +148,17 @@ export default {
       if (fileInput) {
         fileInput.value = '';
       }
+    },
+    // You'll need a method to check if the user is allowed.
+    // This could involve making an API call to your backend.
+    async checkUserPermission() {
+      try {
+        const response = await axios.get('/api/check_permission'); // Replace with your actual endpoint
+        this.isUserAllowed = response.data.isAllowed;
+      } catch (error) {
+        console.error('Error checking user permission:', error);
+        this.isUserAllowed = false; // Assume not allowed on error
+      }
     }
   },
   setup() {
@@ -153,6 +171,11 @@ export default {
     return {
       uuidv4
     };
+  }
+  ,
+  mounted() {
+    // Call the permission check when the component is mounted
+    this.checkUserPermission();
   }
 };
 </script>
@@ -183,6 +206,17 @@ export default {
   border-radius: 17px;
   border: 1px solid var(--card-bg);
   text-align: center;
+}
+.permission-denied-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--text-color);
+  font-size: 20px;
+  text-align: center;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 /* Стили для модального окна */

@@ -10,7 +10,7 @@ import requests  # Import the requests library
 from joserfc.errors import JoseError
 import logging
 from flask_sqlalchemy import SQLAlchemy  # Database integration
-from models import db, AuthToken, Card, Season, Comment
+from models import db, AuthToken, Card, Season, Comment, AllowedUser
 from config import Config
 
 app = Flask(__name__)
@@ -218,6 +218,13 @@ def add_card():
     if not is_auth:
         return jsonify({'error': 'Unauthorized'}), 401
 
+    # Check if the current user is allowed to add cards
+    current_user_username = session.get('telegram_username') # Assuming username is stored in session
+    if not current_user_username or not AllowedUser.query.filter_by(username=current_user_username).first():
+        return jsonify({'error': 'You are not allowed to add cards'}), 403
+
+
+
     uuid = request.form.get('uuid')
     category = request.form.get('category')
     name = request.form.get('name')
@@ -255,6 +262,12 @@ def delete_card(card_id):
     is_auth, user_id = is_authenticated(request, session)
     if not is_auth:
         return jsonify({'error': 'Unauthorized'}), 401
+
+    # Check if the current user is allowed to delete cards
+    current_user_username = session.get('telegram_username') # Assuming username is stored in session
+    if not current_user_username or not AllowedUser.query.filter_by(username=current_user_username).first():
+        return jsonify({'error': 'You are not allowed to delete cards'}), 403
+
 
     card = Card.query.filter_by(uuid=card_id).first()
 
