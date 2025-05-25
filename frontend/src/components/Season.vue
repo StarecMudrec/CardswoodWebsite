@@ -74,7 +74,7 @@ export default {
 
       // Fetch user info to get the Telegram username
       const userInfo = await fetchUserInfo();
-      const username = userInfo ? userInfo.telegram_username : null;
+      const username = userInfo ? userInfo.username : null;
 
       console.log(username);
       if (username) {
