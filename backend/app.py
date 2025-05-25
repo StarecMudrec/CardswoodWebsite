@@ -400,15 +400,17 @@ def update_card(card_id):
         if 'category' in data:
             card.category = data['category']
         if 'season_uuid' in data:
-            season_id = Season.query.filter_by(uuid=data['season_uuid']).first().id
-            card.season_id = season_id # Убедитесь, что эта строка выполняется
+            season = Season.query.filter_by(uuid=data['season_uuid']).first()
+            if not season:
+                return jsonify({'error': 'Season not found'}), 404
+            card.season_id = season.id
 
         db.session.commit()
         return jsonify({'message': 'Card updated successfully'}), 200
     except Exception as e:
         db.session.rollback()
         logging.error(f"Error updating card: {e}")
-        return jsonify({'error': 'Error updating card'}), 500
+        return jsonify({'error': str(e)}), 500
         
 @app.route("/api/season_info/<int:season_id>")
 def get_season_info(season_id):  
