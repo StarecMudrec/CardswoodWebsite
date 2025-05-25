@@ -109,7 +109,7 @@
                   @change="saveField('season')"
                   @blur="cancelEdit('season')"
                   ref="seasonInput"
-                  class="edit-input"
+                  class="edit-input-select"
                 >
                   <option v-for="season in allSeasons" :key="season.uuid" :value="season.uuid">
                     {{ season.name }}
@@ -438,7 +438,7 @@ export default {
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
 }
 
-.edit-input .select {
+.edit-input-select {
   font-size: 20px;
   font-family: inherit;
   color: var(--text-color);
