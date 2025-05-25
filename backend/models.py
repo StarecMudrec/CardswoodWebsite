@@ -12,7 +12,7 @@ class AllowedUser(db.Model):
 class AuthToken(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     token = db.Column(db.String(255), unique=True, nullable=False)
-    user_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Bigint, nullable=False)
 
     def __repr__(self):
         return f'<AuthToken token={self.token} user_id={self.user_id}>'
