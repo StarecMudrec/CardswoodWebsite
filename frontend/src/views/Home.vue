@@ -16,7 +16,7 @@
         @emitUserAllowedStatus="updateUserAllowedStatus"
       />
     </div>
-    <div v-if="isUserAllowed" class="add-season-button" @click="navigateToAddSeason">
+    <div v-if="isUserAllowed" class="add-new-season-btn" @click="navigateToAddSeason">
       + Add New Season
     </div>
   </div>
@@ -69,8 +69,8 @@
   color: #ff5555; /* Red color for errors */
 }
 
-/* Styles for the Add New Season button */
-.add-season-button {
+/* Удаляем все старые стили для этой кнопки и заменяем на: */
+.add-new-season-btn {
   background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -81,22 +81,23 @@
   font-size: 1.1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
   min-height: 80px;
-  margin: 10px auto 80px !important; /* Измененные значения: 10px сверху, auto по бокам, 80px снизу */
+  margin: 10px auto 80px;
   border: 2px dashed #555;
   max-width: 300px;
   width: 90%;
+  position: relative;
 }
-.add-season-button:hover {
+.add-new-season-btn:hover {
   transform: translateY(-5px);
   border-color: var(--accent-color);
   color: var(--accent-color);
 }
 
-/* Гарантируем, что контейнер сезонов имеет правильный отступ */
+/* Принудительно задаем отступ для контейнера */
 #seasons-container {
-  padding-bottom: 20px !important;
+  padding-bottom: 20px;
 }
 
 </style>
