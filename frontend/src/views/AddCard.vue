@@ -435,16 +435,16 @@ textarea {
   left: 0;
   width: 0;
   height: 1px;
-  background-color: var(--hover-color);
+  background-color: var(--text-color);
   transition: width 0.3s ease;
 }
 
 .back-link:hover {
-  color: var(--hover-color);
+  color: var(--text-color);
 }
 .back-link:hover::after {
   width: 100%;
-  color: var(--hover-color);
+  color: var(--text-color);
 }
 
 select {
