@@ -79,7 +79,7 @@ export default {
       },
       seasonIds: [], // Будем хранить только ID сезонов
       showErrorModal: false,
-      errorMessage: ''
+      errorMessage: '',
       isUserAllowed: false, // Add this variable
     }
   },
