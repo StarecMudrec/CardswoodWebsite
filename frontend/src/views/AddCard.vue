@@ -66,7 +66,7 @@
 
 <script>
 import axios from 'axios';
-
+import checkUserPermission from "@/api"
 export default {
   data() {
     return {
@@ -153,8 +153,8 @@ export default {
     // This could involve making an API call to your backend.
     async checkUserPermission() {
       try {
-        const response = await axios.get('/api/check_permission'); // Replace with your actual endpoint
-        this.isUserAllowed = response.data.isAllowed;
+        const permissionResponse = await checkUserPermission(username);
+        this.isUserAllowed = permissionResponse.is_allowed;
       } catch (error) {
         console.error('Error checking user permission:', error);
         this.isUserAllowed = false; // Assume not allowed on error
