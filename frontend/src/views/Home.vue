@@ -74,7 +74,7 @@
   background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: flex; /* Use flex to center content */
+  display: flex;
   justify-content: center;
   align-items: center;
   color: var(--text-color);
@@ -82,12 +82,11 @@
   font-weight: 500;
   cursor: pointer;
   transition: transform 0.2s ease;
-  min-height: 80px; /* Adjust height as needed */
-  margin: 20px auto; /* Center the button and provide vertical margin */
-  border: 2px dashed #555; /* Dashed border to indicate it's an interactive area */
-  max-width: 300px; /* Limit the width */
-  width: 90%; /* Make it responsive */
-  margin-bottom: 50px; /* Добавленный отступ снизу */
+  min-height: 80px;
+  margin: 10px auto 80px; /* Измененные значения: 10px сверху, auto по бокам, 80px снизу */
+  border: 2px dashed #555;
+  max-width: 300px;
+  width: 90%;
 }
 .add-season-button:hover {
   transform: translateY(-5px);
