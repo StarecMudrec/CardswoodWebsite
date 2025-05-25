@@ -156,7 +156,8 @@ export default {
         const newSeason = await createSeason();
         console.log('New season created:', newSeason);
         await this.fetchSeasons(); // Refresh the list of seasons
-        this.$router.push(`/season/${newSeason.uuid}`); // Navigate to the new season's page
+        // Removed automatic navigation after season creation
+        // this.$router.push(`/season/${newSeason.uuid}`); // Navigate to the new season's page
       } catch (error) {
         console.error('Error creating new season:', error);
         alert('Failed to create new season.'); // Provide user feedback
