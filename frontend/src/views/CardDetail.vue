@@ -30,7 +30,7 @@
                   ref="nameInput"
                   class="edit-input"
                 >
-                <span class="edit-icon" @click="startEditing('name')">
+                <span  v-if="isUserAllowed" class="edit-icon" @click="startEditing('name')">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -53,7 +53,7 @@
                 ref="descriptionInput"
                 class="edit-textarea"
               ></textarea>
-              <span class="edit-icon" @click="startEditing('description')">
+              <span  v-if="isUserAllowed" class="edit-icon" @click="startEditing('description')">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -69,7 +69,7 @@
               <div class="card-info-column">
                 <h3>
                   Category:
-                  <span class="edit-icon" @click.stop="toggleEdit('category')">
+                  <span  v-if="isUserAllowed" class="edit-icon" @click.stop="toggleEdit('category')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -92,7 +92,7 @@
               <div class="card-info-column">
                 <h3>
                   Season:
-                  <span class="edit-icon" @click.stop="startEditing('season')">
+                  <span  v-if="isUserAllowed" class="edit-icon" @click.stop="startEditing('season')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -137,7 +137,7 @@
 </template>
 
 <script>
-import { fetchCardInfo, fetchSeasonInfo, fetchComments, fetchSeasons } from '@/api' // Import fetchSeasons
+import { fetchCardInfo, fetchSeasonInfo, fetchComments, fetchSeasons, fetchUserInfo } from '@/api' // Import fetchSeasons
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 
 export default {
@@ -145,6 +145,32 @@ export default {
     uuid: {
       type: String,
       required: true
+    }
+  },
+  data() {
+    return {
+      isUserAllowed: false, // Initialize to false
+    }
+  },
+  async created() {
+    this.loading = true;
+    try {
+
+      // Fetch user info to get the Telegram username
+      const userInfo = await fetchUserInfo();
+      const username = userInfo ? userInfo.username : null;
+
+      if (username) {
+        const permissionResponse = await checkUserPermission(username);
+        this.isUserAllowed = permissionResponse.is_allowed;
+        this.$emit('emitUserAllowedStatus', this.isUserAllowed);
+      }
+
+    } catch (err) {
+      this.error = err;
+      console.error('Error loading cards:', err);
+    } finally {
+      this.loading = false;
     }
   },
   setup(props) {
