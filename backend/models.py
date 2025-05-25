@@ -40,7 +40,7 @@ class Card(db.Model):
 
 # Season Model
 class Season(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement)
     uuid = db.Column(db.String, nullable=False, unique=True)
     name = db.Column(db.String(100))
 
