@@ -30,7 +30,7 @@
                   ref="nameInput"
                   class="edit-input"
                 >
-                <span class="edit-icon" @click="startEditing('name')">
+                <span v-if="isUserAllowed" class="edit-icon" @click="startEditing('name')">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -53,7 +53,7 @@
                 ref="descriptionInput"
                 class="edit-textarea"
               ></textarea>
-              <span class="edit-icon" @click="startEditing('description')">
+              <span v-if="isUserAllowed" class="edit-icon" @click="startEditing('description')">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -69,7 +69,7 @@
               <div class="card-info-column">
                 <h3>
                   Category:
-                  <span class="edit-icon" @click.stop="toggleEdit('category')">
+                  <span v-if="isUserAllowed" class="edit-icon" @click.stop="toggleEdit('category')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -90,30 +90,8 @@
                 </div>
               </div>
               <div class="card-info-column">
-                <h3>
-                  Season:
-                  <span class="edit-icon" @click.stop="startEditing('season')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                  </span>
-                </h3>
-                <div v-if="!editing.season" @click="startEditing('season')">
-                  <p>{{ seasonName }}</p>
-                </div>
-                <select
-                  v-else
-                  v-model="editableCard.season_uuid"
-                  @change="saveField('season')"
-                  @blur="cancelEdit('season')"
-                  ref="seasonInput"
-                  class="edit-input"
-                >
-                  <option v-for="season in allSeasons" :key="season.uuid" :value="season.uuid">
-                    {{ season.name }}
-                  </option>
-                </select>
+                <h3>Season:</h3>
+                <p>{{ seasonName }}</p>
               </div>
             </div>
           </div>
@@ -137,7 +115,7 @@
 </template>
 
 <script>
-import { fetchCardInfo, fetchSeasonInfo, fetchComments, fetchSeasons } from '@/api' // Import fetchSeasons
+import { fetchCardInfo, fetchSeasonInfo, fetchComments, checkUserPermission, fetchUserInfo } from '@/api'
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 
 export default {
@@ -151,24 +129,21 @@ export default {
     const card = ref({})
     const editableCard = ref({})
     const seasonName = ref('')
-    const allSeasons = ref([]) // New reactive property for all seasons
     const comments = ref([])
     const loading = ref(true)
     const error = ref(null)
     const imageError = ref(false)
     const cardNameRef = ref(null)
     const isMobile = ref(false)
+    const isUserAllowed = ref(false)
     const editing = ref({
       name: false,
       description: false,
-      category: false,
-      season: false // Добавьте эту строку
+      category: false
     })
     const nameInput = ref(null)
     const descriptionInput = ref(null)
     const categoryInput = ref(null)
-    const seasonInput = ref(null); // Добавьте эту строку рядом с другими ref
-
 
     const adjustFontSize = () => {
       nextTick(() => {
@@ -223,102 +198,43 @@ export default {
 
 
     const startEditing = (field) => {
-      editing.value = { ...editing.value, [field]: true };
-      editableCard.value = { ...card.value };
-
+      editing.value = { ...editing.value, [field]: true }
+      editableCard.value = { ...card.value }
+      
       nextTick(() => {
         switch(field) {
           case 'name':
-            nameInput.value?.focus();
-            break;
+            nameInput.value?.focus()
+            break
           case 'description':
-            descriptionInput.value?.focus();
-            break;
+            descriptionInput.value?.focus()
+            break
           case 'category':
-            categoryInput.value?.focus();
-            break;
-          case 'season': // Добавляем этот case
-            seasonInput.value?.focus(); // Убедитесь, что у вас есть ref для select элемента, например seasonInput = ref(null)
-            break;
+            categoryInput.value?.focus()
+            break
         }
-      });
-    };
-
+      })
+    }
 
     const saveField = async (field) => {
       try {
-        const updatePayload = {};
-        if (field === 'season') {
-          updatePayload.season_uuid = editableCard.value.season_uuid;
-        } else {
-          updatePayload[field] = editableCard.value[field];
-        }
-
-        console.log('updatePayload before sending:', updatePayload); // <-- Добавьте это
-
-        // Используем card.value.uuid для URL, как и раньше
-        const response = await fetch(`/api/cards/${card.value.uuid}`, {
+        const response = await fetch(`/api/cards/${card.value.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(updatePayload)
-        });
+          body: JSON.stringify({
+            [field]: editableCard.value[field]
+          })
+        })
 
-        if (!response.ok) throw new Error('Failed to update card');
+        if (!response.ok) throw new Error('Failed to update card')
 
-        // Обновляем локальное состояние после успешного сохранения
-        if (field === 'season') {
-           // Обновляем card.value.season_uuid
-           card.value.season_uuid = editableCard.value.season_uuid;
-           // Находим имя сезона по новому season_uuid и обновляем seasonName
-           const selectedSeason = allSeasons.value.find(s => s.uuid === card.value.season_uuid);
-           if (selectedSeason) {
-             seasonName.value = selectedSeason.name;
-           }
-           // Возможно, стоит также обновить editableCard.value.season_uuid
-           // editableCard.value.season_uuid = card.value.season_uuid; // Это может быть излишне, если loadData() вызывается
-        } else {
-           card.value = { ...card.value, [field]: editableCard.value[field] };
-        }
-
-        // Важно: сбрасываем состояние редактирования только после успешного сохранения
-        editing.value = { ...editing.value, [field]: false };
-
+        card.value = { ...card.value, [field]: editableCard.value[field] }
+        editing.value = { ...editing.value, [field]: false }
       } catch (err) {
-        console.error('Error updating card:', err);
-        error.value = err.message || 'Failed to update card';
-        // При ошибке, возможно, стоит откатить изменения в editableCard.value[field]
-        // к card.value[field] и сбросить состояние редактирования
-        editableCard.value[field] = card.value[field]; // Откатываем изменение
-        editing.value = { ...editing.value, [field]: false }; // Сбрасываем редактирование
-      }
-    };
-
-
-
-    // New method to save the selected season
-    const saveSeason = async () => {
-      try {
-        // Ensure editableCard and its season_id are reactive and updated
-        if (editableCard.value && editableCard.value.season_id !== card.value.season_id) {
-           const response = await fetch(`/api/cards/${card.value.id}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              season_uuid: editableCard.value.season_id // Send the season_uuid
-            })
-          });
-
-          if (!response.ok) throw new Error('Failed to update card season');
-           // Update the local card state after successful update
-          card.value.season_id = editableCard.value.season_id;
-        }
-      } catch (err) {
-        console.error('Error updating card season:', err);
-        error.value = err.message || 'Failed to update card season';
+        console.error('Error updating card:', err)
+        error.value = err.message || 'Failed to update card'
       }
     }
 
@@ -331,13 +247,15 @@ export default {
         const season = await fetchSeasonInfo(card.value.season_id)
         seasonName.value = season.name
         
-        // Fetch all seasons
-        const seasonsData = await fetchSeasons();
-        allSeasons.value = seasonsData;
-        // DEBUG: Fetched all seasons here
-
         comments.value = await fetchComments(card.value.id)
-
+        
+        // Проверяем права пользователя
+        const userInfo = await fetchUserInfo()
+        const username = userInfo ? userInfo.username : null
+        if (username) {
+          const permissionResponse = await checkUserPermission(username)
+          isUserAllowed.value = permissionResponse.is_allowed
+        }
         
         setTimeout(adjustFontSize, 0)
       } catch (err) {
@@ -363,16 +281,15 @@ export default {
       card,
       editableCard,
       seasonName,
-      allSeasons,
       comments,
       loading,
       error,
       imageError,
       cardNameRef,
       editing,
+      isUserAllowed,
       startEditing,
       saveField,
-      saveSeason,
       nameInput,
       descriptionInput,
       categoryInput,
@@ -384,7 +301,7 @@ export default {
 </script>
 
 <style scoped>
-/* Добавляем стили для иконки редактирования */
+/* Существующие стили остаются без изменений */
 .edit-icon {
   margin-left: 10px;
   cursor: pointer;
@@ -641,26 +558,7 @@ export default {
   font-size: 14px;
   color: #aaa;
 }
-.card-info-column select {
-  font-size: 18px;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid var(--card-border-color);
-  background-color: var(--card-bg);
-  color: var(--text-color);
-  cursor: pointer;
-  outline: none;
-  margin-top: 5px;
-  font-family: var(--font-family-main);
-}
-.card-info-column select:focus {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
-}
-.card-info-column select option {
-  background-color: var(--card-bg);
-  color: var(--text-color);
-}
+
 @media (max-width: 768px) {
   .card-detail {
     display: flex;
