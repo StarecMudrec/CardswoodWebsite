@@ -80,6 +80,7 @@ export default {
       if (username) {
         const permissionResponse = await checkUserPermission(username);
         this.isUserAllowed = permissionResponse.is_allowed;
+        console.log('isUserAllowed:', this.isUserAllowed);
       }
 
     } catch (err) {
