@@ -161,11 +161,13 @@ export default {
       name: false,
       description: false,
       category: false,
-      //season: false // Добавьте эту строку
+      season: false // Добавьте эту строку
     })
     const nameInput = ref(null)
     const descriptionInput = ref(null)
     const categoryInput = ref(null)
+    const seasonInput = ref(null); // Добавьте эту строку рядом с другими ref
+
 
     const adjustFontSize = () => {
       nextTick(() => {
@@ -244,18 +246,15 @@ export default {
 
     const saveField = async (field) => {
       try {
-        // Адаптируем данные для отправки в зависимости от поля
         const updatePayload = {};
         if (field === 'season') {
-          updatePayload.season_uuid = editableCard.value.season_uuid;
-          // Обновляем season_id в card.value после успешного сохранения
-          // Вам нужно будет обновить seasonName тоже, возможно, перефечив информацию о сезоне
+          updatePayload.season_uuid = editableCard.value.season_uuid; // Исправлено на season_uuid
         } else {
           updatePayload[field] = editableCard.value[field];
         }
 
-
-        const response = await fetch(`/api/cards/${card.value.uuid}`, { // Используем card.value.uuid для URL
+        // Используем card.value.uuid для URL, как и раньше
+        const response = await fetch(`/api/cards/${card.value.uuid}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -265,23 +264,34 @@ export default {
 
         if (!response.ok) throw new Error('Failed to update card');
 
-        // Обновляем локальное состояние только после успешного сохранения
+        // Обновляем локальное состояние после успешного сохранения
         if (field === 'season') {
-           // После успешного обновления сезона, возможно, нужно перефечить данные карты
-           // или обновить локально card.value.season_uuid и seasonName
-           // Проще всего, возможно, просто вызвать loadData()
-           loadData();
+           // Обновляем card.value.season_uuid
+           card.value.season_uuid = editableCard.value.season_uuid;
+           // Находим имя сезона по новому season_uuid и обновляем seasonName
+           const selectedSeason = allSeasons.value.find(s => s.uuid === card.value.season_uuid);
+           if (selectedSeason) {
+             seasonName.value = selectedSeason.name;
+           }
+           // Возможно, стоит также обновить editableCard.value.season_uuid
+           // editableCard.value.season_uuid = card.value.season_uuid; // Это может быть излишне, если loadData() вызывается
         } else {
            card.value = { ...card.value, [field]: editableCard.value[field] };
         }
 
+        // Важно: сбрасываем состояние редактирования только после успешного сохранения
         editing.value = { ...editing.value, [field]: false };
+
       } catch (err) {
         console.error('Error updating card:', err);
         error.value = err.message || 'Failed to update card';
-        // Возможно, стоит откатить изменения в editableCard.value при ошибке
+        // При ошибке, возможно, стоит откатить изменения в editableCard.value[field]
+        // к card.value[field] и сбросить состояние редактирования
+        editableCard.value[field] = card.value[field]; // Откатываем изменение
+        editing.value = { ...editing.value, [field]: false }; // Сбрасываем редактирование
       }
-    }
+    };
+
 
 
     // New method to save the selected season
