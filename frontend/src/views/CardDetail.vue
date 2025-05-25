@@ -452,6 +452,16 @@ export default {
 }
 
 .edit-textarea {
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--accent-color);
+  border-radius: 4px;
+  padding: 10px;
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
 }
 
 .edit-input-select:focus {
