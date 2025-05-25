@@ -65,7 +65,7 @@ export default {
       loading: false,
       selectedCards: [],
       error: null,
-      showDeleteConfirmation: false
+      showDeleteConfirmation: false,
       isUserAllowed: false // Initialize to false
     }
   },
