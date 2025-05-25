@@ -148,7 +148,7 @@ def logout():
             return "Database error", 500
 
     session.clear() # Clear the user's session data
-    response = redirect(url_for("home"))
+    response = make_response(jsonify({'status': 'logged_out'}))
     response.delete_cookie("token")
     return response
 
