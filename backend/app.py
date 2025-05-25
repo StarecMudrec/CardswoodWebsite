@@ -230,6 +230,34 @@ def add_season():
     db.session.commit()
     return jsonify({'message': 'Season added successfully', 'uuid': new_season.uuid, 'name': new_season.name}), 201
 
+@app.route("/api/seasons/<season_uuid>", methods=["PUT"])
+def update_season(season_uuid):
+    is_auth, user_id = is_authenticated(request, session)
+    if not is_auth:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    # Check if the current user is allowed to update seasons
+    current_user_username = session.get('telegram_username') # Assuming username is stored in session
+    if not current_user_username or not AllowedUser.query.filter_by(username=current_user_username).first():
+        return jsonify({'error': 'You are not allowed to update seasons'}), 403
+
+    season = Season.query.filter_by(uuid=season_uuid).first()
+    if not season:
+        return jsonify({'error': 'Season not found'}), 404
+
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+
+    try:
+        if 'name' in data:
+            season.name = data['name']
+        db.session.commit()
+        return jsonify({'message': 'Season updated successfully', 'uuid': season.uuid, 'name': season.name}), 200
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error updating season: {e}")
+        return jsonify({'error': 'Error updating season'}), 500
 @app.route("/api/cards/<season_id>")
 def get_cards(season_id):  
     season = Season.query.filter_by(uuid=season_id).first_or_404()
