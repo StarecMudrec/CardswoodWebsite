@@ -148,9 +148,16 @@ export default {
     }
   },
   setup(props) {
+    // Refs для полей ввода
+    const nameInput = ref(null)
+    const descriptionInput = ref(null)
+    const categoryInput = ref(null)
+    const seasonInput = ref(null)
+
     const card = ref({})
     const editableCard = ref({})
     const seasonName = ref('')
+    const allSeasons = ref([])
     const comments = ref([])
     const loading = ref(true)
     const error = ref(null)
@@ -160,7 +167,8 @@ export default {
     const editing = ref({
       name: false,
       description: false,
-      category: false
+      category: false,
+      season: false
     })
 
     const adjustFontSize = () => {
@@ -265,14 +273,19 @@ export default {
         card.value = await fetchCardInfo(props.uuid)
         editableCard.value = { ...card.value }
         
-        // Загружаем данные сезона
-        const season = await fetchSeasonInfo(card.value.season_id)
-        seasonName.value = season.name
+        // Загружаем все сезоны для выбора
+        allSeasons.value = await fetchAllSeasons()
+        
+        // Загружаем данные текущего сезона
+        if (card.value.season_id) {
+          const season = await fetchSeasonInfo(card.value.season_id)
+          seasonName.value = season.name
+        }
         
         // Загружаем комментарии
         comments.value = await fetchComments(card.value.id)
         
-        // Проверяем права только если пользователь авторизован
+        // Проверяем права пользователя
         try {
           const userInfo = await fetchUserInfo()
           if (userInfo?.username) {
@@ -308,6 +321,7 @@ export default {
       card,
       editableCard,
       seasonName,
+      allSeasons,
       comments,
       loading,
       error,
@@ -315,11 +329,12 @@ export default {
       cardNameRef,
       editing,
       isUserAllowed,
-      startEditing,
-      saveField,
       nameInput,
       descriptionInput,
       categoryInput,
+      seasonInput,
+      startEditing,
+      saveField,
       toggleEdit,
       cancelEdit
     }
