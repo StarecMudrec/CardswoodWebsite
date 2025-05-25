@@ -99,7 +99,7 @@
                     </svg>
                   </span>
                 </h3>
-                <div v-if="!editing.season">
+                <div v-if="!editing.season && !isUserAllowed">
                   <p>{{ seasonName }}</p>
                 </div>
                 <select
