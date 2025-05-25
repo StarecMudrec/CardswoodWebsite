@@ -32,7 +32,6 @@
         @card-selected="handleCardSelected"
         @card-clicked="handleCardClicked"
         @delete-card="handleCardDeleted(card.id)"
-        v-if="isUserAllowed"
       />
       <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
         No cards in this season
