@@ -19,9 +19,9 @@ export default createStore({
       state.seasons = seasons
     },
     UPDATE_SEASON(state, updatedSeason) {
-      const index = state.seasons.findIndex(s => s.uuid === updatedSeason.uuid)
+      const index = state.seasons.findIndex(s => s.uuid === updatedSeason.uuid);
       if (index !== -1) {
-        state.seasons.splice(index, 1, updatedSeason)
+        state.seasons.splice(index, 1, updatedSeason);
       }
     },
     SET_LOADING(state, loading) {
@@ -99,18 +99,14 @@ export default createStore({
       }
     },
 
-    async updateSeason({ commit }, { uuid, name }) {
+    async updateSeason({ commit }, seasonData) {
       try {
-        commit('SET_LOADING', true)
-        const updatedSeason = await updateSeason(uuid, { name })
-        commit('UPDATE_SEASON', updatedSeason)
-        return updatedSeason
+        const updatedSeason = await updateSeason(seasonData.uuid, { name: seasonData.name });
+        commit('UPDATE_SEASON', updatedSeason);
+        return updatedSeason;
       } catch (error) {
-        commit('SET_ERROR', error)
-        console.error('Error updating season:', error)
-        throw error
-      } finally {
-        commit('SET_LOADING', false)
+        console.error('Error updating season:', error);
+        throw error;
       }
     },
 

@@ -55,10 +55,15 @@ export const fetchSeasonInfo = async (seasonId) => {
 
 // Update season info
 export const updateSeason = async (seasonUuid, updateData) => {
-  return apiRequest(`/seasons/${seasonUuid}`, {
+  const response = await fetch(`/api/seasons/${seasonUuid}`, {
     method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify(updateData)
   });
+  if (!response.ok) throw new Error('Failed to update season');
+  return response.json();
 };
 
 // Fetch comments for a card
