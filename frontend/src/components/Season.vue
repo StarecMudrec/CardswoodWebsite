@@ -250,6 +250,9 @@ export default {
   height: 24px;
   border-radius: 50%;
 }
+.delete-season-icon { 
+  color: red;
+}
 
 .edit-icon:hover {
   opacity: 1;
