@@ -93,7 +93,7 @@
                     @keyup.esc="cancelEdit('category')"
                     ref="categoryInput"
                     class="edit-input"
-                    maxlength="1000"
+                    maxlength="20"
                   >
                 </div>
                 <div v-if="categoryError" class="error-message">{{ categoryError }}</div>
