@@ -103,7 +103,7 @@
                   @change="saveField('season')"
                   @blur="cancelEdit('season')"
                   ref="seasonInput"
-                  class="season-select"
+                  class="edit-input-select"
                 >
                   <option v-for="season in allSeasons" :key="season.uuid" :value="season.uuid">
                     {{ season.name }}
@@ -434,15 +434,16 @@ export default {
 
 .edit-input-select {
   width: 50%;
-  padding: 10px 15px;
-  border: none; /* Example border color, adjust as needed */
-  border-radius: 5px;
-  background-color: var(--bg-color); /* Example background, adjust as needed */
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: transparent;
   color: white;
   font-size: 20px;
   text-align: center; 
   cursor: pointer;
   appearance: none; /* Remove default dropdown arrow */
+  margin-top: 8px;
   background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%2F%3E%3C%2Fsvg%3E'); /* Custom dropdown arrow */
   background-repeat: no-repeat;
   background-position: right 15px center;
@@ -465,47 +466,7 @@ export default {
 
 .edit-input-select:focus {
   outline: none;
-  border-color: #60a5fa; /* Example focus border color */
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.5); /* Example focus shadow */
-}
-/* Добавим новый класс для селекта */
-.season-select {
-  width: 100%;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  background-color: transparent;
-  color: white;
-  font-size: 20px;
-  text-align: center;
-  cursor: pointer;
-  appearance: none;
-  margin-top: 8px;
-}
-
-.season-select:focus {
-  outline: none;
   box-shadow: none;
-}
-
-/* Обновим стили для колонки с сезоном */
-.card-info-column:last-child {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Убедимся, что текст сезона и селект выровнены одинаково */
-.card-info-column p {
-  margin: 0;
-  padding: 12px 20px;
-}
-
-/* Обновим стили для категории, чтобы они совпадали */
-.category-container {
-  padding: 12px 20px;
-  margin-top: 8px;
-  width: 100%;
 }
 
 /* Остальные существующие стили без изменений */
