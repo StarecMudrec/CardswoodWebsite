@@ -79,6 +79,7 @@ export default {
       console.log(username);
       if (username) {
         const permissionResponse = await checkUserPermission(username);
+        console.log('permissionResponse:', permissionResponse);
         this.isUserAllowed = permissionResponse.is_allowed;
         console.log('isUserAllowed:', this.isUserAllowed);
       }
