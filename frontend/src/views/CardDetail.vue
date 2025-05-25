@@ -439,20 +439,20 @@ export default {
 }
 
 .edit-input-select {
-  font-size: 20px;
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #3b82f6; /* Example border color, adjust as needed */
+  border-radius: 5px;
+  background-color: #1f2937; /* Example background, adjust as needed */
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  appearance: none; /* Remove default dropdown arrow */
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%2F%3E%3C%2Fsvg%3E'); /* Custom dropdown arrow */
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 1em;
   font-family: inherit;
-  color: var(--text-color);
-  background: rgba(255, 255, 255, 0.1);
-  background-color: var(--bg-color);
-  border: none;
-  border-radius: 4px;
-  padding: 5px;
-  width: 80%;
-  text-align: inherit;
-  transition: inherit;
-  text-shadow: inherit;
-  letter-spacing: inherit;
-  margin-top: 8px;
 }
 
 .edit-textarea {
@@ -466,6 +466,12 @@ export default {
   width: 100%;
   min-height: 100px;
   resize: vertical;
+}
+
+.edit-input-select:focus {
+  outline: none;
+  border-color: #60a5fa; /* Example focus border color */
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.5); /* Example focus shadow */
 }
 
 /* Остальные существующие стили без изменений */
