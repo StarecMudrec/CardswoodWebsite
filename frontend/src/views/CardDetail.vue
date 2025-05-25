@@ -91,7 +91,7 @@
               </div>
               <div class="card-info-column">
                 <h3>
- Season:
+                  Season:
                 </h3>
                 <div v-if="!isUserAllowed">
                   <p>{{ seasonName }}</p>
@@ -438,7 +438,6 @@ export default {
   border: none;
   border-radius: 8px;
   background: transparent;
-  background-color: transparent;
   color: white;
   font-size: 20px;
   text-align: center; 
@@ -452,9 +451,9 @@ export default {
   font-family: inherit;
 }
 
-.edit-input-option { 
-  
-  background: transparent;
+.edit-input-select option { 
+  color: inherit;
+  background: var(--bg-color);
 }
 
 .edit-textarea {
