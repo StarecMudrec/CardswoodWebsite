@@ -88,8 +88,10 @@
   max-width: 300px; /* Limit the width */
   width: 90%; /* Make it responsive */
 }
-.add-season-button {
-  margin-bottom: 50px;
+.add-season-button:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
 }
 
 </style>
