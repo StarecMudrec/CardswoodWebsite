@@ -396,12 +396,12 @@ export default {
   left: 0;
   width: 0;
   height: 1px;
-  background-color: var(--hover-color);
+  background-color: var(--text-color);
   transition: width 0.3s ease;
 }
 
 .cancel-button:hover {
-  color: var(--hover-color);
+  color: var(--text-color);
 }
 
 .cancel-button:hover .button-text::after {
