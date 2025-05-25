@@ -13,10 +13,10 @@
         :season="season" 
         @card-clicked="navigateToCard"
         @add-card="navigateToAddCard"
-        @emitUserAllowedStatus="handleUserAllowedStatus"
+        @emitUserAllowedStatus="updateUserAllowedStatus"
       />
     </div>
-    <div v-if="isUserAllowed" class="add-card-as-card mobile-only" @click="navigateToAddSeason">
+    <div v-if="isUserAllowed" class="add-card-as-card add-season-button" @click="navigateToAddSeason">
       + Add New Season
     </div>
   </div>
@@ -68,6 +68,27 @@
   margin: 50px 0;
   color: #ff5555; /* Red color for errors */
 }
+
+/* Styles for the Add New Season button */
+.add-season-button {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex; /* Use flex to center content */
+  justify-content: center;
+  align-items: center;
+  color: var(--text-color);
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  min-height: 80px; /* Adjust height as needed */
+  margin: 20px auto; /* Center the button and provide vertical margin */
+  border: 2px dashed #555; /* Dashed border to indicate it's an interactive area */
+  max-width: 300px; /* Limit the width */
+  width: 90%; /* Make it responsive */
+}
+
 </style>
 
 <script>
@@ -89,13 +110,11 @@ export default {
   methods: {
     ...mapActions(['fetchSeasons']),
     navigateToCard(cardUuid) {
-      this.$router.push(`/card/${cardUuid}`)
+      this.$router.push(`/card/${cardUuid}`);
     },
-    handleUserAllowedStatus(isAllowed) {
+    updateUserAllowedStatus(isAllowed) {
       console.log('Received user allowed status:', isAllowed);
-      // Update the local data property when the event is received
       this.isUserAllowed = isAllowed;
-    },
     navigateToAddSeason() {
       // Add navigation logic for adding a new season
       // This will likely involve routing to a new component/page
