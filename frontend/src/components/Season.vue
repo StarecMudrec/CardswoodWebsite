@@ -1,8 +1,20 @@
 <template>
   <div class="season">
+    <!-- Модальное окно подтверждения удаления -->
+    <div v-if="showDeleteConfirmation" class="modal-overlay">
+      <div class="modal-content">
+        <h3 class="modal-title">Confirm Deletion</h3>
+        <p>Are you sure you want to delete {{ selectedCards.length }} selected cards?</p>
+        <div class="modal-buttons">
+          <button @click="confirmDelete" class="modal-button delete-button">Delete</button>
+          <button @click="cancelDelete" class="modal-button cancel-button">Cancel</button>
+        </div>
+      </div>
+    </div>
+
     <div class="season-header">
       <h2 class="season-title">{{ season.name }}</h2>
-      <button v-if="selectedCards.length > 0" @click="deleteSelectedCards" class="delete-selected-button">
+      <button v-if="selectedCards.length > 0" @click="showDeleteConfirmation = true" class="delete-selected-button">
         <i class="bi bi-trash"></i> ({{ selectedCards.length }})
       </button>
       <button @click="$router.push('/add-card')" class="add-card-button desktop-only">
@@ -47,7 +59,8 @@ export default {
       cards: [],
       loading: false,
       selectedCards: [],
-      error: null
+      error: null,
+      showDeleteConfirmation: false
     }
   },
   async created() {
@@ -99,19 +112,24 @@ export default {
       }
     },
     async deleteSelectedCards() {
-      if (confirm(`Are you sure you want to delete ${this.selectedCards.length} selected cards?`)) {
-        try {
-          this.loading = true;
-          await Promise.all(this.selectedCards.map(cardId => deleteCard(cardId)));
-          this.selectedCards = []; // Clear selected cards
-          this.cards = await fetchCardsForSeason(this.season.uuid); // Refetch cards
-        } catch (err) {
-          this.error = err;
-          console.error('Error deleting selected cards:', err);
-        } finally {
-          this.loading = false;
-        }
+      try {
+        this.loading = true;
+        await Promise.all(this.selectedCards.map(cardId => deleteCard(cardId)));
+        this.selectedCards = []; // Clear selected cards
+        this.cards = await fetchCardsForSeason(this.season.uuid); // Refetch cards
+      } catch (err) {
+        this.error = err;
+        console.error('Error deleting selected cards:', err);
+      } finally {
+        this.loading = false;
       }
+    },
+    confirmDelete() {
+      this.showDeleteConfirmation = false;
+      this.deleteSelectedCards();
+    },
+    cancelDelete() {
+      this.showDeleteConfirmation = false;
     }
 
   }
@@ -119,6 +137,76 @@ export default {
 </script>
 
 <style scoped>
+/* Добавляем стили для модального окна подтверждения удаления */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--card-bg);
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  border: 1px solid var(--card-bg);
+}
+
+.modal-title {
+  color: var(--text-color);
+  font-weight: 500;
+  margin-bottom: 15px;
+  font-size: 28px;
+}
+
+.modal-content p {
+  color: white;
+  margin-bottom: 20px;
+  font-size: 22px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.modal-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-button {
+  background-color: #ff4444;
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #cc0000;
+}
+
+.cancel-button {
+  background-color: #666;
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #444;
+}
 .season {
   background-color: var(--card-bg);
   border-radius: 8px;
