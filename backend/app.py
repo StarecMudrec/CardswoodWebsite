@@ -227,7 +227,7 @@ def add_season():
     new_season = Season(uuid=new_season_uuid, name=new_season_uuid)
     db.session.add(new_season)
     db.session.commit()
-    return jsonify({'message': 'Season added successfully', 'uuid': new_season.uuid, 'name': new_season.name}), 201
+    return jsonify({'message': 'Season added successfully', 'uuid': new_season.id, 'name': new_season.name}), 201
 
 @app.route("/api/cards/<season_id>")
 def get_cards(season_id):  
