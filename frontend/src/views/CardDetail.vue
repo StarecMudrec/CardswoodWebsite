@@ -249,9 +249,13 @@ export default {
       try {
         const updatePayload = {};
         if (field === 'season') {
-          updatePayload.season_uuid = editableCard.value.season_uuid; // Исправлено на season_uuid
+          card.value.season_uuid = editableCard.value.season_uuid;
+          const selectedSeason = allSeasons.value.find(s => s.uuid === card.value.season_uuid);
+          if (selectedSeason) {
+            seasonName.value = selectedSeason.name;
+          }
         } else {
-          updatePayload[field] = editableCard.value[field];
+           card.value = { ...card.value, [field]: editableCard.value[field] };
         }
 
         // Используем card.value.uuid для URL, как и раньше
