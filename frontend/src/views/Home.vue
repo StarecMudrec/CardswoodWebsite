@@ -83,10 +83,13 @@
   cursor: pointer;
   transition: transform 0.2s ease;
   min-height: 80px; /* Adjust height as needed */
-  margin: 20px auto; /* Center the button and provide vertical margin */
+  margin: -40px auto; /* Center the button and provide vertical margin */
   border: 2px dashed #555; /* Dashed border to indicate it's an interactive area */
   max-width: 300px; /* Limit the width */
   width: 90%; /* Make it responsive */
+}
+.add-season-button {
+  margin-bottom: 50px;
 }
 
 </style>
