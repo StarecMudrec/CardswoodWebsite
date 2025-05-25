@@ -64,7 +64,7 @@ export const checkAuth = async () => {
     console.error('Auth check error:', error)
     return { isAuthenticated: false, userId: null }
   }
-}
+} 
 
 // Delete a card
 export const deleteCard = async (cardId) => {
@@ -92,5 +92,14 @@ export const checkUserPermission = async (username) => {
 export const fetchUserInfo = async () => {
   const response = await fetch('/api/user');
   if (!response.ok) throw new Error('Failed to fetch user info');
+  return response.json();
+};
+
+// Create a new season
+export const createSeason = async () => {
+  const response = await fetch('/api/seasons', {
+    method: 'POST'
+  });
+  if (!response.ok) throw new Error('Failed to create season');
   return response.json();
 };

@@ -205,6 +205,30 @@ def get_seasons():
     # print(season_names)
     return jsonify(season_ids), 200
 
+@app.route("/api/seasons", methods=["POST"])
+def add_season():
+    is_auth, user_id = is_authenticated(request, session)
+    if not is_auth:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    # Check if the current user is allowed to add seasons (same logic as adding cards)
+    current_user_username = session.get('telegram_username') # Assuming username is stored in session
+    logging.debug(f"Attempting to add season. User: {current_user_username}")
+    allowed_user = AllowedUser.query.filter_by(username=current_user_username).first()
+    logging.debug(f"AllowedUser query result: {allowed_user}")
+
+    if not current_user_username or not allowed_user:
+        return jsonify({'error': 'You are not allowed to add seasons'}), 403
+
+    # Generate a UUID for the new season
+    new_season_uuid = str(uuid.uuid4())
+
+    # Create a new Season entry with the UUID as both id and name
+    new_season = Season(uuid=new_season_uuid, name=new_season_uuid) # Using UUID for both for simplicity as requested
+    db.session.add(new_season)
+    db.session.commit()
+    return jsonify({'message': 'Season added successfully', 'uuid': new_season.uuid, 'name': new_season.name}), 201
+
 @app.route("/api/cards/<season_id>")
 def get_cards(season_id):  
     season = Season.query.filter_by(uuid=season_id).first_or_404()

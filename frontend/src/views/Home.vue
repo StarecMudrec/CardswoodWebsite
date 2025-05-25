@@ -11,7 +11,7 @@
         v-for="season in seasons" 
         :key="season.uuid" 
         :season="season" 
-        @card-clicked="navigateToCard"
+        @card-clicked="navigateToCard" deprecated
         @add-card="navigateToAddCard"
         @emitUserAllowedStatus="updateUserAllowedStatus"
       />
@@ -147,11 +147,20 @@ export default {
     },
     navigateToAddCard() {
       // Реализуйте навигацию к странице добавления карточки
-      this.$router.push('/add-card');
+      // this.$router.push('/add-card'); // This method seems unused based on template. Leaving as comment.
     },
-    navigateToAddSeason() {
-      // Add navigation logic for adding a new season
-      // This will likely involve routing to a new component/page
+    async navigateToAddSeason() {
+      try {
+        // Assuming createSeason is imported from your api file
+        const { createSeason } = await import('@/api'); // Import dynamically if not already imported
+        const newSeason = await createSeason();
+        console.log('New season created:', newSeason);
+        await this.fetchSeasons(); // Refresh the list of seasons
+        this.$router.push(`/season/${newSeason.uuid}`); // Navigate to the new season's page
+      } catch (error) {
+        console.error('Error creating new season:', error);
+        alert('Failed to create new season.'); // Provide user feedback
+      }
     }
   },
   mounted() {
