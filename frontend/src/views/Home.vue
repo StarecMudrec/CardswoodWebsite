@@ -16,8 +16,10 @@
         @emitUserAllowedStatus="updateUserAllowedStatus"
       />
     </div>
-    <div v-if="isUserAllowed" class="add-new-season-btn" @click="navigateToAddSeason">
-      + Add New Season
+    <div v-if="isUserAllowed" class="add-season-footer">
+      <div class="add-new-season-btn" @click="navigateToAddSeason">
+        + Add New Season
+      </div>
     </div>
   </div>
 
@@ -69,17 +71,30 @@
   color: #ff5555; /* Red color for errors */
 }
 
-/* Добавляем в секцию <style scoped> */
+page-container {
+  position: relative;
+  min-height: 100vh;
+}
 
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 400px); /* Учитываем высоту хедера */
+}
+
+#seasons-container {
+  flex: 1; /* Занимает все доступное пространство */
+}
+
+.add-season-footer {
+  padding: 20px 0 50px;
+  text-align: center;
+}
 .add-new-season-btn {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
   background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
   color: var(--text-color);
@@ -88,18 +103,16 @@
   cursor: pointer;
   transition: all 0.3s ease;
   min-height: 60px;
-  padding: 0 20px;
+  padding: 0 30px;
   border: 2px dashed #555;
-  max-width: 300px;
-  width: auto;
-  z-index: 100;
+  margin: 0 auto;
 }
+
 .add-new-season-btn:hover {
-  transform: translateX(-50%) translateY(-5px);
+  transform: translateY(-5px);
   border-color: var(--accent-color);
   color: var(--accent-color);
 }
-
 /* Добавляем отступ для основного контента */
 #seasons-container {
   padding-bottom: 100px; /* Чтобы контент не перекрывался кнопкой */
