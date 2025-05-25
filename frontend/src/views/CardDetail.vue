@@ -137,7 +137,7 @@
 </template>
 
 <script>
-import { fetchCardInfo, fetchSeasonInfo, fetchComments, checkUserPermission, fetchUserInfo, fetchAllSeasons } from '@/api'
+import { fetchCardInfo, fetchSeasonInfo, fetchComments, checkUserPermission, fetchUserInfo, fetchSeasons } from '@/api'
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 
 export default {
@@ -274,7 +274,7 @@ export default {
         editableCard.value = { ...card.value }
         
         // Загружаем все сезоны для выбора
-        allSeasons.value = await fetchAllSeasons()
+        allSeasons.value = await fetchSeasons()
         
         // Загружаем данные текущего сезона
         if (card.value.season_id) {
