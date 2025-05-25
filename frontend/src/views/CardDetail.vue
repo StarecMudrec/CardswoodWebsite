@@ -91,7 +91,12 @@
               </div>
               <div class="card-info-column">
                 <h3>Season:</h3>
-                <p>{{ seasonName }}</p>
+                <!-- Dropdown for selecting season -->
+                <select v-model="editableCard.season_id" @change="saveSeason">
+                  <option v-for="season in allSeasons" :key="season.uuid" :value="season.uuid">
+                    {{ season.name }}
+                  </option>
+                </select>
               </div>
             </div>
           </div>
@@ -115,7 +120,7 @@
 </template>
 
 <script>
-import { fetchCardInfo, fetchSeasonInfo, fetchComments } from '@/api'
+import { fetchCardInfo, fetchSeasonInfo, fetchComments, fetchSeasons } from '@/api' // Import fetchSeasons
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 
 export default {
@@ -129,6 +134,7 @@ export default {
     const card = ref({})
     const editableCard = ref({})
     const seasonName = ref('')
+    const allSeasons = ref([]) // New reactive property for all seasons
     const comments = ref([])
     const loading = ref(true)
     const error = ref(null)
@@ -237,6 +243,31 @@ export default {
       }
     }
 
+    // New method to save the selected season
+    const saveSeason = async () => {
+      try {
+        // Ensure editableCard and its season_id are reactive and updated
+        if (editableCard.value && editableCard.value.season_id !== card.value.season_id) {
+           const response = await fetch(`/api/cards/${card.value.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              season_uuid: editableCard.value.season_id // Send the season_uuid
+            })
+          });
+
+          if (!response.ok) throw new Error('Failed to update card season');
+           // Update the local card state after successful update
+          card.value.season_id = editableCard.value.season_id;
+        }
+      } catch (err) {
+        console.error('Error updating card season:', err);
+        error.value = err.message || 'Failed to update card season';
+      }
+    }
+
     const loadData = async () => {
       try {
         loading.value = true
@@ -246,7 +277,13 @@ export default {
         const season = await fetchSeasonInfo(card.value.season_id)
         seasonName.value = season.name
         
+        // Fetch all seasons
+        const seasonsData = await fetchSeasons();
+        allSeasons.value = seasonsData;
+        // DEBUG: Fetched all seasons here
+
         comments.value = await fetchComments(card.value.id)
+
         
         setTimeout(adjustFontSize, 0)
       } catch (err) {
@@ -272,6 +309,7 @@ export default {
       card,
       editableCard,
       seasonName,
+      allSeasons, // Expose allSeasons to the template
       comments,
       loading,
       error,
@@ -280,6 +318,7 @@ export default {
       editing,
       startEditing,
       saveField,
+      saveSeason, // Expose saveSeason to the template
       nameInput,
       descriptionInput,
       categoryInput,
@@ -602,5 +641,5 @@ export default {
   .edit-input {
     width: 100%;
   }
-}
+}\n\n/* Styles for the season select dropdown */\n.card-info-column select {\n  font-size: 18px;\n  padding: 8px;\n  border-radius: 4px;\n  border: 1px solid var(--card-border-color);\n  background-color: var(--card-bg);\n  color: var(--text-color);\n  cursor: pointer;\n  outline: none;\n  margin-top: 5px; /* Adjust spacing as needed */\n}\n\n.card-info-column select:focus {\n  border-color: var(--accent-color);\n  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);\n}\n\n.card-info-column select option {\n    background-color: var(--card-bg);\n    color: var(--text-color);\n}
 </style>
