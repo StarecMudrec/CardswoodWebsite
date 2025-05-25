@@ -1,8 +1,12 @@
 <template>
   <div
     class="card"
-    :class="{ 'selected': isSelected }"
-    v-if="card"@click="handleCardClick"
+    :class="{ 
+      'selected': isSelected,
+      'selected-animation': isSelected && !isMobile
+    }"
+    v-if="card"
+    @click="handleCardClick"
   >
     <div class="card-inner-content">
       <div class="image-wrapper">
@@ -46,9 +50,20 @@ export default {
   data() {
     return {
       isSelected: false,
- };
+      isMobile: false
+    };
+  },
+  mounted() {
+    this.checkMobile();
+    window.addEventListener('resize', this.checkMobile);
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.checkMobile);
   },
   methods: {
+    checkMobile() {
+      this.isMobile = window.innerWidth <= 768;
+    },
     handleImageError(e) {
       e.target.src = '/placeholder.jpg';
     },
@@ -92,6 +107,28 @@ export default {
 
 .card:hover {
   transform: translateY(-5px);
+}
+
+.card.selected-animation {
+  animation: float-shake 2s ease-in-out infinite;
+  transform: translateY(-15px);
+  z-index: 10;
+}
+
+/* Добавляем новые стили для анимации */
+@keyframes float-shake {
+  0%, 100% {
+    transform: translateY(-15px) rotate(-1deg);
+  }
+  25% {
+    transform: translateY(-18px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-18px) rotate(-1deg);
+  }
 }
 
 /* Style for the selection checkbox */
@@ -204,7 +241,10 @@ export default {
       display: block; /* Ensure checkbox is visible on mobile */
     }
   }
-
+  .card.selected-animation {
+    animation: none;
+    transform: none;
+  }
   .image-wrapper {
     height: calc(var(--card-width) * 1.4);
   }
