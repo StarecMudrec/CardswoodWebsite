@@ -107,6 +107,7 @@
                   v-model="editableCard.season_uuid"
                   @change="saveField('season')"
                   @blur="cancelEdit('season')"
+                  ref="seasonInput"
                   class="edit-input"
                 >
                   <option v-for="season in allSeasons" :key="season.uuid" :value="season.uuid">
