@@ -230,7 +230,7 @@ export default {
   border: none;
   color: var(--text-color);
   cursor: pointer;
-  font-size: 22;
+  font-size: 22px;
   font-weight: 500;
   padding: 5px 0;
   position: relative;
