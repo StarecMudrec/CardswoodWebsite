@@ -134,16 +134,12 @@ export default {
     const error = ref(null)
     const imageError = ref(false)
     const cardNameRef = ref(null)
-    const isMobile = ref(false)
     const isUserAllowed = ref(false)
     const editing = ref({
       name: false,
       description: false,
       category: false
     })
-    const nameInput = ref(null)
-    const descriptionInput = ref(null)
-    const categoryInput = ref(null)
 
     const adjustFontSize = () => {
       nextTick(() => {
@@ -241,20 +237,29 @@ export default {
     const loadData = async () => {
       try {
         loading.value = true
+        error.value = null
+        
+        // Загружаем данные карточки
         card.value = await fetchCardInfo(props.uuid)
         editableCard.value = { ...card.value }
         
+        // Загружаем данные сезона
         const season = await fetchSeasonInfo(card.value.season_id)
         seasonName.value = season.name
         
+        // Загружаем комментарии
         comments.value = await fetchComments(card.value.id)
         
-        // Проверяем права пользователя
-        const userInfo = await fetchUserInfo()
-        const username = userInfo ? userInfo.username : null
-        if (username) {
-          const permissionResponse = await checkUserPermission(username)
-          isUserAllowed.value = permissionResponse.is_allowed
+        // Проверяем права только если пользователь авторизован
+        try {
+          const userInfo = await fetchUserInfo()
+          if (userInfo?.username) {
+            const permissionResponse = await checkUserPermission(userInfo.username)
+            isUserAllowed.value = permissionResponse.is_allowed
+          }
+        } catch (authError) {
+          console.log('User not authenticated, editing disabled')
+          isUserAllowed.value = false
         }
         
         setTimeout(adjustFontSize, 0)
