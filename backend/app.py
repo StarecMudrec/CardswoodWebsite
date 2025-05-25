@@ -147,6 +147,7 @@ def logout():
             logging.exception(f"Database error deleting token: {e}")
             return "Database error", 500
 
+    session.clear() # Clear the user's session data
     response = redirect(url_for("home"))
     response.delete_cookie("token")
     return response
