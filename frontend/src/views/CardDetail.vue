@@ -14,7 +14,7 @@
             @error="imageError = true"
             @dblclick="handleImageDoubleClick"
           />
-          <button v-if="isUserAllowed" class="replace-image-button">Replace Image</button>
+          <!-- <button v-if="isUserAllowed" class="replace-image-button">Replace Image</button> -->
           <div v-else class="image-placeholder">No image available</div>
         </div>
         
