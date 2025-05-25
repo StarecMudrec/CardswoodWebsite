@@ -115,6 +115,7 @@ export default {
     updateUserAllowedStatus(isAllowed) {
       console.log('Received user allowed status:', isAllowed);
       this.isUserAllowed = isAllowed;
+    },
     navigateToAddSeason() {
       // Add navigation logic for adding a new season
       // This will likely involve routing to a new component/page
