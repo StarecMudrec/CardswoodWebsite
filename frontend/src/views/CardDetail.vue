@@ -134,12 +134,16 @@ export default {
     const error = ref(null)
     const imageError = ref(false)
     const cardNameRef = ref(null)
+    const isMobile = ref(false)
     const isUserAllowed = ref(false)
     const editing = ref({
       name: false,
       description: false,
       category: false
     })
+    const nameInput = ref(null)
+    const descriptionInput = ref(null)
+    const categoryInput = ref(null)
 
     const adjustFontSize = () => {
       nextTick(() => {
