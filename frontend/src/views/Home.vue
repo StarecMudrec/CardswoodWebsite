@@ -7,36 +7,118 @@
       <div v-if="loading" class="loading">Loading cards...</div>
       <div v-else-if="error" class="error-message">Error loading data: {{ error.message || error }}. Please try again later.</div>
       <div v-else-if="seasons.length === 0" class="loading">No seasons found</div>
-      <div v-for="season in seasons" :key="season.uuid" class="season-wrapper">
-        <div class="season-header">
-          <h2 class="season-title">
-            <span v-if="!editingSeason[season.uuid]">{{ season.name }}</span>
-            <input
-              v-else
-              v-model="editableSeasonName"
-              @blur="saveSeasonName(season)"
-              @keyup.enter="saveSeasonName(season)"
-              @keyup.esc="cancelEditSeason(season)"
-              ref="seasonNameInput"
-              class="edit-input"
-            >
-            <span 
-              v-if="isUserAllowed" 
-              class="edit-icon" 
-              @click="startEditSeason(season)"
-            >
-              ✏️
-            </span>
-          </h2>
-        </div>
-        <Season 
-          :season="season" 
-          @card-clicked="navigateToCard"
-        />
+      <Season 
+        v-for="season in seasons" 
+        :key="season.uuid" 
+        :season="season" 
+        @card-clicked="navigateToCard" deprecated
+        @add-card="navigateToAddCard"
+        @emitUserAllowedStatus="updateUserAllowedStatus"
+      />
+    </div>
+    <div v-if="isUserAllowed" class="add-season-footer">
+      <div class="add-new-season-btn" @click="navigateToAddSeason">
+        + Add New Season
       </div>
     </div>
   </div>
+
 </template>
+
+<style scoped>
+.background-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 400px; /* Adjust height as needed */
+  background-image: url('/background.jpg');
+  background-size: cover;
+  background-position: center 57%; /* Position the vertical center 80% down from the top, center horizontally */
+  z-index: 1; /* Ensure it's behind the content */
+}
+
+.background-logo {
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  max-width: 250px; /* Adjust size as needed */
+  max-height: 250px; /* Adjust size as needed */
+  z-index: 1; /* Ensure it's behind the content */
+}
+
+.separator-line {
+  position: relative;
+  margin-top: 370px; /* Adjust to be below the background image */
+  height: 2px;
+  background-color: white;
+  border: none;
+  z-index: 2; /* Ensure it's above the background */
+  width: 75%;
+}
+
+#seasons-container {
+  position: relative; /* Essential for z-index to work correctly relative to the background */
+  margin-top: 30px; /* Push content down by the height of the background */
+  z-index: 2; /* Ensure content is above the background */
+  /* Add other styles for your seasons container here */
+  padding-bottom: 50px;
+}
+.error-message {
+  text-align: center;
+  margin: 50px 0;
+  color: #ff5555; /* Red color for errors */
+}
+
+page-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 400px); /* Учитываем высоту хедера */
+}
+
+#seasons-container {
+  flex: 1; /* Занимает все доступное пространство */
+}
+
+.add-season-footer {
+  padding: 20px 0 50px;
+  text-align: center;
+}
+.add-new-season-btn {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-color);
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 60px;
+  padding: 0 30px;
+  border: 2px dashed #555;
+  margin: 0 auto;
+}
+
+.add-new-season-btn:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+/* Добавляем отступ для основного контента */
+#seasons-container {
+  padding-bottom: 0px; /* Чтобы контент не перекрывался кнопкой */
+}
+
+</style>
 
 <script>
 import Season from '@/components/Season.vue'
@@ -46,144 +128,44 @@ export default {
   components: {
     Season
   },
-  data() {
-    return {
-      isUserAllowed: false,
-      editingSeason: {},
-      editableSeasonName: '',
-      currentEditingSeason: null
-    };
-  },
   computed: {
     ...mapState(['seasons', 'loading', 'error'])
   },
+  data() {
+    return {
+      isUserAllowed: false
+    };
+  },
   methods: {
-    ...mapActions(['fetchSeasons', 'updateSeason']),
-    
-    startEditSeason(season) {
-      this.editingSeason = { [season.uuid]: true };
-      this.editableSeasonName = season.name;
-      this.currentEditingSeason = season;
-      
-      this.$nextTick(() => {
-        this.$refs.seasonNameInput?.focus();
-      });
-    },
-    
-    async saveSeasonName(season) {
-      try {
-        if (this.editableSeasonName.trim() === '') {
-          this.cancelEditSeason(season);
-          return;
-        }
-        
-        await this.updateSeason({
-          uuid: season.uuid,
-          name: this.editableSeasonName
-        });
-        
-        this.editingSeason = {};
-        this.currentEditingSeason = null;
-      } catch (error) {
-        console.error('Error updating season name:', error);
-      }
-    },
-    
-    cancelEditSeason(season) {
-      this.editingSeason = {};
-      this.currentEditingSeason = null;
-    },
-    
+    ...mapActions(['fetchSeasons']),
     navigateToCard(cardUuid) {
       this.$router.push(`/card/${cardUuid}`);
+    },
+    updateUserAllowedStatus(isAllowed) {
+      console.log('Received user allowed status:', isAllowed);
+      this.isUserAllowed = isAllowed;
+    },
+    navigateToAddCard() {
+      // Реализуйте навигацию к странице добавления карточки
+      // this.$router.push('/add-card'); // This method seems unused based on template. Leaving as comment.
+    },
+    async navigateToAddSeason() {
+      try {
+        // Assuming createSeason is imported from your api file
+        const { createSeason } = await import('@/api'); // Import dynamically if not already imported
+        const newSeason = await createSeason();
+        console.log('New season created:', newSeason);
+        await this.fetchSeasons(); // Refresh the list of seasons
+        // Removed automatic navigation after season creation
+        // this.$router.push(`/season/${newSeason.uuid}`); // Navigate to the new season's page
+      } catch (error) {
+        console.error('Error creating new season:', error);
+        alert('Failed to create new season.'); // Provide user feedback
+      }
     }
   },
   mounted() {
-    this.fetchSeasons();
-  }
+    this.fetchSeasons()
+  },
 }
 </script>
-
-<style scoped>
-.season-header {
-  position: relative;
-}
-
-.edit-icon {
-  margin-left: 10px;
-  cursor: pointer;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
-}
-
-.edit-icon:hover {
-  opacity: 1;
-}
-
-.edit-input {
-  font-size: inherit;
-  font-family: inherit;
-  color: inherit;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid var(--accent-color);
-  border-radius: 4px;
-  padding: 2px 5px;
-  width: auto;
-  max-width: 80%;
-}
-
-/* Остальные стили остаются без изменений */
-.background-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 400px;
-  background-image: url('/background.jpg');
-  background-size: cover;
-  background-position: center 57%;
-  z-index: 1;
-}
-
-.background-logo {
-  position: absolute;
-  top: 100px;
-  left: 50%;
-  transform: translate(-50%, 0);
-  max-width: 250px;
-  max-height: 250px;
-  z-index: 1;
-}
-
-.separator-line {
-  position: relative;
-  margin-top: 370px;
-  height: 2px;
-  background-color: white;
-  border: none;
-  z-index: 2;
-  width: 75%;
-}
-
-#seasons-container {
-  position: relative;
-  margin-top: 30px;
-  z-index: 2;
-  padding-bottom: 50px;
-}
-
-.error-message {
-  text-align: center;
-  margin: 50px 0;
-  color: #ff5555;
-}
-
-.season-title {
-  font-size: 24px;
-  margin: 0;
-  color: var(--accent-color);
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-}
-</style>
