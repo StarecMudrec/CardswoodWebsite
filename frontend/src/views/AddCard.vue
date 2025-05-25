@@ -66,7 +66,7 @@
 
 <script>
 import axios from 'axios';
-import { checkUserPermission } from '@/api';
+import { checkUserPermission, fetchUserInfo } from '@/api';
 export default {
   data() {
     return {
