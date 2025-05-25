@@ -244,42 +244,71 @@ export default {
 
     const saveField = async (field) => {
       try {
+        console.log('Saving field:', field, 'with data:', editableCard.value);
+        
+        let dataToSend = {};
+        
+        // Особый случай для сезона
+        if (field === 'season') {
+          dataToSend = {
+            season_uuid: editableCard.value.season_uuid
+          };
+        } else {
+          dataToSend = {
+            [field]: editableCard.value[field]
+          };
+        }
+
         const response = await fetch(`/api/cards/${card.value.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
           },
-          body: JSON.stringify({
-            [field]: editableCard.value[field]
-          })
-        })
-        console.log('saveField called with field:', field);
-        if (!response.ok) throw new Error('Failed to update card')
+          body: JSON.stringify(dataToSend)
+        });
 
-        card.value = { ...card.value, [field]: editableCard.value[field] }
-        editing.value = { ...editing.value, [field]: false }
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to update card');
+        }
+
+        // Обновляем локальные данные
+        if (field === 'season') {
+          const season = allSeasons.value.find(s => s.uuid === editableCard.value.season_uuid);
+          seasonName.value = season?.name || '';
+          card.value.season_uuid = editableCard.value.season_uuid;
+        } else {
+          card.value[field] = editableCard.value[field];
+        }
+
+        editing.value = { ...editing.value, [field]: false };
       } catch (err) {
-        console.error('Error updating card:', err)
-        error.value = err.message || 'Failed to update card'
+        console.error('Error updating card:', err);
+        error.value = err.message || 'Failed to update card';
       }
     }
 
     const loadData = async () => {
       try {
-        loading.value = true
-        error.value = null
+        loading.value = true;
         
-        // Загружаем данные карточки
-        card.value = await fetchCardInfo(props.uuid)
-        editableCard.value = { ...card.value }
+        // Загружаем карточку
+        card.value = await fetchCardInfo(props.uuid);
+        editableCard.value = { ...card.value };
         
-        // Загружаем все сезоны для выбора
-        allSeasons.value = await fetchSeasons()
+        // Загружаем сезоны
+        const seasons = await fetchSeasons();
+        allSeasons.value = seasons.map(season => ({
+          uuid: season.uuid,
+          name: season.name
+        }));
         
-        // Загружаем данные текущего сезона
+        // Загружаем текущий сезон
         if (card.value.season_id) {
-          const season = await fetchSeasonInfo(card.value.season_id)
-          seasonName.value = season.name
+          const season = await fetchSeasonInfo(card.value.season_id);
+          seasonName.value = season.name;
+          editableCard.value.season_uuid = season.uuid;
         }
         
         // Загружаем комментарии
