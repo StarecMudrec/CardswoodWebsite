@@ -481,7 +481,7 @@ export default {
   width: 100%;
   padding: 10px;
   margin-top: 10px;
-  background-color: var(--accent-color);
+  background-color: var(--bg-color);
   color: white;
   border: none;
   border-radius: 5px;
