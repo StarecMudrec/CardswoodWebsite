@@ -99,11 +99,12 @@
                     </svg>
                   </span>
                 </h3>
-                <div v-if="!editing.season && isUserAllowed" @click="startEditing('season')">
+                <div v-if="!editing.season" @click="startEditing('season')">
                   <p>{{ seasonName }}</p>
                 </div>
                 <select
                   v-else
+                  v-if="isUserAllowed" 
                   v-model="editableCard.season_uuid"
                   @change="saveField('season')"
                   @blur="cancelEdit('season')"
