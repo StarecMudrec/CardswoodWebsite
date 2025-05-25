@@ -439,13 +439,14 @@ export default {
 }
 
 .edit-input-select {
-  width: 100%;
+  width: 50%;
   padding: 10px 15px;
   border: none; /* Example border color, adjust as needed */
   border-radius: 5px;
   background-color: var(--bg-color); /* Example background, adjust as needed */
   color: white;
   font-size: 1rem;
+  text-align: center; 
   cursor: pointer;
   appearance: none; /* Remove default dropdown arrow */
   background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%2F%3E%3C%2Fsvg%3E'); /* Custom dropdown arrow */
