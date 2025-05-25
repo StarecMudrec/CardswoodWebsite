@@ -23,6 +23,7 @@
           <div class="card-header-section">
             <div class="title-container">
               <h1 ref="cardNameRef">
+                
                 <span v-if="!editing.name">{{ card.name }}</span>
                 <input 
                   v-else
@@ -130,6 +131,7 @@
         </div>
       </div>
     </div>
+    <div v-if="saveError" class="error-message">{{ saveError }}</div>
   <input type="file" ref="fileInput" @change="handleFileChange" accept="image/*" style="display: none;">
   </div>
 </template>
@@ -161,6 +163,7 @@ export default {
     const loading = ref(true)
     const error = ref(null)
     const imageError = ref(false)
+    const saveError = ref(null); // New ref for save errors
     const cardNameRef = ref(null)
     const isUserAllowed = ref(false)
     const editing = ref({
@@ -242,6 +245,7 @@ export default {
     }
 
     const saveField = async (field) => {
+      saveError.value = null; // Clear previous save errors
       try {
         console.log('Saving field:', field, 'with data:', editableCard.value);
         
@@ -284,7 +288,7 @@ export default {
         editing.value = { ...editing.value, [field]: false };
       } catch (err) {
         console.error('Error updating card:', err);
-        error.value = err.message || 'Failed to update card';
+        saveError.value = err.message || 'Failed to update card'; // Set save error
       }
     }
 
@@ -388,6 +392,7 @@ export default {
       comments,
       loading,
       error,
+      saveError, // Return saveError
       imageError,
       cardNameRef,
       editing,
