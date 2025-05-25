@@ -14,7 +14,9 @@
         </div>
       </div>
     </div>
-
+    <button v-if="selectedCards.length > 0" @click="clearSelection" class="clear-selection-button">
+      Отменить выделение
+    </button>
     <div class="season-header">
       <h2 class="season-title">
         <span v-if="!editingSeasonName">{{ season.name }}</span>
@@ -149,6 +151,9 @@ export default {
       } else {
         this.selectedCards = this.selectedCards.filter(id => id !== cardId);
       }
+    },
+    clearSelection() {
+      this.selectedCards = []; // Очистить выбранные карты
     },
     async deleteSelectedCards() {
       try {
