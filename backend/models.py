@@ -29,6 +29,7 @@ class Card(db.Model):
     season_id = db.Column(db.Integer, db.ForeignKey('season.id', ondelete='CASCADE'), nullable=False)
 
     season = db.relationship("Season", backref=db.backref("cards"))
+    comments = db.relationship('Comment', backref='card', lazy=True, cascade='all, delete-orphan')
 
     def present(self): 
         return {"id": self.id, 
