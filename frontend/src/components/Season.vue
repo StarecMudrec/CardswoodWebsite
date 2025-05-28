@@ -120,7 +120,7 @@ export default {
       handler(newSelectedCards) {
         this.cards = this.cards.map(card => ({
           ...card,
-          isSelected: newSelectedCards.includes(card.id)
+          isSelected: newSelectedCards.includes(card.uuid)
         }));
       },
       deep: true // Watch for changes inside the array
