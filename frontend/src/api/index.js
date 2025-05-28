@@ -84,7 +84,6 @@ export const deleteCard = async (cardId) => {
   const response = await fetch(`/api/cards/${cardId}`, {
     method: 'DELETE'
   });
-  console.log(`Fetching ${method} ${url}`);
   if (!response.ok) throw new Error('Failed to delete card');
 };
 
