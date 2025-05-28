@@ -97,6 +97,7 @@ export default {
     try {
       this.cards = await fetchCardsForSeason(this.season.uuid);
 
+      console.log('Loaded cards:', this.cards);
       // Fetch user info to get the Telegram username
       const userInfo = await fetchUserInfo();
       const username = userInfo ? userInfo.username : null;
