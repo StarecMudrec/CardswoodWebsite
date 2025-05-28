@@ -65,6 +65,7 @@
 <script>
 import axios from 'axios';
 import { checkUserPermission, fetchUserInfo } from '@/api';
+import imageCompression from 'browser-image-compression';
 export default {
   data() {
     return {
@@ -111,21 +112,37 @@ export default {
       this.errorMessage = '';
     },
     async submitForm() {
-      const formData = new FormData();
-      const cardUuid = this.uuidv4();
-      formData.append('uuid', cardUuid);
-      formData.append('name', this.card.name);
-      formData.append('description', this.card.description);
-      formData.append('category', this.card.category);
-      formData.append('season_id', this.card.season);
-      formData.append('img', this.card.image);
+      if (!this.card.image) {
+        this.errorMessage = 'Please select an image file.';
+        this.showErrorModal = true;
+        return;
+      }
 
       try {
+        // Сжимаем изображение перед отправкой
+        const options = {
+          maxSizeMB: 1,          // Максимальный размер после сжатия (1MB)
+          maxWidthOrHeight: 1920,// Максимальная ширина/высота
+          useWebWorker: true     // Использовать WebWorker для лучшей производительности
+        };
+        
+        const compressedFile = await imageCompression(this.card.image, options);
+        
+        const formData = new FormData();
+        const cardUuid = this.uuidv4();
+        formData.append('uuid', cardUuid);
+        formData.append('name', this.card.name);
+        formData.append('description', this.card.description);
+        formData.append('category', this.card.category);
+        formData.append('season_id', this.card.season);
+        formData.append('img', compressedFile, compressedFile.name); // Используем сжатый файл
+
         const response = await axios.post('/api/cards', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
         });
+        
         console.log('Card added successfully:', response.data);
         this.resetForm();
       } catch (error) {
