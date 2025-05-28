@@ -40,7 +40,7 @@
           </svg>
         </span>
       </h2>
-      <button v-if="selectedCards.length > 0" @click="showDeleteConfirmation = true" class="delete-selected-button">
+      <button v-if="selectedCards.length > 0" @click="deletingItemType = 'cards'; showDeleteConfirmation = true;" class="delete-selected-button">
         <i class="bi bi-trash"></i> ({{ selectedCards.length }})
       </button>
       <button v-if="isUserAllowed" @click="$router.push('/add-card')" class="add-card-button desktop-only">
