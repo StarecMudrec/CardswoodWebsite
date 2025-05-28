@@ -4,9 +4,8 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
-
-RUN npm install browser-image-compression
+RUN npm install --frozen-lockfile && \
+    npm install browser-image-compression
 
 COPY . /app
 
