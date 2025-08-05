@@ -12,7 +12,7 @@ import logging
 from flask_sqlalchemy import SQLAlchemy  # Database integration
 from models import db, AuthToken, Card, Season, Comment, AllowedUser
 from config import Config
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from sqlalchemy.orm import Session
 
 app = Flask(__name__)
@@ -204,15 +204,15 @@ def serve_card_image(filename):
 @app.route("/api/seasons")
 def get_seasons():
     try:
-        with Session(db.engine) as session:
-            seasons = session.scalars(
-                select(Card.season)
-                .distinct()
-                .where(Card.season.is_not(None))
-            ).all()
-            
-            return jsonify(sorted(seasons)), 200
-            
+        # Most reliable implementation
+        seasons = db.session.scalars(
+            select(Card.season)
+            .filter(and_(Card.season.isnot(None)))
+            .distinct()
+        ).all()
+        
+        return jsonify(sorted(season for season in seasons if season is not None)), 200
+        
     except Exception as e:
         logging.error(f"Database error: {str(e)}", exc_info=True)
         return jsonify({'error': 'Database operation failed'}), 500
