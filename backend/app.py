@@ -12,6 +12,8 @@ import logging
 from flask_sqlalchemy import SQLAlchemy  # Database integration
 from models import db, AuthToken, Card, Season, Comment, AllowedUser
 from config import Config
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -202,23 +204,18 @@ def serve_card_image(filename):
 @app.route("/api/seasons")
 def get_seasons():
     try:
-        # Method 1: Using SQLAlchemy 2.x style (recommended)
-        seasons = db.session.scalars(
-            db.select(Card.season)
-            .where(Card.season != None)  # noqa: E711
-            .distinct()
-        ).all()
-        
-        # Method 2: Alternative using execute()
-        # seasons = db.session.execute(
-        #     db.select(Card.season).distinct().where(Card.season.isnot(None))
-        # ).scalars().all()
-        
-        return jsonify(sorted(season for season in seasons if season is not None)), 200
-        
+        with Session(db.engine) as session:
+            seasons = session.scalars(
+                select(Card.season)
+                .distinct()
+                .where(Card.season.is_not(None))
+            ).all()
+            
+            return jsonify(sorted(seasons)), 200
+            
     except Exception as e:
-        logging.error(f"Error fetching seasons: {str(e)}")
-        return jsonify({'error': 'Failed to fetch seasons'}), 500
+        logging.error(f"Database error: {str(e)}", exc_info=True)
+        return jsonify({'error': 'Database operation failed'}), 500
 
 @app.route("/api/seasons", methods=["POST"])
 def add_season():
