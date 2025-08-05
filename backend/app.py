@@ -258,6 +258,7 @@ def update_season(season_uuid):
         db.session.rollback()
         logging.error(f"Error updating season: {e}")
         return jsonify({'error': 'Error updating season'}), 500
+
 @app.route("/api/seasons/<season_uuid>", methods=["DELETE"])
 def delete_season(season_uuid):
     is_auth, user_id = is_authenticated(request, session)
@@ -281,6 +282,7 @@ def delete_season(season_uuid):
         db.session.rollback()
         logging.error(f"Error deleting season: {e}")
         return jsonify({'error': 'Error deleting season'}), 500
+
 @app.route("/api/cards/<season_id>")
 def get_cards(season_id):  
     season = Season.query.filter_by(uuid=season_id).first_or_404()
@@ -362,6 +364,7 @@ def delete_card(card_id):
         db.session.rollback()
         logging.error(f"Error deleting card: {e}")
         return jsonify({'error': 'Error deleting card'}), 500
+
 @app.route('/api/check_permission', methods=['GET'])
 def check_permission():
     username = request.args.get('username')
@@ -378,6 +381,7 @@ def get_card_info(card_id):
     print(card_id)
     card = Card.query.filter_by(uuid=card_id).first_or_404()
     return jsonify(card.present()), 200
+
 @app.route("/api/cards/<card_id>", methods=["PUT"])
 def update_card(card_id):
     is_auth, user_id = is_authenticated(request, session)

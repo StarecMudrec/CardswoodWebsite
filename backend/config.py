@@ -9,3 +9,4 @@ class Config:
     SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres:postgres@db:5432/cards"  # SQLite database
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.environ.get("SECRET_KEY")
+    DATABASE_URL = "sqlite+aiosqlite:///tcp://sqlite-proxy:9000/"
