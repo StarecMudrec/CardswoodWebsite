@@ -202,10 +202,9 @@ def serve_card_image(filename):
 @app.route("/api/seasons")
 def get_seasons():
     try:
-        # Get distinct season values from cards table
-        seasons = db.session.query(Card.season).distinct().all()
-        # Extract season numbers from the result
-        season_numbers = [season[0] for season in seasons if season[0] is not None]
+        # More efficient query to get distinct seasons
+        seasons = db.session.query(Card.season).filter(Card.season.isnot(None)).distinct().all()
+        season_numbers = [season[0] for season in seasons]
         return jsonify(sorted(season_numbers)), 200
     except Exception as e:
         logging.error(f"Error fetching seasons: {e}")
