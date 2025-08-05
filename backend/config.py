@@ -1,5 +1,6 @@
 import os
 from hashlib import sha256
+from sqlalchemy import create_engine
 
 
 class Config:
@@ -9,4 +10,7 @@ class Config:
     SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres:postgres@db:5432/cards"  # SQLite database
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.environ.get("SECRET_KEY")
-    DATABASE_URL = "sqlite+aiosqlite:///tcp://sqlite-proxy:9000/"
+    
+    # New SQLite engine (read-only)
+    SQLITE_DB_PATH = "sqlite:////db/offcardswood.db?mode=ro"  # Read-only mode
+    SQLITE_ENGINE = create_engine(SQLITE_DB_PATH)

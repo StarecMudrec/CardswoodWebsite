@@ -204,18 +204,15 @@ def serve_card_image(filename):
 @app.route("/api/seasons")
 def get_seasons():
     try:
-        # Most reliable implementation
-        seasons = db.session.scalars(
-            select(Card.season)
-            .filter(and_(Card.season.isnot(None)))
-            .distinct()
-        ).all()
-        
-        return jsonify(sorted(season for season in seasons if season is not None)), 200
-        
+        # Use raw SQL with the SQLite engine
+        with Config.SQLITE_ENGINE.connect() as connection:
+            result = connection.execute("SELECT DISTINCT season FROM cards WHERE season IS NOT NULL")
+            seasons = [row[0] for row in result]
+            return jsonify(sorted(seasons)), 200
+            
     except Exception as e:
-        logging.error(f"Database error: {str(e)}", exc_info=True)
-        return jsonify({'error': 'Database operation failed'}), 500
+        logging.error(f"SQLite error: {str(e)}", exc_info=True)
+        return jsonify({'error': 'Failed to fetch seasons'}), 500
 
 @app.route("/api/seasons", methods=["POST"])
 def add_season():
@@ -297,20 +294,24 @@ def delete_season(season_uuid):
 @app.route("/api/cards/<season_id>")
 def get_cards(season_id):  
     try:
-        # Convert season_id to integer (since it's stored as BigInteger)
-        season_num = int(season_id)
-        
-        # Query cards for the specified season
-        cards = Card.query.filter_by(season=season_num).all()
-        
-        # Prepare response data
-        cards_ids = [card.id for card in cards]
-        
-        return jsonify(cards_ids), 200
+        with Config.SQLITE_ENGINE.connect() as connection:
+            result = connection.execute(
+                "SELECT id, photo, name, rarity, points FROM cards WHERE season = ?",
+                (int(season_id),)
+            )
+            cards = [{
+                'id': row[0],
+                'photo': row[1],
+                'name': row[2],
+                'rarity': row[3],
+                'points': row[4]
+            } for row in result]
+            return jsonify(cards), 200
+            
     except ValueError:
         return jsonify({'error': 'Invalid season ID'}), 400
     except Exception as e:
-        logging.error(f"Error fetching cards for season {season_num}: {e}")
+        logging.error(f"SQLite error: {str(e)}")
         return jsonify({'error': 'Failed to fetch cards'}), 500
 
 @app.route("/api/cards", methods=["POST"])
@@ -402,31 +403,32 @@ def check_permission():
 @app.route("/api/card_info/<card_id>")
 def get_card_info(card_id):  
     try:
-        # Convert card_id to integer if needed (depends on your ID format)
-        card = Card.query.filter_by(id=int(card_id)).first()
-        
-        if not card:
-            return jsonify({'error': 'Card not found'}), 404
+        with Config.SQLITE_ENGINE.connect() as connection:
+            row = connection.execute(
+                "SELECT photo, name, rarity, points, number, drop, event, season FROM cards WHERE id = ?", 
+                (int(card_id),)
+            ).fetchone()
             
-        card_data = {
-            'id': card.id,
-            'uuid': card.id,
-            'season_id': card.season,
-            'img': card.photo,
-            'category': card.rarity,
-            'name': card.name,
-            'desription' : {'points': card.points,
-                            'number': card.number,
-                            'drop': card.drop,
-                            'event': card.event}
-        }
-        
-        return jsonify(card_data), 200
-        
+            if not row:
+                return jsonify({'error': 'Card not found'}), 404
+                
+            return jsonify({
+                'id': card_id,
+                'uuid': card_id,
+                'img': row[0],
+                'name': row[1],
+                'category': row[2],
+                'season_id': row[7],
+                'description': str({'points': row[3],
+                                'number': row[4],
+                                'drop': row[5],
+                                'event': row[6]})
+            }), 200
+            
     except ValueError:
-        return jsonify({'error': 'Invalid card ID format'}), 400
+        return jsonify({'error': 'Invalid card ID'}), 400
     except Exception as e:
-        logging.error(f"Error fetching card info: {e}")
+        logging.error(f"SQLite error: {str(e)}")
         return jsonify({'error': 'Failed to fetch card info'}), 500
 
 @app.route("/api/cards/<card_id>", methods=["PUT"])
