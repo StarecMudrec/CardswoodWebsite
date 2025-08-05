@@ -202,17 +202,15 @@ def serve_card_image(filename):
 @app.route("/api/seasons")
 def get_seasons():
     try:
-        # Using SQLAlchemy's proper not-null filter syntax
-        seasons = db.session.query(Card.season).filter(Card.season != None).distinct().all()  # noqa: E711
+        # Most efficient and clear way to get distinct seasons
+        seasons = db.session.execute(
+            db.select(Card.season).distinct().where(Card.season.is_not(None))
+        ).scalars().all()
         
-        # Alternative syntax if the above doesn't work:
-        # seasons = db.session.query(distinct(Card.season)).filter(Card.season.isnot(None)).all()
-        
-        season_numbers = [season[0] for season in seasons if season[0] is not None]
-        return jsonify(sorted(season_numbers)), 200
+        return jsonify(sorted(seasons)), 200
         
     except Exception as e:
-        logging.error(f"Error fetching seasons: {str(e)}")  # Ensure we convert exception to string
+        logging.error(f"Error fetching seasons: {str(e)}")
         return jsonify({'error': 'Failed to fetch seasons'}), 500
 
 @app.route("/api/seasons", methods=["POST"])
