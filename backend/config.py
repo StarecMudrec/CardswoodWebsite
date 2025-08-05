@@ -11,6 +11,13 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.environ.get("SECRET_KEY")
     
-    # New SQLite engine (read-only)
-    SQLITE_DB_PATH = "sqlite:////db/offcardswood.db?mode=ro"  # Read-only mode
-    SQLITE_ENGINE = create_engine(SQLITE_DB_PATH)
+    # For the TCP proxy we set up earlier
+    SQLITE_PROXY_URL = "sqlite:///tcp://sqlite-proxy:9000/"  # Using container name
+    # OR if using host networking:
+    # SQLITE_PROXY_URL = "sqlite:///tcp://localhost:9000/"
+    
+    @property
+    def SQLITE_ENGINE(self):
+        if not hasattr(self, '_sqlite_engine'):
+            self._sqlite_engine = create_engine(self.SQLITE_PROXY_URL)
+        return self._sqlite_engine
