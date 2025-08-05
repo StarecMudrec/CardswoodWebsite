@@ -201,10 +201,15 @@ def serve_card_image(filename):
 
 @app.route("/api/seasons")
 def get_seasons():
-    seasons = Season.query.order_by(Season.id.asc()).all()
-    season_ids = [season.id for season in seasons]
-    # print(season_names)
-    return jsonify(season_ids), 200
+    try:
+        # Get distinct season values from cards table
+        seasons = db.session.query(Card.season).distinct().all()
+        # Extract season numbers from the result
+        season_numbers = [season[0] for season in seasons if season[0] is not None]
+        return jsonify(sorted(season_numbers)), 200
+    except Exception as e:
+        logging.error(f"Error fetching seasons: {e}")
+        return jsonify({'error': 'Failed to fetch seasons'}), 500
 
 @app.route("/api/seasons", methods=["POST"])
 def add_season():
@@ -285,10 +290,22 @@ def delete_season(season_uuid):
 
 @app.route("/api/cards/<season_id>")
 def get_cards(season_id):  
-    season = Season.query.filter_by(uuid=season_id).first_or_404()
-    cards = (season.cards)
-    cards_uuids = [card.uuid for card in cards]
-    return jsonify(cards_uuids), 200
+    try:
+        # Convert season_id to integer (since it's stored as BigInteger)
+        season_num = int(season_id)
+        
+        # Query cards for the specified season
+        cards = Card.query.filter_by(season=season_num).all()
+        
+        # Prepare response data
+        cards_ids = [card.id for card in cards]
+        
+        return jsonify(cards_ids), 200
+    except ValueError:
+        return jsonify({'error': 'Invalid season ID'}), 400
+    except Exception as e:
+        logging.error(f"Error fetching cards for season {season_num}: {e}")
+        return jsonify({'error': 'Failed to fetch cards'}), 500
 
 @app.route("/api/cards", methods=["POST"])
 def add_card():
@@ -378,9 +395,33 @@ def check_permission():
     
 @app.route("/api/card_info/<card_id>")
 def get_card_info(card_id):  
-    print(card_id)
-    card = Card.query.filter_by(uuid=card_id).first_or_404()
-    return jsonify(card.present()), 200
+    try:
+        # Convert card_id to integer if needed (depends on your ID format)
+        card = Card.query.filter_by(id=int(card_id)).first()
+        
+        if not card:
+            return jsonify({'error': 'Card not found'}), 404
+            
+        card_data = {
+            'id': card.id,
+            'uuid': card.id,
+            'season_id': card.season,
+            'img': card.photo,
+            'category': card.rarity,
+            'name': card.name,
+            'desription' : {'points': card.points,
+                            'number': card.number,
+                            'drop': card.drop,
+                            'event': card.event}
+        }
+        
+        return jsonify(card_data), 200
+        
+    except ValueError:
+        return jsonify({'error': 'Invalid card ID format'}), 400
+    except Exception as e:
+        logging.error(f"Error fetching card info: {e}")
+        return jsonify({'error': 'Failed to fetch card info'}), 500
 
 @app.route("/api/cards/<card_id>", methods=["PUT"])
 def update_card(card_id):
@@ -472,8 +513,22 @@ def update_card_image(card_uuid):
 
 @app.route("/api/season_info/<int:season_id>")
 def get_season_info(season_id):  
-    season = Season.query.filter_by(id=season_id).first_or_404()
-    return jsonify(season.present()), 200
+    try:
+        season_num = int(season_id)
+        
+        season_info = {
+            'id': season_num,
+            'uuid': season_num,
+            'name': "Season" + season_num
+        }
+        
+        return jsonify(season_info), 200
+        
+    except ValueError:
+        return jsonify({'error': 'Invalid season ID format'}), 400
+    except Exception as e:
+        logging.error(f"Error fetching season info: {e}")
+        return jsonify({'error': 'Failed to fetch season info'}), 500
 
 @app.route("/api/comments/<card_id>")
 def get_comments(card_id):
