@@ -202,12 +202,19 @@ def serve_card_image(filename):
 @app.route("/api/seasons")
 def get_seasons():
     try:
-        # Most efficient and clear way to get distinct seasons
-        seasons = db.session.execute(
-            db.select(Card.season).distinct().where(Card.season.is_not(None))
-        ).scalars().all()
+        # Method 1: Using SQLAlchemy 2.x style (recommended)
+        seasons = db.session.scalars(
+            db.select(Card.season)
+            .where(Card.season != None)  # noqa: E711
+            .distinct()
+        ).all()
         
-        return jsonify(sorted(seasons)), 200
+        # Method 2: Alternative using execute()
+        # seasons = db.session.execute(
+        #     db.select(Card.season).distinct().where(Card.season.isnot(None))
+        # ).scalars().all()
+        
+        return jsonify(sorted(season for season in seasons if season is not None)), 200
         
     except Exception as e:
         logging.error(f"Error fetching seasons: {str(e)}")
