@@ -11,24 +11,12 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.environ.get("SECRET_KEY")
     
-    # SQLite proxy connection URL
-    SQLITE_PROXY_URL = "sqlite:///tcp://sqlite-proxy:9000/"
-    
-    # Initialize engine at class level
+    # For SQLite over TCP proxy
+    SQLITE_PROXY_URL = "sqlite:///:memory:?host=sqlite-proxy&port=9000&timeout=30"
+
+    # SQLAlchemy engine setup
+    from sqlalchemy import create_engine
     SQLITE_ENGINE = create_engine(
         SQLITE_PROXY_URL,
-        pool_size=5,
-        max_overflow=10,
-        pool_timeout=30
+        connect_args={'check_same_thread': False}
     )
-    
-    # Or if you prefer lazy initialization:
-    """
-    _sqlite_engine = None
-    
-    @classmethod
-    def get_sqlite_engine(cls):
-        if cls._sqlite_engine is None:
-            cls._sqlite_engine = create_engine(cls.SQLITE_PROXY_URL)
-        return cls._sqlite_engine
-    """
