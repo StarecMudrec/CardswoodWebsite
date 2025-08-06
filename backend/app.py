@@ -558,9 +558,12 @@ def get_season_info(season_id):
 
 @app.route("/api/comments/<card_id>")
 def get_comments(card_id):
-    card = Card.query.filter_by(id=card_id).first_or_404()
-    comments = [comment.present() for comment in card.comments]
-    return jsonify(comments), 200
+    # Get all comments for a specific card_id
+    comments = Comment.query.filter_by(card_id=card_id).order_by(Comment.id).all()
+
+    # If you want them in the presented format (as dictionaries)
+    comments_data = [comment.present() for comment in comments]
+    return jsonify(comments_data), 200
 
 @app.route("/api/check_auth")
 def check_auth():

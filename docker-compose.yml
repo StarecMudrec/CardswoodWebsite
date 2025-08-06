@@ -49,7 +49,7 @@ services:
       SECRET_KEY: VUPSENPUPSENROSTIC)
       FLASK_APP: wsgi:app
     command: >      
-      sh -c "flask db init && flask --app wsgi db migrate  &&
+      sh -c "flask --app wsgi db migrate  &&
       flask --app wsgi db upgrade &&
       gunicorn --bind 0.0.0.0:8000 wsgi:app"
 
