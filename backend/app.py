@@ -227,9 +227,9 @@ def serve_card_image(filename):
 @app.route("/api/seasons")
 def get_seasons():
     try:
-        with Session() as session:
+        with get_sqlite_conn() as conn:
             # Must use text() wrapper for raw SQL
-            result = session.execute(text("SELECT DISTINCT season FROM cards WHERE season IS NOT NULL"))
+            result = conn.execute(text("SELECT DISTINCT season FROM cards WHERE season IS NOT NULL"))
             seasons = [row[0] for row in result]
             return jsonify(sorted(seasons)), 200
     except Exception as e:
