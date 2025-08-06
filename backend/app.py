@@ -12,7 +12,7 @@ import logging
 from flask_sqlalchemy import SQLAlchemy  # Database integration
 from models import db, AuthToken, Card, Season, Comment, AllowedUser
 from config import Config
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, text
 from sqlalchemy.orm import Session
 
 app = Flask(__name__)
@@ -204,14 +204,13 @@ def serve_card_image(filename):
 @app.route("/api/seasons")
 def get_seasons():
     try:
-        # Use raw SQL with the SQLite engine
-        with Config.SQLITE_ENGINE.connect() as connection:
-            result = connection.execute("SELECT DISTINCT season FROM cards WHERE season IS NOT NULL")
+        with Config.SQLITE_ENGINE.connect() as conn:
+            # Wrap query in text()
+            result = conn.execute(text("SELECT DISTINCT season FROM cards WHERE season IS NOT NULL"))
             seasons = [row[0] for row in result]
             return jsonify(sorted(seasons)), 200
-            
     except Exception as e:
-        logging.error(f"SQLite error: {str(e)}", exc_info=True)
+        logging.error(f"Database error: {str(e)}")
         return jsonify({'error': 'Failed to fetch seasons'}), 500
 
 @app.route("/api/seasons", methods=["POST"])
