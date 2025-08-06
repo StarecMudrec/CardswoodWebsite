@@ -37,8 +37,9 @@ services:
     volumes:
       - ./backend:/app
       - ./frontend/public:/app/public
-      - card_images:/app/card_imgs
+      # - card_images:/app/card_imgs
       - /root/CARDSWOOS/db/offcardswood.db:/app/db/offcardswood.db:ro
+      - /root/CARDSWOOS/photos:app/card_imgs
     depends_on:
       db:
         condition: service_healthy
