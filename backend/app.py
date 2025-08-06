@@ -14,6 +14,7 @@ from models import db, AuthToken, Card, Season, Comment, AllowedUser
 from config import Config
 from sqlalchemy import create_engine, select, and_, text
 from sqlalchemy.orm import Session, sessionmaker
+import sqlite3
 
 engine = create_engine(
     Config.SQLITE_PROXY_URL,
@@ -200,6 +201,20 @@ def home():
 
 
 #API ROUTES
+
+@app.route("/api/raw-db-test")
+def raw_db_test():
+    try:
+        # Bypass SQLAlchemy for direct test
+        conn = sqlite3.connect('file:/data/db.sqlite?mode=ro&uri=true', uri=True)
+        tables = conn.execute("SELECT name FROM sqlite_master").fetchall()
+        conn.close()
+        return jsonify({
+            'tables': [t[0] for t in tables],
+            'status': 'success'
+        }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route("/api/debug-db")
 def debug_db():
