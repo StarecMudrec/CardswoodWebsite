@@ -544,7 +544,7 @@ def update_card_image(card_uuid):
 @app.route("/api/season_info/<int:season_id>")
 def get_season_info(season_id):  
     try:
-        season_num = int(season_id)
+        season_num = season_id
         
         season_info = {
             'id': season_num,
