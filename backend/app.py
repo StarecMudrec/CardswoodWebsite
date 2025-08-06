@@ -223,7 +223,7 @@ def db_status():
 @app.route('/card_imgs/<filename>')
 def serve_card_image(filename):
     # Создаем папку если ее нет
-    os.makedirs('card_imgs', exist_ok=True)
+    # os.makedirs('card_imgs', exist_ok=True)
     return send_from_directory('card_imgs', filename)
 
 @app.route("/api/seasons")
