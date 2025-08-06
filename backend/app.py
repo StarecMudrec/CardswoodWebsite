@@ -14,13 +14,7 @@ from models import db, AuthToken, Card, Season, Comment, AllowedUser
 from config import Config
 from sqlalchemy import create_engine, select, and_, text
 from sqlalchemy.orm import Session, sessionmaker
-import sqlite3
-
-engine = create_engine(
-    Config.SQLITE_PROXY_URL,
-    connect_args={'timeout': 30, 'check_same_thread': False}
-)
-Session = sessionmaker(bind=engine)
+from sqlite3 import connect
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -36,6 +30,9 @@ migrate = Migrate(app, db)
 with app.app_context():
     db.create_all()
 
+
+def get_sqlite_conn():
+    return connect(Config.SQLITE_DB_PATH, uri=True)  # uri=True enables ?mode=ro
 
 # Authentication Helper Function
 def is_authenticated(request, session):
@@ -202,58 +199,24 @@ def home():
 
 #API ROUTES
 
-@app.route("/api/raw-db-test")
-def raw_db_test():
+@app.route("/db-status")
+def db_status():
+    # PostgreSQL check
+    pg_version = db.session.execute(text("SELECT version()")).scalar()
+    
+    # SQLite check
     try:
-        # Bypass SQLAlchemy for direct test
-        conn = sqlite3.connect('file:/data/db.sqlite?mode=ro&uri=true', uri=True)
-        tables = conn.execute("SELECT name FROM sqlite_master").fetchall()
-        conn.close()
-        return jsonify({
-            'tables': [t[0] for t in tables],
-            'status': 'success'
-        }), 200
+        with get_sqlite_conn() as conn:
+            sqlite_version = conn.execute("SELECT sqlite_version()").fetchone()[0]
+            cards_count = conn.execute("SELECT COUNT(*) FROM cards").fetchone()[0]
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route("/api/debug-db")
-def debug_db():
-    try:
-        with engine.connect() as conn:
-            # Check tables
-            tables = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).fetchall()
-            # Check columns in cards table
-            cards_columns = conn.execute(text("PRAGMA table_info(cards)")).fetchall()
-            return jsonify({
-                'tables': [t[0] for t in tables],
-                'cards_columns': [c[1] for c in cards_columns],  # Column names
-                'connection_url': Config.SQLITE_PROXY_URL
-            }), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route("/api/db-check")
-def db_check():
-    try:
-        # Direct file access test
-        conn = sqlite3.connect('/root/CARDSWOOS/db/offcardswood.db')
-        tables = conn.execute("SELECT name FROM sqlite_master").fetchall()
-        conn.close()
-        
-        return jsonify({
-            'tables': [t[0] for t in tables],
-            'status': 'success',
-            'file': '/root/CARDSWOOS/db/offcardswood.db'
-        }), 200
-    except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'solution': [
-                '1. Verify file exists at /root/CARDSWOOS/db/offcardswood.db',
-                '2. Check permissions: sudo chmod 644 /root/CARDSWOOS/db/offcardswood.db',
-                '3. Validate SQLite file integrity'
-            ]
-        }), 500
+        return jsonify({"error": str(e)}), 500
+    
+    return jsonify({
+        "postgres_version": pg_version,
+        "sqlite_version": sqlite_version,
+        "cards_count": cards_count
+    })
 
 @app.route('/card_imgs/<filename>')
 def serve_card_image(filename):

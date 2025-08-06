@@ -12,11 +12,5 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY")
     
     # For SQLite over TCP proxy
-    SQLITE_PROXY_URL = "sqlite:///file:///root/CARDSWOOS/db/offcardswood.db?mode=ro&uri=true"
-
-    # SQLAlchemy engine setup
-    from sqlalchemy import create_engine
-    SQLITE_ENGINE = create_engine(
-        SQLITE_PROXY_URL,
-        connect_args={'check_same_thread': False}
-    )
+    SQLITE_DB_PATH = "/app/db/offcardswood.db"  # Mounted path in container
+    # SQLALCHEMY_BINDS = f"sqlite:///{SQLITE_DB_PATH}?mode=ro"  # Read-only mode
