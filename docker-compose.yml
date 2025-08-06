@@ -49,10 +49,11 @@ services:
       SECRET_KEY: VUPSENPUPSENROSTIC)
       FLASK_APP: wsgi:app
     command: >      
-      sh -c "flask --app wsgi db migrate  &&
-      flask --app wsgi db upgrade &&
-      gunicorn --bind 0.0.0.0:8000 wsgi:app"
-
+      sh -c "gunicorn --bind 0.0.0.0:8000 wsgi:app"
+    # flask --app wsgi db init &&
+    # flask --app wsgi db migrate  &&
+    # flask --app wsgi db upgrade &&
+      
 volumes:
   postgres_data: {}
   frontend_node_modules: {}
