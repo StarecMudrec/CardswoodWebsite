@@ -12,7 +12,7 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY")
     
     # For SQLite over TCP proxy
-    SQLITE_PROXY_URL = "sqlite:///:memory:?host=sqlite-proxy&port=9000&timeout=30"
+    SQLITE_PROXY_URL = "sqlite:///:memory:?host=sqlite-proxy&port=9000&uri=true"
 
     # SQLAlchemy engine setup
     from sqlalchemy import create_engine
