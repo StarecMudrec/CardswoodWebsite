@@ -421,7 +421,7 @@ def get_card_info(card_id):
     try:
         with get_sqlite_conn() as conn:
             row = conn.execute(
-                "SELECT photo, name, rarity, points, number, drop, event, season FROM cards WHERE id = ?", 
+                "SELECT photo, name, rarity, points, number, [drop], event, season FROM cards WHERE id = ?", 
                 (int(card_id),)
             ).fetchone()
             
@@ -431,10 +431,10 @@ def get_card_info(card_id):
             return jsonify({
                 'id': card_id,
                 'uuid': card_id,
-                'img': row[0],
-                'name': row[1],
-                'category': row[2],
                 'season_id': row[7],
+                'img': row[0],
+                'category': row[2],
+                'name': row[1],
                 'description': str({'points': row[3],
                                 'number': row[4],
                                 'drop': row[5],
