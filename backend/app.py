@@ -12,8 +12,14 @@ import logging
 from flask_sqlalchemy import SQLAlchemy  # Database integration
 from models import db, AuthToken, Card, Season, Comment, AllowedUser
 from config import Config
-from sqlalchemy import select, and_, text
-from sqlalchemy.orm import Session
+from sqlalchemy import create_engine, select, and_, text
+from sqlalchemy.orm import Session, sessionmaker
+
+engine = create_engine(
+    Config.SQLITE_PROXY_URL,
+    connect_args={'timeout': 30, 'check_same_thread': False}
+)
+Session = sessionmaker(bind=engine)
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -195,6 +201,20 @@ def home():
 
 #API ROUTES
 
+@app.route("/api/db-check")
+def db_check():
+    try:
+        with Session() as session:
+            tables = session.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).fetchall()
+            cards_count = session.execute(text("SELECT COUNT(*) FROM cards")).scalar()
+            return jsonify({
+                'tables': [t[0] for t in tables],
+                'cards_count': cards_count,
+                'connection': 'success'
+            }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/card_imgs/<filename>')
 def serve_card_image(filename):
     # Создаем папку если ее нет
@@ -204,9 +224,9 @@ def serve_card_image(filename):
 @app.route("/api/seasons")
 def get_seasons():
     try:
-        with Config.SQLITE_ENGINE.connect() as conn:
-            # Wrap query in text()
-            result = conn.execute(text("SELECT DISTINCT season FROM cards WHERE season IS NOT NULL"))
+        with Session() as session:
+            # Must use text() wrapper for raw SQL
+            result = session.execute(text("SELECT DISTINCT season FROM cards WHERE season IS NOT NULL"))
             seasons = [row[0] for row in result]
             return jsonify(sorted(seasons)), 200
     except Exception as e:
