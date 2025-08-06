@@ -201,6 +201,22 @@ def home():
 
 #API ROUTES
 
+@app.route("/api/debug-db")
+def debug_db():
+    try:
+        with engine.connect() as conn:
+            # Check tables
+            tables = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).fetchall()
+            # Check columns in cards table
+            cards_columns = conn.execute(text("PRAGMA table_info(cards)")).fetchall()
+            return jsonify({
+                'tables': [t[0] for t in tables],
+                'cards_columns': [c[1] for c in cards_columns],  # Column names
+                'connection_url': Config.SQLITE_PROXY_URL
+            }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route("/api/db-check")
 def db_check():
     try:
