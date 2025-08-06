@@ -229,7 +229,7 @@ def get_seasons():
     try:
         with get_sqlite_conn() as conn:
             # Must use text() wrapper for raw SQL
-            result = conn.execute(text("SELECT DISTINCT season FROM cards WHERE season IS NOT NULL"))
+            result = conn.execute("SELECT DISTINCT season FROM cards WHERE season IS NOT NULL")
             seasons = [row[0] for row in result]
             return jsonify(sorted(seasons)), 200
     except Exception as e:
