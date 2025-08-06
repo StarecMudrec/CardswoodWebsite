@@ -235,17 +235,24 @@ def debug_db():
 @app.route("/api/db-check")
 def db_check():
     try:
-        engine = create_engine(Config.SQLITE_PROXY_URL)
-        with engine.connect() as conn:
-            tables = conn.execute(text("SELECT name FROM sqlite_master")).fetchall()
-            return jsonify({
-                'tables': [t[0] for t in tables],
-                'status': 'success'
-            }), 200
+        # Direct file access test
+        conn = sqlite3.connect('/root/CARDSWOOS/db/offcardswood.db')
+        tables = conn.execute("SELECT name FROM sqlite_master").fetchall()
+        conn.close()
+        
+        return jsonify({
+            'tables': [t[0] for t in tables],
+            'status': 'success',
+            'file': '/root/CARDSWOOS/db/offcardswood.db'
+        }), 200
     except Exception as e:
         return jsonify({
             'error': str(e),
-            'solution': 'Verify /root/CARDSWOOS/db/offcardswood.db exists and is readable'
+            'solution': [
+                '1. Verify file exists at /root/CARDSWOOS/db/offcardswood.db',
+                '2. Check permissions: sudo chmod 644 /root/CARDSWOOS/db/offcardswood.db',
+                '3. Validate SQLite file integrity'
+            ]
         }), 500
 
 @app.route('/card_imgs/<filename>')

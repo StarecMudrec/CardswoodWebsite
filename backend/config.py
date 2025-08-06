@@ -12,7 +12,7 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY")
     
     # For SQLite over TCP proxy
-    SQLITE_PROXY_URL = "sqlite:///file:///root/CARDSWOOS/db/offcardswood.db?mode=ro"
+    SQLITE_PROXY_URL = "sqlite:///file:///root/CARDSWOOS/db/offcardswood.db?mode=ro&uri=true"
 
     # SQLAlchemy engine setup
     from sqlalchemy import create_engine
