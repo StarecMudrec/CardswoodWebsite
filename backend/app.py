@@ -437,10 +437,7 @@ def get_card_info(card_id):
                 'img': row[0],
                 'category': row[2],
                 'name': row[1],
-                'description': str({'points': row[3],
-                                'number': row[4],
-                                'drop': row[5],
-                                'event': row[6]})
+                'description': f"Points: {row[3]}\n Number: {row[4]}\n Drop: {row[5]}\n Event: {row[6]}"
             }), 200
             
     except ValueError:
