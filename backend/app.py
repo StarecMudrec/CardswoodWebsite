@@ -235,16 +235,18 @@ def debug_db():
 @app.route("/api/db-check")
 def db_check():
     try:
-        with Session() as session:
-            tables = session.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).fetchall()
-            cards_count = session.execute(text("SELECT COUNT(*) FROM cards")).scalar()
+        engine = create_engine(Config.SQLITE_PROXY_URL)
+        with engine.connect() as conn:
+            tables = conn.execute(text("SELECT name FROM sqlite_master")).fetchall()
             return jsonify({
                 'tables': [t[0] for t in tables],
-                'cards_count': cards_count,
-                'connection': 'success'
+                'status': 'success'
             }), 200
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({
+            'error': str(e),
+            'solution': 'Verify /root/CARDSWOOS/db/offcardswood.db exists and is readable'
+        }), 500
 
 @app.route('/card_imgs/<filename>')
 def serve_card_image(filename):
