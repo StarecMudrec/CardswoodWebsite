@@ -34,6 +34,10 @@ with app.app_context():
 def get_sqlite_conn():
     return connect(Config.SQLITE_DB_PATH, uri=True)  # uri=True enables ?mode=ro
 
+@app.route('/placeholder.jpg')
+def serve_placeholder():
+    return send_from_directory('public', 'placeholder.jpg')
+
 # Authentication Helper Function
 def is_authenticated(request, session):
     token = request.args.get("token") or request.cookies.get("token")
@@ -59,7 +63,6 @@ def is_authenticated(request, session):
     except Exception as e:
         logging.exception(f"Authentication error: {e}")
         return False, None
-
 
 # Function to download avatar image
 def download_avatar(url, user_id):
@@ -133,7 +136,6 @@ def telegram_callback():
       </script>
     """)
     return response
-
 
 # Logout Route (Clears the Token)
 @app.route("/auth/logout", methods=['GET', 'POST'])

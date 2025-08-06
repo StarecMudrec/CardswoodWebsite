@@ -36,6 +36,7 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
+      - ./frontend/public:/app/public
       - card_images:/app/card_imgs
       - /root/CARDSWOOS/db/offcardswood.db:/app/db/offcardswood.db:ro
     depends_on:
