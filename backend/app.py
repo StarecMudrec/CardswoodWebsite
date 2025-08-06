@@ -321,14 +321,8 @@ def get_cards(season_id):
                 "SELECT id, photo, name, rarity, points FROM cards WHERE season = ?",
                 (int(season_id),)
             )
-            cards = [{
-                'id': row[0],
-                'photo': row[1],
-                'name': row[2],
-                'rarity': row[3],
-                'points': row[4]
-            } for row in result]
-            return jsonify(cards), 200
+            cards_ids = [row[0] for row in result]
+            return jsonify(cards_ids), 200
             
     except ValueError:
         return jsonify({'error': 'Invalid season ID'}), 400
@@ -549,7 +543,7 @@ def get_season_info(season_id):
         season_info = {
             'id': season_num,
             'uuid': season_num,
-            'name': "Season" + str(season_num)
+            'name': "Season " + str(season_num)
         }
         
         return jsonify(season_info), 200
