@@ -316,8 +316,8 @@ def delete_season(season_uuid):
 @app.route("/api/cards/<season_id>")
 def get_cards(season_id):  
     try:
-        with Config.SQLITE_ENGINE.connect() as connection:
-            result = connection.execute(
+        with get_sqlite_conn() as conn:
+            result = conn.execute(
                 "SELECT id, photo, name, rarity, points FROM cards WHERE season = ?",
                 (int(season_id),)
             )
@@ -425,8 +425,8 @@ def check_permission():
 @app.route("/api/card_info/<card_id>")
 def get_card_info(card_id):  
     try:
-        with Config.SQLITE_ENGINE.connect() as connection:
-            row = connection.execute(
+        with get_sqlite_conn() as conn:
+            row = conn.execute(
                 "SELECT photo, name, rarity, points, number, drop, event, season FROM cards WHERE id = ?", 
                 (int(card_id),)
             ).fetchone()
