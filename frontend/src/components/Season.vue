@@ -334,15 +334,21 @@
 
   .sort-dropdown {
     position: absolute;
-    top: 100%;
+    top: 142%;
     left: 0;
-    background-color: var(--card-bg);
+    background-color: #1e1e1eeb;
+    color: var(--text-color);
     border: 1px solid #333;
     border-radius: 8px;
     padding: 10px 0;
     z-index: 100;
-    min-width: 250px;
+    min-width: 173px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  @media (max-width: 1460px) {
+    .sort-dropdown {
+      right: 0;
+    }
   }
 
   .sort-option {
