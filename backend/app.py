@@ -324,7 +324,7 @@ def get_cards(season_id):
         with get_sqlite_conn() as conn:
             # Make sure your query selects all required fields
             query = """
-                SELECT id, uuid, photo as img, name, rarity, points 
+                SELECT id, id as uuid, photo as img, name, rarity, points 
                 FROM cards 
                 WHERE season = ?
                 ORDER BY {} {}
