@@ -18,20 +18,19 @@ export const fetchSeasons = async () => {
 }
 
 // Fetch cards for a specific season
-export const fetchCardsForSeason = async (seasonUuid) => {
-  const response = await fetch(`/api/cards/${seasonUuid}`)
-  if (!response.ok) throw new Error('Failed to fetch cards')
-  const cardUuids = await response.json()
-  
-  const cards = await Promise.all(
-    cardUuids.map(async uuid => {
-      const cardResponse = await fetch(`/api/card_info/${uuid}`)
-      if (!cardResponse.ok) throw new Error('Failed to fetch card info')
-      return cardResponse.json()
-    })
-  )
-  
-  return cards
+export async function fetchCardsForSeason(seasonId, sortField = 'id', sortDirection = 'asc') {
+  try {
+    const response = await axios.get(`/api/cards/${seasonId}`, {
+      params: {
+        sort: sortField,
+        direction: sortDirection
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching cards:', error);
+    throw error;
+  }
 }
 
 // Fetch detailed card info

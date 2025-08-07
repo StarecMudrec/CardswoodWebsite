@@ -270,29 +270,18 @@
       closeSortDropdown() {
         this.showSortDropdown = false;
       },
-      sortBy(field, direction) {
+      async sortBy(field, direction) {
         this.currentSort = { field, direction };
         this.closeSortDropdown();
         
-        if (field === 'rarity') {
-          this.cards.sort((a, b) => {
-            const aValue = this.rarityOrder[a.rarity] || 0;
-            const bValue = this.rarityOrder[b.rarity] || 0;
-            return direction === 'asc' ? aValue - bValue : bValue - aValue;
-          });
-        } else {
-          this.cards.sort((a, b) => {
-            const aValue = a[field] || '';
-            const bValue = b[field] || '';
-            
-            if (field === 'points') {
-              return direction === 'asc' ? aValue - bValue : bValue - aValue;
-            } else {
-              if (aValue < bValue) return direction === 'asc' ? -1 : 1;
-              if (aValue > bValue) return direction === 'asc' ? 1 : -1;
-              return 0;
-            }
-          });
+        try {
+          this.loading = true;
+          this.cards = await fetchCardsForSeason(this.season.uuid, field, direction);
+        } catch (error) {
+          console.error('Error sorting cards:', error);
+          this.error = error;
+        } finally {
+          this.loading = false;
         }
       }
     }
