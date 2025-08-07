@@ -47,24 +47,27 @@
         + Add New Card
       </button>
     </div>
-    <div class="cards-container">
-      <Card
-        v-for="card in cards"
-        :key="card.uuid"
-        :card="card || {}"
-        @card-selected="handleCardSelected"
-        @card-clicked="handleCardClicked"
-        @delete-card="handleCardDeleted(card.id)"
-        :allow-selection="isUserAllowed"
-      />
-      <div class="loading-spinner-container">
+    <div class="cards-container-wrapper">
+      <div v-if="loading" class="loading-spinner-container">
         <div class="loading-spinner"></div>
       </div>
-      <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
-        No cards in this season
-      </div>
-      <div v-if="isUserAllowed" class="add-card-as-card mobile-only" @click="$router.push('/add-card')">
-        + Add New Card
+      
+      <div class="cards-container">
+        <Card
+          v-for="card in cards"
+          :key="card.uuid"
+          :card="card || {}"
+          @card-selected="handleCardSelected"
+          @card-clicked="handleCardClicked"
+          @delete-card="handleCardDeleted(card.id)"
+          :allow-selection="isUserAllowed"
+        />
+        <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
+          No cards in this season
+        </div>
+        <div v-if="isUserAllowed" class="add-card-as-card mobile-only" @click="$router.push('/add-card')">
+          + Add New Card
+        </div>
       </div>
     </div>
   </div>
@@ -235,6 +238,11 @@ export default {
 </script>
 
 <style scoped>
+.cards-container-wrapper {
+  position: relative;
+  min-height: 200px; /* Ensure there's space for the spinner */
+}
+
 .loading-spinner-container {
   position: absolute;
   top: 0;
