@@ -10,7 +10,14 @@
           <div class="loading-text">Loading card details...</div>
         </div>
       </div>
-      <div v-else-if="error" class="error-message">Error loading card: {{ error }}</div>
+      <div v-else-if="error" class="loading-overlay error-overlay">
+        <div class="loading-content">
+          <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div class="loading-text error-text">Error loading card: {{ error }}</div>
+        </div>
+      </div>
       <div v-else class="card-detail">
         <div class="card-image-container">
           <img 
@@ -515,6 +522,21 @@ export default {
   stroke: var(--accent-color);
   stroke-linecap: round;
   animation: dash 1.5s ease-in-out infinite;
+}
+
+/* New error-specific styles */
+.error-overlay {
+  background-color: rgba(0, 0, 0, 0.85); /* Slightly darker for errors */
+}
+
+.error-icon {
+  width: 50px;
+  height: 50px;
+  color: #ff4444; /* Red color for error icon */
+}
+
+.error-text {
+  color: #ff6b6b; /* Lighter red for error text */
 }
 
 @keyframes rotate {
