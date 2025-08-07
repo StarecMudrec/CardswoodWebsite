@@ -1,4 +1,5 @@
 // src/api/index.js
+import axios from 'axios'
 
 // Fetch all seasons
 export const fetchSeasons = async () => {
