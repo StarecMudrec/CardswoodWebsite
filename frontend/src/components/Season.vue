@@ -296,36 +296,36 @@
   .sort-controls {
     position: relative;
     display: inline-block;
-    margin-left: 20px;
+    margin-right: 12px;
   }
 
   .sort-icon {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     cursor: pointer;
     padding: 3px 0;
   }
 
   .sort-icon-line {
     display: block;
-    height: 3px;
+    height: 2px;
     background-color: var(--text-color);
     transition: all 0.3s ease;
   }
 
   .sort-icon-line:nth-child(1) {
-    width: 100%;
+    width: 90%;
   }
 
   .sort-icon-line:nth-child(2) {
-    width: 65%;
+    width: 60%;
   }
 
   .sort-icon-line:nth-child(3) {
-    width: 35%;
+    width: 30%;
   }
 
   .sort-icon:hover .sort-icon-line {
