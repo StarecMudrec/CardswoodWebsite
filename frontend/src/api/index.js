@@ -26,12 +26,19 @@ export async function fetchCardsForSeason(seasonId, sortField = 'id', sortDirect
         direction: sortDirection
       }
     });
+    
+    // Transform the data to match what your Card component expects
     return response.data.map(card => ({
-      ...card,
-      // Ensure all required fields are present
+      id: card.id,
       uuid: card.uuid || card.id.toString(), // Fallback to id if uuid doesn't exist
-      category: card.rarity // Map rarity to category if needed
+      img: card.photo || card.img,           // Handle different field names
+      name: card.name,
+      rarity: card.rarity,
+      points: card.points,
+      category: card.rarity,                 // Map rarity to category if needed
+      // Include any other required fields
     }));
+    
   } catch (error) {
     console.error('Error fetching cards:', error);
     throw error;

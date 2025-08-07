@@ -273,14 +273,18 @@
       async sortBy(field, direction) {
         try {
           this.loading = true;
-          this.cards = await fetchCardsForSeason(this.season.uuid, field, direction);
           this.currentSort = { field, direction };
+          
+          // Close dropdown immediately
+          this.showSortDropdown = false;
+          
+          // Fetch sorted cards from API
+          this.cards = await fetchCardsForSeason(this.season.uuid, field, direction);
         } catch (error) {
           console.error('Error sorting cards:', error);
-          this.error = error;s
+          this.error = error;
         } finally {
           this.loading = false;
-          this.showSortDropdown = false;
         }
       }
     }
