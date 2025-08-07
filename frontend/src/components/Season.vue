@@ -72,15 +72,24 @@
       </div>
       
       <div class="cards-container">
-        <Card
-          v-for="card in cards"
-          :key="card.uuid"
-          :card="card || {}"
-          @card-selected="handleCardSelected"
-          @card-clicked="handleCardClicked"
-          @delete-card="handleCardDeleted(card.id)"
-          :allow-selection="isUserAllowed"
-        />
+        <transition-group 
+          name="card-sort"
+          tag="div"
+          class="cards-container"
+          @before-enter="beforeEnter"
+          @enter="enter"
+          @leave="leave"
+        >
+          <Card
+            v-for="card in cards"
+            :key="card.uuid"
+            :card="card || {}"
+            @card-selected="handleCardSelected"
+            @card-clicked="handleCardClicked"
+            @delete-card="handleCardDeleted(card.id)"
+            :allow-selection="isUserAllowed"
+          />
+        </transition-group>
         <div v-if="!loading && cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666; margin-top: 17px;">
           No cards in this season
         </div>
@@ -270,21 +279,85 @@
       closeSortDropdown() {
         this.showSortDropdown = false;
       },
+      beforeEnter(el) {
+        el.style.opacity = 0
+        el.style.transform = "translateY(20px)"
+      },
+      
+      enter(el, done) {
+        const delay = el.dataset.index * 50
+        setTimeout(() => {
+          gsap.to(el, {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            ease: "power2.out",
+            onComplete: done
+          })
+        }, delay)
+      },
+      
+      leave(el, done) {
+        gsap.to(el, {
+          opacity: 0,
+          y: -20,
+          duration: 0.3,
+          ease: "power2.in",
+          onComplete: done
+        })
+      },
+      
       async sortBy(field, direction) {
         try {
-          this.loading = true;
-          this.currentSort = { field, direction };
+          this.loading = true
+          // Store current positions before sorting
+          const cardElements = this.$el.querySelectorAll('.card')
+          const oldPositions = Array.from(cardElements).map(el => {
+            const rect = el.getBoundingClientRect()
+            return {
+              x: rect.left,
+              y: rect.top
+            }
+          })
           
-          // Close dropdown immediately
-          this.showSortDropdown = false;
+          // Perform the sort
+          this.currentSort = { field, direction }
+          this.cards = await fetchCardsForSeason(this.season.uuid, field, direction)
           
-          // Fetch sorted cards from API
-          this.cards = await fetchCardsForSeason(this.season.uuid, field, direction);
+          // Wait for DOM update
+          await this.$nextTick()
+          
+          // Animate to new positions
+          const newCardElements = this.$el.querySelectorAll('.card')
+          newCardElements.forEach((el, index) => {
+            const newRect = el.getBoundingClientRect()
+            const oldPos = oldPositions[index]
+            
+            if (oldPos) {
+              const dx = oldPos.x - newRect.left
+              const dy = oldPos.y - newRect.top
+              
+              gsap.set(el, {
+                x: dx,
+                y: dy,
+                opacity: 0
+              })
+              
+              gsap.to(el, {
+                x: 0,
+                y: 0,
+                opacity: 1,
+                duration: 0.5,
+                delay: index * 0.03,
+                ease: "power2.out"
+              })
+            }
+          })
+          
         } catch (error) {
-          console.error('Error sorting cards:', error);
-          this.error = error;
+          console.error('Error sorting cards:', error)
         } finally {
-          this.loading = false;
+          this.loading = false
         }
       }
     }
@@ -292,6 +365,26 @@
 </script>
 
 <style scoped>
+  /* Animation styles */
+  .card-sort-move {
+    transition: all 0.5s ease;
+  }
+
+  .card-sort-enter-active,
+  .card-sort-leave-active {
+    transition: all 0.5s ease;
+    position: absolute;
+  }
+
+  .card-sort-enter,
+  .card-sort-leave-to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .card {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+  }
   /* Add these new styles */
   .sort-controls {
     position: relative;
