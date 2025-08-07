@@ -296,7 +296,7 @@
   .sort-controls {
     position: relative;
     display: inline-block;
-    margin-right: 12px;
+    margin-right: 2px;
   }
 
   .sort-icon {
@@ -307,6 +307,7 @@
     height: 20px;
     cursor: pointer;
     padding: 3px 0;
+    transform: scaleX(-1);
   }
 
   .sort-icon-line {
