@@ -103,7 +103,6 @@
 
 <script>
   import Card from './Card.vue'
-  import { gsap } from 'gsap'
   import { fetchCardsForSeason, deleteCard, checkUserPermission, fetchUserInfo, updateSeason, deleteSeason } from '@/api'
   export default {
     components: {

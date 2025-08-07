@@ -11,8 +11,7 @@
     "axios": "^1.6.8",
     "vue-router": "^4.2.0",
     "vuex": "^4.1.0",
-    "browser-image-compression": "^2.0.0",
-    "gsap": "^3.13.0"
+    "browser-image-compression": "^2.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
