@@ -271,17 +271,16 @@
         this.showSortDropdown = false;
       },
       async sortBy(field, direction) {
-        this.currentSort = { field, direction };
-        this.closeSortDropdown();
-        
         try {
           this.loading = true;
           this.cards = await fetchCardsForSeason(this.season.uuid, field, direction);
+          this.currentSort = { field, direction };
         } catch (error) {
           console.error('Error sorting cards:', error);
-          this.error = error;
+          this.error = error;s
         } finally {
           this.loading = false;
+          this.showSortDropdown = false;
         }
       }
     }

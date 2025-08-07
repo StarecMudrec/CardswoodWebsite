@@ -322,12 +322,12 @@ def get_cards(season_id):
         sort_direction = request.args.get('direction', 'asc')
         
         with get_sqlite_conn() as conn:
-            # Base query
-            query = "SELECT id, photo, name, rarity, points FROM cards WHERE season = ?"
+            # Base query - include uuid if it exists in your table
+            query = "SELECT id, uuid, photo, name, rarity, points, number, [drop], event, season FROM cards WHERE season = ?"
             params = (int(season_id),)
             
             # Add sorting
-            valid_sort_fields = ['id', 'name', 'rarity', 'points']
+            valid_sort_fields = ['id', 'name', 'rarity', 'points', 'number']
             if sort_field not in valid_sort_fields:
                 sort_field = 'id'
                 
@@ -337,7 +337,20 @@ def get_cards(season_id):
             query += f" ORDER BY {sort_field} {sort_direction}"
             
             result = conn.execute(query, params)
-            cards = [dict(zip(['id', 'photo', 'name', 'rarity', 'points'], row)) for row in result]
+            cards = []
+            for row in result:
+                cards.append({
+                    'id': row[0],
+                    'uuid': row[1],  # Make sure this matches your DB schema
+                    'img': row[2],
+                    'name': row[3],
+                    'rarity': row[4],
+                    'points': row[5],
+                    'number': row[6],
+                    'drop': row[7],
+                    'event': row[8],
+                    'season': row[9]
+                })
             
             return jsonify(cards), 200
             
