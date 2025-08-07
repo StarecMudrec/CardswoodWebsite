@@ -526,7 +526,7 @@ export default {
 
 /* New error-specific styles */
 .error-overlay {
-  background-color: rgba(0, 0, 0, 0.85); /* Slightly darker for errors */
+  background-color: rgba(0, 0, 0, 0.7); /* Slightly darker for errors */
 }
 
 .error-icon {
