@@ -240,7 +240,7 @@ export default {
 <style scoped>
 .cards-container-wrapper {
   position: relative;
-  min-height: 200px; /* Ensure there's space for the spinner */
+  min-height: 50px; /* Ensure there's space for the spinner */
 }
 
 .loading-spinner-container {
@@ -252,7 +252,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.2);
+  /* background-color: rgba(0, 0, 0, 0.2); */
   z-index: 10;
   border-radius: 8px;
 }
