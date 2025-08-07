@@ -537,11 +537,11 @@
   }
 
   .left-arrow {
-    left: 20px;
+    left: 10px;
   }
 
   .right-arrow {
-    right: 20px;
+    right: 10px;
   }
 
   .arrow-icon-wrapper {
