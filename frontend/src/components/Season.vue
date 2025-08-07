@@ -57,7 +57,10 @@
         @delete-card="handleCardDeleted(card.id)"
         :allow-selection="isUserAllowed"
       />
-      <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
+      <div v-if="loading" class="loading-spinner-container">
+        <div class="loading-spinner"></div>
+      </div>
+      <div v-else-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
         No cards in this season
       </div>
       <div v-if="isUserAllowed" class="add-card-as-card mobile-only" @click="$router.push('/add-card')">
@@ -232,6 +235,32 @@ export default {
 </script>
 
 <style scoped>
+.loading-spinner-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  border-radius: 8px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--accent-color);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 /* Add these new styles */
 .season-title {
   position: relative;
