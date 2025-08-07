@@ -320,20 +320,46 @@ def get_cards(season_id):
     try:
         sort_field = request.args.get('sort', 'id')
         sort_direction = request.args.get('direction', 'asc')
+
+        RARITY_ORDER = {
+            'EPISODICAL': 1,
+            'SECONDARY': 2,
+            'FAMOUS': 3,
+            'MAINCHARACTER': 4,
+            'MOVIE': 5,
+            'SERIES': 6,
+            'ACHIEVEMENTS': 7
+        }
         
         with get_sqlite_conn() as conn:
-            # Make sure your query selects all required fields
-            query = """
-                SELECT id, id as uuid, photo as img, name, rarity, points 
-                FROM cards 
-                WHERE season = ?
-                ORDER BY {} {}
-            """.format(sort_field, sort_direction)
-            
-            result = conn.execute(query, (int(season_id),))
-            cards = [dict(zip(['id', 'uuid', 'img', 'name', 'rarity', 'points'], row)) for row in result]
-            
-            return jsonify(cards), 200
+            if sort_field == 'rarity':
+                # For rarity sorting, we need to get all cards first
+                result = conn.execute(
+                    "SELECT id, photo, name, rarity, points FROM cards WHERE season = ?",
+                    (int(season_id),)
+                )
+                cards = [dict(zip(['id', 'img', 'name', 'rarity', 'points'], row)) for row in result]
+                
+                # Sort in Python using our custom order
+                cards.sort(key=lambda x: RARITY_ORDER.get(x['rarity'], 0))
+                
+                if sort_direction.lower() == 'desc':
+                    cards.reverse()
+                
+                return jsonify(cards), 200
+            else:
+                # Make sure your query selects all required fields
+                query = """
+                    SELECT id, id as uuid, photo as img, name, rarity, points 
+                    FROM cards 
+                    WHERE season = ?
+                    ORDER BY {} {}
+                """.format(sort_field, sort_direction)
+                
+                result = conn.execute(query, (int(season_id),))
+                cards = [dict(zip(['id', 'uuid', 'img', 'name', 'rarity', 'points'], row)) for row in result]
+                
+                return jsonify(cards), 200
             
     except ValueError:
         return jsonify({'error': 'Invalid season ID'}), 400
