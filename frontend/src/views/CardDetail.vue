@@ -2,7 +2,14 @@
   <div>
     <div class="background-container"></div>
     <div class="card-detail-container">
-      <div v-if="loading" class="loading">Loading card details...</div>
+      <div v-if="loading" class="loading-overlay">
+        <div class="loading-content">
+          <svg class="spinner" viewBox="0 0 50 50">
+            <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+          </svg>
+          <div class="loading-text">Loading card details...</div>
+        </div>
+      </div>
       <div v-else-if="error" class="error-message">Error loading card: {{ error }}</div>
       <div v-else class="card-detail">
         <div class="card-image-container">
@@ -471,6 +478,66 @@ export default {
 </script>
 
 <style scoped>
+/* Add these new styles at the end of your style section */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.loading-text {
+  color: white;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  animation: rotate 2s linear infinite;
+}
+
+.spinner .path {
+  stroke: var(--accent-color);
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
 /* Существующие стили остаются без изменений */
 .edit-icon {
   margin-left: 10px;
