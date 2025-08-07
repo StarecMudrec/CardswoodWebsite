@@ -62,7 +62,7 @@
           @delete-card="handleCardDeleted(card.id)"
           :allow-selection="isUserAllowed"
         />
-        <div v-if="cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
+        <div v-if="!loading && cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666;">
           No cards in this season
         </div>
         <div v-if="isUserAllowed" class="add-card-as-card mobile-only" @click="$router.push('/add-card')">
