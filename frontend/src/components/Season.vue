@@ -75,7 +75,7 @@
         <transition-group 
           name="card-sort"
           tag="div"
-          class="cards-container-thing"
+          class="cards-container"
           @before-enter="beforeEnter"
           @enter="enter"
           @leave="leave"
@@ -382,16 +382,20 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
+  .cards-container {
+    position: relative;
+  }
+
   .card {
     transition: transform 0.5s ease, opacity 0.5s ease;
   }
 
   /* Make sure cards have a transition for smooth movement */
-  .cards-container-thing {
+  .cards-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
-    position: relative; /* Needed for transition-group */
   }
   /* Add these new styles */
   .sort-controls {
