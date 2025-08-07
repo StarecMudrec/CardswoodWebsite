@@ -318,13 +318,28 @@ def delete_season(season_uuid):
 @app.route("/api/cards/<season_id>")
 def get_cards(season_id):  
     try:
+        sort_field = request.args.get('sort', 'id')
+        sort_direction = request.args.get('direction', 'asc')
+        
         with get_sqlite_conn() as conn:
-            result = conn.execute(
-                "SELECT id, photo, name, rarity, points FROM cards WHERE season = ?",
-                (int(season_id),)
-            )
-            cards_ids = [row[0] for row in result]
-            return jsonify(cards_ids), 200
+            # Base query
+            query = "SELECT id, photo, name, rarity, points FROM cards WHERE season = ?"
+            params = (int(season_id),)
+            
+            # Add sorting
+            valid_sort_fields = ['id', 'name', 'rarity', 'points']
+            if sort_field not in valid_sort_fields:
+                sort_field = 'id'
+                
+            if sort_direction.lower() not in ['asc', 'desc']:
+                sort_direction = 'asc'
+                
+            query += f" ORDER BY {sort_field} {sort_direction}"
+            
+            result = conn.execute(query, params)
+            cards = [dict(zip(['id', 'photo', 'name', 'rarity', 'points'], row)) for row in result]
+            
+            return jsonify(cards), 200
             
     except ValueError:
         return jsonify({'error': 'Invalid season ID'}), 400
