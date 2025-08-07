@@ -348,6 +348,7 @@
   @media (max-width: 1460px) {
     .sort-dropdown {
       right: 0;
+      left: auto;
     }
   }
 
