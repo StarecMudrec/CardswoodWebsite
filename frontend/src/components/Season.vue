@@ -383,19 +383,8 @@
     transform: translateY(20px);
   }
 
-  .cards-container {
-    position: relative;
-  }
-
   .card {
     transition: transform 0.5s ease, opacity 0.5s ease;
-  }
-
-  /* Make sure cards have a transition for smooth movement */
-  .cards-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
   }
   /* Add these new styles */
   .sort-controls {
