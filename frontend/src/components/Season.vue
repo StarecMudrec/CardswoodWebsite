@@ -72,15 +72,17 @@
       </div>
       
       <div class="cards-container">
-        <Card
-          v-for="card in cards"
-          :key="card.uuid"
-          :card="card || {}"
-          @card-selected="handleCardSelected"
-          @card-clicked="handleCardClicked"
-          @delete-card="handleCardDeleted(card.id)"
-          :allow-selection="isUserAllowed"
-        />
+        <transition-group name="card-sort" tag="div" class="cards-grid">
+          <Card
+            v-for="card in cards"
+            :key="card.uuid"
+            :card="card || {}"
+            @card-selected="handleCardSelected"
+            @card-clicked="handleCardClicked"
+            @delete-card="handleCardDeleted(card.id)"
+            :allow-selection="isUserAllowed"
+          />
+        </transition-group>
         <div v-if="!loading && cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666; margin-top: 17px;">
           No cards in this season
         </div>
@@ -274,12 +276,48 @@
         try {
           this.loading = true;
           this.currentSort = { field, direction };
-          
-          // Close dropdown immediately
           this.showSortDropdown = false;
           
-          // Fetch sorted cards from API
-          this.cards = await fetchCardsForSeason(this.season.uuid, field, direction);
+          // Store current positions
+          const cards = this.$el.querySelectorAll('.card');
+          const oldPositions = Array.from(cards).map(card => {
+            const rect = card.getBoundingClientRect();
+            return { x: rect.left, y: rect.top };
+          });
+          
+          // Update the cards
+          this.cards = await fetchCardsForSeason(
+            this.season.uuid, 
+            field, 
+            direction
+          );
+          
+          // Wait for DOM update
+          await this.$nextTick();
+          
+          // Animate to new positions
+          const newCards = this.$el.querySelectorAll('.card');
+          newCards.forEach((card, index) => {
+            const newRect = card.getBoundingClientRect();
+            const oldPos = oldPositions[index];
+            
+            if (oldPos) {
+              const dx = oldPos.x - newRect.left;
+              const dy = oldPos.y - newRect.top;
+              
+              // Set initial position
+              card.style.transform = `translate(${dx}px, ${dy}px)`;
+              card.style.transition = 'none';
+              
+              // Force repaint
+              card.offsetHeight;
+              
+              // Animate to final position
+              card.style.transform = '';
+              card.style.transition = 'transform 0.5s ease';
+            }
+          });
+          
         } catch (error) {
           console.error('Error sorting cards:', error);
           this.error = error;
@@ -292,6 +330,33 @@
 </script>
 
 <style scoped>
+  /* Add these styles to your existing styles */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    position: relative; /* Needed for smooth transitions */
+  }
+
+  .card-sort-move {
+    transition: transform 0.5s ease;
+  }
+
+  .card-sort-enter-active,
+  .card-sort-leave-active {
+    transition: all 0.5s ease;
+  }
+
+  .card-sort-enter-from,
+  .card-sort-leave-to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  .card-sort-leave-active {
+    position: absolute;
+    width: 100%;
+  }
   /* Add these new styles */
   .sort-controls {
     position: relative;
