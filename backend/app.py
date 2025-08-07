@@ -430,6 +430,11 @@ def get_card_info(card_id):
             if not row:
                 return jsonify({'error': 'Card not found'}), 404
                 
+            card_count = conn.execute(
+                "SELECT COUNT(*) FROM filmstrips WHERE card_id = ?",
+                (card_id,)
+            ).fetchone()[0]
+
             return jsonify({
                 'id': card_id,
                 'uuid': card_id,
@@ -437,7 +442,7 @@ def get_card_info(card_id):
                 'img': row[0],
                 'category': row[2],
                 'name': row[1],
-                'description': f"Points: {row[3]}\n Number: {row[4]}\n Drop: {row[5]}\n Event: {row[6]}"
+                'description': f"Amount: {card_count}"
             }), 200
             
     except ValueError:
