@@ -31,6 +31,7 @@ export async function fetchCardsForSeason(seasonId, sortField = 'id', sortDirect
     // Transform the data to match what your Card component expects
     return response.data.map(card => ({
       id: card.id,
+      uuid: card.uuid || card.id.toString(), // Fallback to id if uuid doesn't exist
       img: card.photo || card.img,           // Handle different field names
       name: card.name,
       rarity: card.rarity,
