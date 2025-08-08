@@ -74,7 +74,7 @@
       <div class="cards-container">
         <Card
           v-for="card in cards"
-          :key="card.uuid"
+          :key="card.id"
           :card="card || {}"
           @card-selected="handleCardSelected"
           @card-clicked="handleCardClicked"
@@ -178,7 +178,7 @@
         handler(newSelectedCards) {
           this.cards = this.cards.map(card => ({
             ...card,
-            isSelected: newSelectedCards.includes(card.uuid)
+            isSelected: newSelectedCards.includes(card.id)
           }));
         },
         deep: true // Watch for changes inside the array
@@ -198,8 +198,8 @@
           this.loading = false;
         }
       },
-      handleCardClicked(cardUuid) {
-        this.$emit('card-clicked', cardUuid);
+      handleCardClicked(cardId) {
+        this.$emit('card-clicked', cardId);
       },
       handleCardSelected(cardId, isSelected) {
         if (isSelected) {
