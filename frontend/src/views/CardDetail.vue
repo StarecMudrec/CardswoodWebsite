@@ -639,6 +639,8 @@
     width: 100%;
     top: 0;
     left: 0;
+    -ms-overflow-style: none; /* For IE/Edge */
+    scrollbar-width: none; /* For Firefox */
   }
   .nav-arrow.disabled {
     opacity: 0.2;
