@@ -14,25 +14,27 @@
           </svg>
         </div>
       </div>
+
+      <div v-if="loading" class="loading-overlay">
+        <div class="loading-content">
+          <svg class="spinner" viewBox="0 0 50 50">
+            <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+          </svg>
+          <div class="loading-text">Loading card details...</div>
+        </div>
+      </div>
+      <div v-if="error" class="loading-overlay error-overlay">
+        <div class="loading-content">
+          <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div class="loading-text error-text">Error loading card: {{ error }}</div>
+        </div>
+      </div>
+
       <transition :name="transitionName" mode="out-in">
         <div :key="card.id" class="card-detail-container">
-          <div v-if="loading" class="loading-overlay">
-            <div class="loading-content">
-              <svg class="spinner" viewBox="0 0 50 50">
-                <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
-              </svg>
-              <div class="loading-text">Loading card details...</div>
-            </div>
-          </div>
-          <div v-else-if="error" class="loading-overlay error-overlay">
-            <div class="loading-content">
-              <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <div class="loading-text error-text">Error loading card: {{ error }}</div>
-            </div>
-          </div>
-          <div v-else class="card-detail">
+          <div class="card-detail">
             <div class="card-image-container">
               <img 
                 v-if="card.img && !imageError" 
@@ -566,14 +568,12 @@
 </script>
 
 <style scoped>
-  /* Add these styles to your existing style section */
+  /* Transition styles */
   .slide-left-enter-active,
   .slide-left-leave-active,
   .slide-right-enter-active,
   .slide-right-leave-active {
     transition: all 0.5s ease;
-    position: absolute;
-    width: 100%;
   }
 
   .slide-left-enter-from {
