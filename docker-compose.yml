@@ -63,7 +63,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /root/CARDSWOOS/db
+      device: /root/CARDSWOOS/db/offcardswood.db
   cardswoos_photos:
     driver: local
     driver_opts:
