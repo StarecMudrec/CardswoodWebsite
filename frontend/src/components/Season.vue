@@ -97,7 +97,26 @@
   import { gsap } from 'gsap';
   import Card from './Card.vue'
   import { fetchCardsForSeason, deleteCard, checkUserPermission, fetchUserInfo, updateSeason, deleteSeason } from '@/api'
+  
+  // Add this directive definition at the top of the script section
+  const clickOutside = {
+    beforeMount(el, binding) {
+      el.clickOutsideEvent = function(event) {
+        if (!(el === event.target || el.contains(event.target))) {
+          binding.value();
+        }
+      };
+      document.addEventListener('click', el.clickOutsideEvent);
+    },
+    unmounted(el) {
+      document.removeEventListener('click', el.clickOutsideEvent);
+    },
+  };
+
   export default {
+    directives: {
+      'click-outside': clickOutside
+    },
     components: {
       Card
     },
