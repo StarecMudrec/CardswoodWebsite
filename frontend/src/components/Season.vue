@@ -71,7 +71,7 @@
         <div class="loading-spinner"></div>
       </div>
       
-      <transition-group name="cards" tag="div" class="cards-container">
+      <div class="cards-container">
         <Card
           v-for="card in cards"
           :key="card.uuid"
@@ -87,7 +87,7 @@
         <div v-if="isUserAllowed" class="add-card-as-card mobile-only" @click="$router.push('/add-card')">
           + Add New Card
         </div>
-      </transition-group>
+      </div>
     </div>
   </div>
 </template>
@@ -278,16 +278,8 @@
           // Close dropdown immediately
           this.showSortDropdown = false;
           
-          // Create a copy of the current cards to trigger the transition
-          const tempCards = [...this.cards];
-          this.cards = [];
-          
-          // Small delay to allow Vue to react to the empty array
-          await new Promise(resolve => setTimeout(resolve, 50));
-          
           // Fetch sorted cards from API
-          const sortedCards = await fetchCardsForSeason(this.season.uuid, field, direction);
-          this.cards = sortedCards;
+          this.cards = await fetchCardsForSeason(this.season.uuid, field, direction);
         } catch (error) {
           console.error('Error sorting cards:', error);
           this.error = error;
@@ -300,25 +292,6 @@
 </script>
 
 <style scoped>
-  /* Add these styles to your existing styles */
-  .cards-move {
-    transition: all 0.5s ease;
-  }
-
-  .cards-enter-active,
-  .cards-leave-active {
-    transition: all 0.5s ease;
-  }
-
-  .cards-enter-from,
-  .cards-leave-to {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
-  .cards-leave-active {
-    position: absolute;
-  }
   /* Add these new styles */
   .sort-controls {
     position: relative;
@@ -773,7 +746,6 @@
     gap: 0px;
     justify-content: center;
     grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
-    position: relative; /* Add this line */
   }
 
   .add-card-button:hover {
