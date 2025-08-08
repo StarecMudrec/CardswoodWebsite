@@ -300,7 +300,7 @@
 <style scoped>
   /* Add these new styles for card transitions */
   .cards-move {
-    transition: transform 0.5s ease;
+    transition: transform 2.5s ease;
   }
 
   .cards-enter-active,
