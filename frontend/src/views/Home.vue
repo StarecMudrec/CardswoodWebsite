@@ -143,7 +143,7 @@ export default {
   methods: {
     ...mapActions(['fetchSeasons']),
     ...mapMutations(['REMOVE_SEASON']), // Add mapMutations
-    navigateToCard(cardUuid, currentSortField, currentSortDirection) { // Deprecated - use @card-clicked on card component directly
+    navigateToCard(cardUuid) { // Deprecated - use @card-clicked on card component directly
       this.$router.push({
         path: `/card/${cardUuid}`,
         query: {
