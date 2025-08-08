@@ -573,12 +573,26 @@
   .slide-left-leave-active,
   .slide-right-enter-active,
   .slide-right-leave-active {
-    transition: all 0.5s ease;
+    transition: 
+      transform 0.5s ease,
+      opacity 0.4s ease 0.1s;
+    position: absolute;
+    width: 100%;
   }
 
   .slide-left-enter-from {
     transform: translateX(100%);
     opacity: 0;
+  }
+
+  .slide-left-enter-to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .slide-left-leave-from {
+    transform: translateX(0);
+    opacity: 1;
   }
 
   .slide-left-leave-to {
@@ -591,15 +605,26 @@
     opacity: 0;
   }
 
+  .slide-right-enter-to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .slide-right-leave-from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
   .slide-right-leave-to {
     transform: translateX(100%);
     opacity: 0;
   }
 
   .card-detail-container {
-    position: relative;
+    position: absolute;
+    width: 100%;
+    top: 0;
     left: 0;
-    right: 0;
   }
   .nav-arrow.disabled {
     opacity: 0.2;
@@ -609,7 +634,6 @@
   /* Add these new styles */
   .card-detail-wrapper {
     position: relative;
-    overflow: hidden;
     min-height: 100vh;
   }
 
