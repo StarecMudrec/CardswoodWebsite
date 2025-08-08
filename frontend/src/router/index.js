@@ -20,7 +20,7 @@ const routes = [
     component: Login
   },
   {
-    path: '/card/:uuid',
+    path: '/card/:id',
     name: 'CardDetail',
     component: CardDetail,
     props: true
