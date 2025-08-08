@@ -233,16 +233,28 @@
       // Add these for card navigation
       const sortedCards = ref([])
       const currentSort = ref({ field: 'id', direction: 'asc' })
+      const currentCardIndex = ref(-1)
 
-      const isFirstCard = computed(() => {
-        if (!card.value || !sortedCards.value.length) return true
-        return sortedCards.value[0]?.uuid === card.value.uuid
-      })
+      const isFirstCard = computed(() => currentCardIndex.value <= 0)
+      const isLastCard = computed(() => currentCardIndex.value >= sortedCards.value.length - 1)
 
-      const isLastCard = computed(() => {
-        if (!card.value || !sortedCards.value.length) return true
-        return sortedCards.value[sortedCards.value.length - 1]?.uuid === card.value.uuid
-      })
+      const findCurrentCardIndex = () => {
+        if (!card.value?.uuid || !sortedCards.value.length) return -1
+        return sortedCards.value.findIndex(c => c.uuid === card.value.uuid)
+      }
+
+      const loadSortedCards = async () => {
+        try {
+          if (!card.value?.season_id) return
+          
+          // Fetch cards with the current sort (you might want to store sort params globally)
+          const cards = await fetchCardsForSeason(card.value.season_id, 'id', 'asc') // Default sort
+          sortedCards.value = cards
+          currentCardIndex.value = findCurrentCardIndex()
+        } catch (error) {
+          console.error('Error loading sorted cards:', error)
+        }
+      }
 
       const adjustFontSize = () => {
         nextTick(() => {
@@ -417,6 +429,8 @@
           // Load current card
           card.value = await fetchCardInfo(props.uuid);
           editableCard.value = { ...card.value };
+
+          await loadSortedCards()
           
           // Load all cards from the same season with current sort
           const cards = await fetchCardsForSeason(card.value.season_id, currentSort.value.field, currentSort.value.direction)
@@ -461,21 +475,19 @@
       }
 
       const goToPreviousCard = () => {
-        if (isFirstCard.value) return
+        if (isFirstCard.value || currentCardIndex.value === -1) return
         
-        const currentIndex = sortedCards.value.findIndex(c => c.uuid === card.value.uuid)
-        if (currentIndex > 0) {
-          const prevCard = sortedCards.value[currentIndex - 1]
+        const prevCard = sortedCards.value[currentCardIndex.value - 1]
+        if (prevCard) {
           router.push(`/card/${prevCard.uuid}`)
         }
       }
 
       const goToNextCard = () => {
-        if (isLastCard.value) return
+        if (isLastCard.value || currentCardIndex.value === -1) return
         
-        const currentIndex = sortedCards.value.findIndex(c => c.uuid === card.value.uuid)
-        if (currentIndex < sortedCards.value.length - 1) {
-          const nextCard = sortedCards.value[currentIndex + 1]
+        const nextCard = sortedCards.value[currentCardIndex.value + 1]
+        if (nextCard) {
           router.push(`/card/${nextCard.uuid}`)
         }
       }
@@ -490,7 +502,11 @@
         window.removeEventListener('resize', adjustFontSize)
       })
 
-      watch(() => props.uuid, loadData)
+      watch(() => props.uuid, async (newUuid) => {
+        if (newUuid && card.value?.uuid !== newUuid) {
+          await loadData()
+        }
+      })
 
       watch(() => editableCard.value.name, (newName) => {
         if (newName && newName.length > 100) {
@@ -543,9 +559,11 @@
         saveField,
         toggleEdit,
         cancelEdit,
-        fileInput,
+        fileInput,  
         handleImageDoubleClick,
         handleFileChange,
+        isFirstCard,
+        isLastCard,
         goToPreviousCard,
         goToNextCard
       }
