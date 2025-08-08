@@ -189,9 +189,9 @@
 </template>
 
 <script>
-  import { fetchCardInfo, fetchSeasonInfo, fetchComments, checkUserPermission, fetchUserInfo, fetchSeasons } from '@/api'
+  import { fetchCardInfo, fetchSeasonInfo, fetchComments, checkUserPermission, fetchUserInfo, fetchSeasons, fetchCardsForSeason } from '@/api'
   import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
-  import { useRouter } from 'vue-router'
+  import { useRouter, useRoute } from 'vue-router'
 
   export default {
     props: {
@@ -211,6 +211,7 @@
     },
     setup(props) {
       const router = useRouter()
+      const route = useRoute()
       const fileInput = ref(null)
       // Refs для полей ввода
       const nameInput = ref(null)
@@ -243,8 +244,14 @@
 
       const loadCardList = async () => {
         try {
+          if (!card.value.season_id) return
+          
+          // Get sort parameters from route query or use defaults
+          const sortField = route.query.sort || 'id'
+          const sortDirection = route.query.direction || 'asc'
+          
           // Get the sorted list of cards for the current season
-          const cards = await fetchCardsForSeason(card.value.season_id, props.sortField, props.sortDirection)
+          const cards = await fetchCardsForSeason(card.value.season_id, sortField, sortDirection)
           cardList.value = cards
           
           // Find current card's position in the sorted list
@@ -254,17 +261,23 @@
         }
       }
 
-      const goToPreviousCard = async () => {
+      const goToPreviousCard = () => {
         if (currentCardIndex.value > 0) {
           const prevCard = cardList.value[currentCardIndex.value - 1]
-          router.push(`/card/${prevCard.uuid}?sort=${props.sortField}&direction=${props.sortDirection}`)
+          router.push({
+            path: `/card/${prevCard.uuid}`,
+            query: route.query // Preserve current query params
+          })
         }
       }
 
-      const goToNextCard = async () => {
+      const goToNextCard = () => {
         if (currentCardIndex.value < cardList.value.length - 1) {
           const nextCard = cardList.value[currentCardIndex.value + 1]
-          router.push(`/card/${nextCard.uuid}?sort=${props.sortField}&direction=${props.sortDirection}`)
+          router.push({
+            path: `/card/${nextCard.uuid}`,
+            query: route.query // Preserve current query params
+          })
         }
       }
 
@@ -495,6 +508,13 @@
         }
       }, { immediate: true })
 
+      // Reload card list when route query changes
+      watch(() => route.query, () => {
+        if (card.value.season_id) {
+          loadCardList()
+        }
+      })
+
       watch(() => props.uuid, loadData)
 
       watch(() => editableCard.value.name, (newName) => {
@@ -573,13 +593,16 @@
 <style scoped>
   /* Add to your existing styles */
   .nav-arrow.disabled {
-    opacity: 0.2;
+    opacity: 0.3;
     cursor: not-allowed;
-    pointer-events: none;
   }
 
   .nav-arrow.disabled .arrow-icon {
-    fill: #666; /* Gray out the icon */
+    fill: #666;
+  }
+
+  .nav-arrow:not(.disabled):hover {
+    opacity: 1;
   }
   /* Add these new styles */
   .card-detail-wrapper {
