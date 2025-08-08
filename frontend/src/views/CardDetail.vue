@@ -1,186 +1,189 @@
 <template>
   <div>
     <div class="background-container"></div>
-    <div class="card-detail-wrapper">
-      <!-- Left Arrow -->
-      <div 
-        class="nav-arrow left-arrow" 
-        :class="{ 'disabled': isFirstCard }"
-        @click="goToPreviousCard"
-      >
-        <div class="arrow-icon-wrapper">
-          <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 20.1L6.9 12 15 3.9z"/>
-          </svg>
-        </div>
-      </div>
-      <div class="card-detail-container">
-        <div v-if="loading" class="loading-overlay">
-          <div class="loading-content">
-            <svg class="spinner" viewBox="0 0 50 50">
-              <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+    <!-- Add horizontal scroll container -->
+    <div class="card-scroll-container" ref="scrollContainer">
+      <div class="card-detail-wrapper">
+        <!-- Left Arrow -->
+        <div 
+          class="nav-arrow left-arrow" 
+          :class="{ 'disabled': isFirstCard }"
+          @click="goToPreviousCard"
+        >
+          <div class="arrow-icon-wrapper">
+            <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 20.1L6.9 12 15 3.9z"/>
             </svg>
-            <div class="loading-text">Loading card details...</div>
           </div>
         </div>
-        <div v-else-if="error" class="loading-overlay error-overlay">
-          <div class="loading-content">
-            <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <div class="loading-text error-text">Error loading card: {{ error }}</div>
+        <div class="card-detail-container">
+          <div v-if="loading" class="loading-overlay">
+            <div class="loading-content">
+              <svg class="spinner" viewBox="0 0 50 50">
+                <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+              </svg>
+              <div class="loading-text">Loading card details...</div>
+            </div>
           </div>
-        </div>
-        <div v-else class="card-detail">
-          <div class="card-image-container">
-            <img 
-              v-if="card.img && !imageError" 
-              :src="`/card_imgs/${card.img}`" 
-              :alt="card.name" 
-              class="card-detail-image"
-              @error="imageError = true"
-              @dblclick="handleImageDoubleClick"
-            />
-            <!-- <button v-if="isUserAllowed" class="replace-image-button">Replace Image</button> -->
-            <div v-else class="image-placeholder">No image available</div>
+          <div v-else-if="error" class="loading-overlay error-overlay">
+            <div class="loading-content">
+              <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div class="loading-text error-text">Error loading card: {{ error }}</div>
+            </div>
           </div>
-          
-          <div class="card-content-wrapper">
-            <!-- Название карточки и главная разделительная линия -->
-            <div class="card-header-section">
-              <div class="title-container">
-                <h1 ref="cardNameRef">
-                  
-                  <span v-if="!editing.name">{{ card.name }}</span>
-                  <input 
+          <div v-else class="card-detail">
+            <div class="card-image-container">
+              <img 
+                v-if="card.img && !imageError" 
+                :src="`/card_imgs/${card.img}`" 
+                :alt="card.name" 
+                class="card-detail-image"
+                @error="imageError = true"
+                @dblclick="handleImageDoubleClick"
+              />
+              <!-- <button v-if="isUserAllowed" class="replace-image-button">Replace Image</button> -->
+              <div v-else class="image-placeholder">No image available</div>
+            </div>
+            
+            <div class="card-content-wrapper">
+              <!-- Название карточки и главная разделительная линия -->
+              <div class="card-header-section">
+                <div class="title-container">
+                  <h1 ref="cardNameRef">
+                    
+                    <span v-if="!editing.name">{{ card.name }}</span>
+                    <input 
+                      v-else
+                      v-model="editableCard.name"
+                      @blur="saveField('name')"
+                      @keyup.enter="saveField('name')"
+                      ref="nameInput"
+                      class="edit-input"
+                      maxlength="100"
+                    >
+                    <span v-if="isUserAllowed" class="edit-icon" @click="startEditing('name')">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </span>
+                  </h1>
+                </div>
+                <div v-if="nameError" class="error-message">{{ nameError }}</div>
+                <div class="main-divider"></div>
+              </div>
+              
+              <!-- Описание карточки -->
+              <div class="card-description-section">
+                <div class="card-description">
+                  <p v-if="!editing.description">{{ card.description }}</p>
+                  <textarea
                     v-else
-                    v-model="editableCard.name"
-                    @blur="saveField('name')"
-                    @keyup.enter="saveField('name')"
-                    ref="nameInput"
-                    class="edit-input"
-                    maxlength="100"
-                  >
-                  <span v-if="isUserAllowed" class="edit-icon" @click="startEditing('name')">
+                    v-model="editableCard.description"
+                    @blur="saveField('description')"
+                    @keyup.enter="saveField('description')"
+                    ref="descriptionInput"
+                    maxlength="1000"
+                    class="edit-textarea"
+                  ></textarea>
+                  <span v-if="isUserAllowed" class="edit-icon" @click="startEditing('description')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
                   </span>
-                </h1>
+                </div>
+                <div v-if="descriptionError" class="error-message">{{ descriptionError }}</div>
+                <div class="secondary-divider"></div>
               </div>
-              <div v-if="nameError" class="error-message">{{ nameError }}</div>
-              <div class="main-divider"></div>
-            </div>
-            
-            <!-- Описание карточки -->
-            <div class="card-description-section">
-              <div class="card-description">
-                <p v-if="!editing.description">{{ card.description }}</p>
-                <textarea
-                  v-else
-                  v-model="editableCard.description"
-                  @blur="saveField('description')"
-                  @keyup.enter="saveField('description')"
-                  ref="descriptionInput"
-                  maxlength="1000"
-                  class="edit-textarea"
-                ></textarea>
-                <span v-if="isUserAllowed" class="edit-icon" @click="startEditing('description')">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
-                </span>
-              </div>
-              <div v-if="descriptionError" class="error-message">{{ descriptionError }}</div>
-              <div class="secondary-divider"></div>
-            </div>
-            
-            <!-- Информация о категории и сезоне -->
-            <div class="card-info-section">
-              <div class="card-info-columns">
-                <div class="card-info-column">
-                  <h3>
-                    Rarity:
-                    <span v-if="isUserAllowed" class="edit-icon" @click.stop="toggleEdit('category')">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                      </svg>
-                    </span>
-                  </h3>
-                  <div class="category-container">
-                    <p v-if="!editing.category">{{ card.category }}</p>
-                    <input
+              
+              <!-- Информация о категории и сезоне -->
+              <div class="card-info-section">
+                <div class="card-info-columns">
+                  <div class="card-info-column">
+                    <h3>
+                      Rarity:
+                      <span v-if="isUserAllowed" class="edit-icon" @click.stop="toggleEdit('category')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                      </span>
+                    </h3>
+                    <div class="category-container">
+                      <p v-if="!editing.category">{{ card.category }}</p>
+                      <input
+                        v-else
+                        v-model="editableCard.category"
+                        @blur="saveField('category')"
+                        @keyup.enter="saveField('category')"
+                        @keyup.esc="cancelEdit('category')"
+                        ref="categoryInput"
+                        class="edit-input"
+                        maxlength="20"
+                      >
+                    </div>
+                    <div v-if="categoryError" class="error-message">{{ categoryError }}</div>
+                  </div>
+                  <div class="card-info-column">
+                    <h3>
+                      Season:
+                      <span v-if="isUserAllowed" class="edit-icon" @click.stop="toggleEdit('season')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                      </span>
+                    </h3>
+                    <div v-if="!isUserAllowed">
+                      <p>{{ seasonName }}</p>
+                    </div>
+                    <select
                       v-else
-                      v-model="editableCard.category"
-                      @blur="saveField('category')"
-                      @keyup.enter="saveField('category')"
-                      @keyup.esc="cancelEdit('category')"
-                      ref="categoryInput"
-                      class="edit-input"
-                      maxlength="20"
+                      v-if="isUserAllowed" 
+                      v-model="editableCard.season_uuid"
+                      @change="saveField('season')"
+                      @blur="cancelEdit('season')"
+                      ref="seasonInput"
+                      class="edit-input-select"
                     >
+                      <option class="edit-input-option" v-for="season in allSeasons" :key="season.uuid" :value="season.uuid">
+                        {{ season.name }}
+                      </option>
+                    </select>
                   </div>
-                  <div v-if="categoryError" class="error-message">{{ categoryError }}</div>
-                </div>
-                <div class="card-info-column">
-                  <h3>
-                    Season:
-                    <span v-if="isUserAllowed" class="edit-icon" @click.stop="toggleEdit('season')">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                      </svg>
-                    </span>
-                  </h3>
-                  <div v-if="!isUserAllowed">
-                    <p>{{ seasonName }}</p>
-                  </div>
-                  <select
-                    v-else
-                    v-if="isUserAllowed" 
-                    v-model="editableCard.season_uuid"
-                    @change="saveField('season')"
-                    @blur="cancelEdit('season')"
-                    ref="seasonInput"
-                    class="edit-input-select"
-                  >
-                    <option class="edit-input-option" v-for="season in allSeasons" :key="season.uuid" :value="season.uuid">
-                      {{ season.name }}
-                    </option>
-                  </select>
                 </div>
               </div>
-            </div>
-            
-            <!-- Комментарии -->
-            <div class="comments-section">
-              <div v-if="comments.length === 0" class="no-comments">
-                No comments yet
-              </div>
-              <div v-else class="comments-list">
-                <div v-for="comment in comments" :key="comment.id" class="comment">
-                  <div class="comment-text">{{ comment.text }}</div>
-                  <div class="comment-meta">User #{{ comment.user_id }}</div>
+              
+              <!-- Комментарии -->
+              <div class="comments-section">
+                <div v-if="comments.length === 0" class="no-comments">
+                  No comments yet
+                </div>
+                <div v-else class="comments-list">
+                  <div v-for="comment in comments" :key="comment.id" class="comment">
+                    <div class="comment-text">{{ comment.text }}</div>
+                    <div class="comment-meta">User #{{ comment.user_id }}</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div v-if="saveError" class="error-message">{{ saveError }}</div>
-      <!-- Right Arrow -->
-      <div 
-        class="nav-arrow right-arrow" 
-        :class="{ 'disabled': isLastCard }"
-        @click="goToNextCard"
-      >
-        <div class="arrow-icon-wrapper">
-          <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 3.9L17.1 12 9 20.1z"/>
-          </svg>
+        <div v-if="saveError" class="error-message">{{ saveError }}</div>
+        <!-- Right Arrow -->
+        <div 
+          class="nav-arrow right-arrow" 
+          :class="{ 'disabled': isLastCard }"
+          @click="goToNextCard"
+        >
+          <div class="arrow-icon-wrapper">
+            <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 3.9L17.1 12 9 20.1z"/>
+            </svg>
+          </div>
         </div>
       </div>
     </div>
@@ -235,6 +238,9 @@
 
       const isFirstCard = computed(() => currentCardIndex.value <= 0)
       const isLastCard = computed(() => currentCardIndex.value >= sortedCards.value.length - 1)
+
+      const scrollContainer = ref(null);
+      const cardContainer = ref(null);
 
       const findCurrentCardIndex = () => {
         if (!card.value?.id || !sortedCards.value.length) return -1;
@@ -464,23 +470,43 @@
         }
       }
 
-      const goToPreviousCard = () => {
-        if (isFirstCard.value || currentCardIndex.value === -1) return
+      const goToPreviousCard = async () => {
+        if (isFirstCard.value || currentCardIndex.value === -1) return;
         
-        const prevCard = sortedCards.value[currentCardIndex.value - 1]
+        const prevCard = sortedCards.value[currentCardIndex.value - 1];
         if (prevCard) {
-          router.push(`/card/${prevCard.id}`)
+          await router.push(`/card/${prevCard.id}`);
+          await nextTick();
+          smoothScroll('left');
         }
       }
 
-      const goToNextCard = () => {
-        if (isLastCard.value || currentCardIndex.value === -1) return
+      const goToNextCard = async () => {
+        if (isLastCard.value || currentCardIndex.value === -1) return;
         
-        const nextCard = sortedCards.value[currentCardIndex.value + 1]
+        const nextCard = sortedCards.value[currentCardIndex.value + 1];
         if (nextCard) {
-          router.push(`/card/${nextCard.id}`)
+          await router.push(`/card/${nextCard.id}`);
+          await nextTick();
+          smoothScroll('right');
         }
       }
+      
+      const smoothScroll = (direction) => {
+        if (!scrollContainer.value) return;
+        
+        const container = scrollContainer.value;
+        const cardWidth = cardContainer.value?.offsetWidth || 0;
+        const currentScroll = container.scrollLeft;
+        const targetScroll = direction === 'right' 
+          ? currentScroll + cardWidth 
+          : currentScroll - cardWidth;
+
+        container.scrollTo({
+          left: targetScroll,
+          behavior: 'smooth'
+        });
+      };
 
 
       onMounted(() => {
@@ -552,6 +578,8 @@
         fileInput,  
         handleImageDoubleClick,
         handleFileChange,
+        scrollContainer,
+        cardContainer,
         isFirstCard,
         isLastCard,
         goToPreviousCard,
