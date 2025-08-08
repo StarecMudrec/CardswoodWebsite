@@ -568,20 +568,17 @@
 </script>
 
 <style scoped>
-  /* Transition styles */
   .slide-left-enter-active,
   .slide-left-leave-active,
   .slide-right-enter-active,
   .slide-right-leave-active {
-    transition: 
-      transform 0.5s ease,
-      opacity 0.4s ease 0.1s;
-    position: absolute;
+    transition: transform 0.5s ease, opacity 0.4s ease 0.1s;
     width: 100%;
   }
 
   .slide-left-enter-from {
     transform: translateX(100%);
+    position: absolute; /* Only during enter/leave */
     opacity: 0;
   }
 
@@ -597,11 +594,13 @@
 
   .slide-left-leave-to {
     transform: translateX(-100%);
+    position: absolute; /* Only during enter/leave */
     opacity: 0;
   }
 
   .slide-right-enter-from {
     transform: translateX(-100%);
+    position: absolute; /* Only during enter/leave */
     opacity: 0;
   }
 
@@ -617,15 +616,16 @@
 
   .slide-right-leave-to {
     transform: translateX(100%);
+    position: absolute; /* Only during enter/leave */
     opacity: 0;
   }
 
   .card-detail-container {
-    position: absolute;
+    position: relative; /* Change from absolute to relative */
     width: 100%;
-    top: 0;
-    left: 0;
+    transition: transform 0.5s ease, opacity 0.4s ease 0.1s;
   }
+
   .nav-arrow.disabled {
     opacity: 0.2;
     pointer-events: none;
