@@ -717,7 +717,7 @@
     right: 0;
     bottom: 0;
     overflow: hidden;
-    /* height: 100vh; */
+    height: 100vh;
     width: 100vw;
   }
 
@@ -756,10 +756,6 @@
     opacity: 0;
   }
 
-  .slide-left-leave-active {
-    position: absolute;
-  }
-
   .slide-right-enter-from {
     transform: translateX(-100%);
     opacity: 0;
@@ -778,10 +774,6 @@
   .slide-right-leave-to {
     transform: translateX(100%);
     opacity: 0;
-  }
-
-  .slide-right-leave-active {
-    position: absolute;
   }
 
   .card-detail-container {
