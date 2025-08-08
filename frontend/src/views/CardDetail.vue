@@ -195,7 +195,7 @@
 
   export default {
     props: {
-      uuid: {
+      id: {
         type: String,
         required: true
       }
@@ -237,7 +237,7 @@
       const isLastCard = computed(() => currentCardIndex.value >= sortedCards.value.length - 1)
 
       const findCurrentCardIndex = () => {
-        if (!card.value?.uuid || !sortedCards.value.length) return -1
+        if (!card.value?.id || !sortedCards.value.length) return -1
         return sortedCards.value.findIndex(c => c.id === card.value.id)
       }
 
@@ -390,7 +390,7 @@
         formData.append('image', file);
 
         try {
-          const response = await fetch(`/api/cards/${card.value.uuid}/image`, {
+          const response = await fetch(`/api/cards/${card.value.id}/image`, {
             method: 'PUT',
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('authToken')}`
@@ -413,7 +413,7 @@
         try {
           loading.value = true;
           
-          card.value = await fetchCardInfo(props.uuid);
+          card.value = await fetchCardInfo(props.id);
           editableCard.value = { ...card.value };
 
           await loadSortedCards()
@@ -460,7 +460,7 @@
         
         const prevCard = sortedCards.value[currentCardIndex.value - 1]
         if (prevCard) {
-          router.push(`/card/${prevCard.uuid}`)
+          router.push(`/card/${prevCard.id}`)
         }
       }
 
@@ -469,7 +469,7 @@
         
         const nextCard = sortedCards.value[currentCardIndex.value + 1]
         if (nextCard) {
-          router.push(`/card/${nextCard.uuid}`)
+          router.push(`/card/${nextCard.id}`)
         }
       }
 
@@ -483,8 +483,8 @@
         window.removeEventListener('resize', adjustFontSize)
       })
 
-      watch(() => props.uuid, async (newUuid) => {
-        if (newUuid && card.value?.uuid !== newUuid) {
+      watch(() => props.id, async (newId) => {
+        if (newId && card.value?.id !== newId) {
           await loadData()
         }
       })
