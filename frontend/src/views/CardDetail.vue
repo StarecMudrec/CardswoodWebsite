@@ -3,10 +3,14 @@
     <div class="background-container"></div>
     <div class="card-detail-wrapper">
       <!-- Left Arrow -->
-      <div class="nav-arrow left-arrow" @click="goToPreviousCard">
+      <div 
+        class="nav-arrow left-arrow" 
+        :class="{ 'disabled': isFirstCard }"
+        @click="goToPreviousCard"
+      >
         <div class="arrow-icon-wrapper">
           <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 20.1L6.9 12 15 3.9z"/> <!-- Rotated left version -->
+            <path d="M15 20.1L6.9 12 15 3.9z"/>
           </svg>
         </div>
       </div>
@@ -168,10 +172,14 @@
       </div>
       <div v-if="saveError" class="error-message">{{ saveError }}</div>
       <!-- Right Arrow -->
-      <div class="nav-arrow right-arrow" @click="goToNextCard">
+      <div 
+        class="nav-arrow right-arrow" 
+        :class="{ 'disabled': isLastCard }"
+        @click="goToNextCard"
+      >
         <div class="arrow-icon-wrapper">
           <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 3.9L17.1 12 9 20.1z"/> <!-- Rotated right version -->
+            <path d="M9 3.9L17.1 12 9 20.1z"/>
           </svg>
         </div>
       </div>
@@ -181,8 +189,9 @@
 </template>
 
 <script>
-  import { fetchCardInfo, fetchSeasonInfo, fetchComments, checkUserPermission, fetchUserInfo, fetchSeasons } from '@/api'
+  import { fetchCardInfo, fetchSeasonInfo, fetchComments, checkUserPermission, fetchUserInfo, fetchSeasons, fetchCardsForSeason } from '@/api'
   import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
+  import { useRouter } from 'vue-router'
 
   export default {
     props: {
@@ -192,6 +201,7 @@
       }
     },
     setup(props) {
+        const router = useRouter()
       const fileInput = ref(null)
       // Refs для полей ввода
       const nameInput = ref(null)
@@ -219,6 +229,8 @@
         category: false,
         season: false
       })
+      const sortedCards = ref([]) // Add this to store the sorted card list
+      const currentSort = ref({ field: 'id', direction: 'asc' }) // Track current sort
 
       const adjustFontSize = () => {
         nextTick(() => {
@@ -393,6 +405,10 @@
           // Загружаем карточку
           card.value = await fetchCardInfo(props.uuid);
           editableCard.value = { ...card.value };
+        
+          // Load all cards from the same season with current sort
+          const cards = await fetchCardsForSeason(card.value.season_id, currentSort.value.field, currentSort.value.direction)
+          sortedCards.value = cards
           
           // Загружаем сезоны
           const seasons = await fetchSeasons();
@@ -431,6 +447,23 @@
           loading.value = false
         }
       }
+
+      const goToPreviousCard = () => {
+        const currentIndex = sortedCards.value.findIndex(c => c.uuid === card.value.uuid)
+        if (currentIndex > 0) {
+          const prevCard = sortedCards.value[currentIndex - 1]
+          router.push(`/card/${prevCard.uuid}`)
+        }
+      }
+
+      const goToNextCard = () => {
+        const currentIndex = sortedCards.value.findIndex(c => c.uuid === card.value.uuid)
+        if (currentIndex < sortedCards.value.length - 1) {
+          const nextCard = sortedCards.value[currentIndex + 1]
+          router.push(`/card/${nextCard.uuid}`)
+        }
+      }
+
 
       onMounted(() => {
         window.addEventListener('resize', adjustFontSize)
@@ -496,23 +529,30 @@
         cancelEdit,
         fileInput,
         handleImageDoubleClick,
-        handleFileChange
+        handleFileChange,
+        goToPreviousCard,
+        goToNextCard
       }
     },
-    methods: {
-      goToPreviousCard() {
-        // Implement navigation to previous card
-        console.log('Navigate to previous card');
+    computed: {
+      isFirstCard() {
+        if (!this.card.value || !this.sortedCards.value) return true
+        return this.sortedCards.value[0]?.uuid === this.card.value.uuid
       },
-      goToNextCard() {
-        // Implement navigation to next card
-        console.log('Navigate to next card');
+      isLastCard() {
+        if (!this.card.value || !this.sortedCards.value) return true
+        return this.sortedCards.value[this.sortedCards.value.length - 1]?.uuid === this.card.value.uuid
       }
-    }
+    },
   }
 </script>
 
 <style scoped>
+  .nav-arrow.disabled {
+    opacity: 0.2;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
   /* Add these new styles */
   .card-detail-wrapper {
     position: relative;
