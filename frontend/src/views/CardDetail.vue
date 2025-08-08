@@ -578,8 +578,6 @@
       opacity 0.4s ease 0.1s;
     position: absolute;
     width: 100%;
-    top: 0;
-    left: 0;
   }
 
   .slide-left-enter-from {
@@ -627,7 +625,6 @@
     width: 100%;
     top: 0;
     left: 0;
-    padding-bottom: 40px; /* Add space at the bottom */
   }
   .nav-arrow.disabled {
     opacity: 0.2;
@@ -637,8 +634,6 @@
   /* Add these new styles */
   .card-detail-wrapper {
     position: relative;
-    overflow: hidden; /* Prevent any overflow during transitions */
-    padding-top: 20px; /* Add space at the top */
   }
 
   .nav-arrow {
