@@ -241,6 +241,10 @@
       const isFirstCard = computed(() => currentCardIndex.value <= 0)
       const isLastCard = computed(() => currentCardIndex.value >= sortedCards.value.length - 1)
 
+      const preloadedCards = ref({})
+      const isPreloading = ref(false)
+      const preloadError = ref(null)
+
       const findCurrentCardIndex = () => {
         if (!card.value?.id || !sortedCards.value.length) return -1;
         
@@ -264,8 +268,62 @@
           console.log('Current card ID:', card.value.id);
           console.log('Current card index:', currentCardIndex.value);
           console.log('Card IDs in sortedCards:', sortedCards.value.map(c => c.id));
+          
+          // Preload adjacent cards after we have the sorted list
+          preloadAdjacentCards();
         } catch (error) {
           console.error('Error loading sorted cards:', error);
+        }
+      }
+
+      // Add this new function to preload adjacent cards
+      const preloadAdjacentCards = async () => {
+        if (isPreloading.value || !sortedCards.value.length) return;
+        
+        isPreloading.value = true;
+        preloadError.value = null;
+        
+        try {
+          const preloadPromises = [];
+          
+          // Preload previous card if it exists
+          if (currentCardIndex.value > 0) {
+            const prevCardId = sortedCards.value[currentCardIndex.value - 1].id;
+            if (!preloadedCards.value[prevCardId]) {
+              preloadPromises.push(
+                fetchCardInfo(prevCardId)
+                  .then(cardData => {
+                    preloadedCards.value[prevCardId] = cardData;
+                  })
+                  .catch(err => {
+                    console.error(`Failed to preload card ${prevCardId}:`, err);
+                  })
+              );
+            }
+          }
+          
+          // Preload next card if it exists
+          if (currentCardIndex.value < sortedCards.value.length - 1) {
+            const nextCardId = sortedCards.value[currentCardIndex.value + 1].id;
+            if (!preloadedCards.value[nextCardId]) {
+              preloadPromises.push(
+                fetchCardInfo(nextCardId)
+                  .then(cardData => {
+                    preloadedCards.value[nextCardId] = cardData;
+                  })
+                  .catch(err => {
+                    console.error(`Failed to preload card ${nextCardId}:`, err);
+                  })
+              );
+            }
+          }
+          
+          await Promise.all(preloadPromises);
+        } catch (err) {
+          preloadError.value = err.message || 'Failed to preload cards';
+          console.error('Error preloading cards:', err);
+        } finally {
+          isPreloading.value = false;
         }
       }
 
@@ -473,7 +531,23 @@
         if (isFirstCard.value || currentCardIndex.value === -1) return;
         transitionName.value = 'slide-right';
         const prevCard = sortedCards.value[currentCardIndex.value - 1];
-        if (prevCard) {
+        
+        if (prevCard && preloadedCards.value[prevCard.id]) {
+          // Use preloaded data if available
+          card.value = preloadedCards.value[prevCard.id];
+          editableCard.value = { ...card.value };
+          currentCardIndex.value = currentCardIndex.value - 1;
+          
+          // Update URL without triggering a full reload
+          router.replace(`/card/${prevCard.id}`);
+          
+          // Load season info and comments for the new card
+          loadSeasonAndComments();
+          
+          // Preload new adjacent cards
+          preloadAdjacentCards();
+        } else if (prevCard) {
+          // Fallback to regular navigation if not preloaded
           router.push(`/card/${prevCard.id}`);
         }
       }
@@ -482,8 +556,39 @@
         if (isLastCard.value || currentCardIndex.value === -1) return;
         transitionName.value = 'slide-left';
         const nextCard = sortedCards.value[currentCardIndex.value + 1];
-        if (nextCard) {
+        
+        if (nextCard && preloadedCards.value[nextCard.id]) {
+          // Use preloaded data if available
+          card.value = preloadedCards.value[nextCard.id];
+          editableCard.value = { ...card.value };
+          currentCardIndex.value = currentCardIndex.value + 1;
+          
+          // Update URL without triggering a full reload
+          router.replace(`/card/${nextCard.id}`);
+          
+          // Load season info and comments for the new card
+          loadSeasonAndComments();
+          
+          // Preload new adjacent cards
+          preloadAdjacentCards();
+        } else if (nextCard) {
+          // Fallback to regular navigation if not preloaded
           router.push(`/card/${nextCard.id}`);
+        }
+      }
+
+      const loadSeasonAndComments = async () => {
+        try {
+          if (card.value.season_id) {
+            const season = await fetchSeasonInfo(card.value.season_id);
+            seasonName.value = season.name;
+            editableCard.value.season_uuid = season.uuid;
+          }
+          
+          comments.value = await fetchComments(card.value.id);
+          adjustFontSize();
+        } catch (err) {
+          console.error('Error loading season or comments:', err);
         }
       }
 
@@ -495,6 +600,13 @@
 
       onUnmounted(() => {
         window.removeEventListener('resize', adjustFontSize)
+      })
+
+      // Watch for card changes to preload new adjacent cards
+      watch(() => card.value.id, (newId) => {
+        if (newId) {
+          preloadAdjacentCards();
+        }
       })
 
       watch(() => props.id, async (newId) => {
@@ -562,6 +674,10 @@
         goToPreviousCard,
         goToNextCard,
         transitionName,
+        preloadedCards,
+        isPreloading,
+        preloadError,
+        loadSeasonAndComments
       }
     }
   }
