@@ -71,15 +71,25 @@
         <div class="loading-spinner"></div>
       </div>
       
-      <transition-group name="cards" tag="div" class="cards-container">
+      <transition-group 
+        name="cards" 
+        tag="div" 
+        class="cards-container"
+        @before-enter="beforeEnter"
+        @enter="enter"
+        @leave="leave"
+        v-bind:css="false"
+      >
         <Card
-          v-for="card in cards"
+          v-for="(card, index) in cards"
           :key="card.uuid"
+          :data-index="index"
           :card="card || {}"
           @card-selected="handleCardSelected"
           @card-clicked="handleCardClicked"
           @delete-card="handleCardDeleted(card.id)"
           :allow-selection="isUserAllowed"
+          class="card-item"
         />
         <div v-if="!loading && cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666; margin-top: 17px;">
           No cards in this season
@@ -95,6 +105,7 @@
 <script>
   import Card from './Card.vue'
   import { fetchCardsForSeason, deleteCard, checkUserPermission, fetchUserInfo, updateSeason, deleteSeason } from '@/api'
+  import { gsap } from 'gsap'
   export default {
     components: {
       Card
@@ -270,29 +281,72 @@
       closeSortDropdown() {
         this.showSortDropdown = false;
       },
+      beforeEnter(el) {
+        el.style.opacity = 0
+        el.style.transform = 'translateY(20px)'
+      },
+      
+      enter(el, done) {
+        const delay = el.dataset.index * 30
+        setTimeout(() => {
+          gsap.to(el, {
+            opacity: 1,
+            y: 0,
+            duration: 0.3,
+            ease: 'power2.out',
+            onComplete: done
+          })
+        }, delay)
+      },
+      
+      leave(el, done) {
+        gsap.to(el, {
+          opacity: 0,
+          y: 20,
+          duration: 0.2,
+          ease: 'power2.in',
+          onComplete: done
+        })
+      },
+      
       async sortBy(field, direction) {
         try {
-          this.loading = true;
-          this.currentSort = { field, direction };
+          this.loading = true
+          this.currentSort = { field, direction }
+          this.showSortDropdown = false
           
-          // Close dropdown immediately
-          this.showSortDropdown = false;
+          // Use GreenSock for smoother sorting animation
+          const cards = await fetchCardsForSeason(this.season.uuid, field, direction)
           
-          // Create a copy of the current cards to trigger the transition
-          const tempCards = [...this.cards];
-          this.cards = [];
+          // Animate the transition
+          gsap.to('.card-item', {
+            opacity: 0,
+            y: 20,
+            duration: 0.2,
+            stagger: 0.02,
+            ease: 'power2.in',
+            onComplete: () => {
+              this.cards = cards
+              this.$nextTick(() => {
+                gsap.fromTo('.card-item', 
+                  { opacity: 0, y: 20 },
+                  {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.3,
+                    stagger: 0.03,
+                    ease: 'power2.out'
+                  }
+                )
+              })
+            }
+          })
           
-          // Small delay to allow Vue to react to the empty array
-          await new Promise(resolve => setTimeout(resolve, 50));
-          
-          // Fetch sorted cards from API
-          const sortedCards = await fetchCardsForSeason(this.season.uuid, field, direction);
-          this.cards = sortedCards;
         } catch (error) {
-          console.error('Error sorting cards:', error);
-          this.error = error;
+          console.error('Error sorting cards:', error)
+          this.error = error
         } finally {
-          this.loading = false;
+          this.loading = false
         }
       }
     }
@@ -301,6 +355,9 @@
 
 <style scoped>
   /* Add these styles to your existing styles */
+  .card-item {
+    will-change: transform, opacity; /* Hint to browser for optimization */
+  }
   .cards-move {
     transition: all 0.5s ease;
   }
@@ -769,11 +826,11 @@
 
   .cards-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0px;
-    justify-content: center;
     grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
-    position: relative; /* Add this line */
+    position: relative;
+    transform-style: preserve-3d; /* Better GPU acceleration */
+    backface-visibility: hidden;
+    perspective: 1000px;
   }
 
   .add-card-button:hover {
