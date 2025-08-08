@@ -1227,6 +1227,7 @@
   .no-comments {
     color: #666;
     font-style: italic;
+    pointer-events: none;
   }
 
   .comments-list {
