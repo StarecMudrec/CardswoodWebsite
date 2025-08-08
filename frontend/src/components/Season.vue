@@ -72,24 +72,22 @@
       </div>
       
       <div class="cards-container">
-        <transition-group name="card-glide" tag="div" class="cards-grid">
-          <Card
-            v-for="card in (animatingCards || cards)"
-            :key="card.uuid"
-            :card="card || {}"
-            @card-selected="handleCardSelected"
-            @card-clicked="handleCardClicked"
-            @delete-card="handleCardDeleted(card.id)"
-            :allow-selection="isUserAllowed"
-            class="card-item"
-          />
-          <div v-if="!loading && cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666; margin-top: 17px;">
-            No cards in this season
-          </div>
-          <div v-if="isUserAllowed" class="add-card-as-card mobile-only" @click="$router.push('/add-card')">
-            + Add New Card
-          </div>
-        </transition-group>
+        <Card
+          v-for="card in cards"
+          :key="card.uuid"
+          :card="card || {}"
+          @card-selected="handleCardSelected"
+          @card-clicked="handleCardClicked"
+          @delete-card="handleCardDeleted(card.id)"
+          :allow-selection="isUserAllowed"
+          class="card-item"
+        />
+        <div v-if="!loading && cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666; margin-top: 17px;">
+          No cards in this season
+        </div>
+        <div v-if="isUserAllowed" class="add-card-as-card mobile-only" @click="$router.push('/add-card')">
+          + Add New Card
+        </div>
       </div>
     </div>
   </div>
@@ -129,8 +127,7 @@
           'MOVIE': 5,
           'SERIES': 6,
           'ACHIEVEMENTS': 7
-        },
-        animatingCards: null
+        }
       }
     },
     async created() {
@@ -282,46 +279,25 @@
           this.showSortDropdown = false;
           
           // Store current positions before sorting
-          const cardElements = this.$el.querySelectorAll('.card-item');
-          const oldPositions = Array.from(cardElements).map(card => {
+          const cards = this.$el.querySelectorAll('.card-item');
+          const positions = Array.from(cards).map(card => {
             const rect = card.getBoundingClientRect();
-            return {
-              id: card.__vue__?.card?.uuid || '',
-              x: rect.left,
-              y: rect.top,
-              width: rect.width,
-              height: rect.height
-            };
+            return { x: rect.left, y: rect.top };
           });
 
           // Fetch sorted cards
-          const newCards = await fetchCardsForSeason(this.season.uuid, field, direction);
+          this.cards = await fetchCardsForSeason(this.season.uuid, field, direction);
           
-          // Create a mapping of old positions by card ID
-          const positionMap = {};
-          oldPositions.forEach(pos => {
-            if (pos.id) positionMap[pos.id] = pos;
-          });
-
-          // Temporarily keep the old cards visible during animation
-          this.animatingCards = [...this.cards];
-          
-          // Hide the original cards during animation
-          gsap.set(cardElements, { opacity: 0 });
-          
-          // Set up the new card positions
-          this.cards = newCards;
-          
+          // Wait for Vue to update the DOM
           await this.$nextTick();
           
-          // Animate cards from old positions to new positions
-          const newCardElements = this.$el.querySelectorAll('.card-item');
-          newCardElements.forEach((card, index) => {
-            const cardId = card.__vue__?.card?.uuid;
-            const oldPos = positionMap[cardId];
+          // Animate cards to their new positions
+          const newCards = this.$el.querySelectorAll('.card-item');
+          newCards.forEach((card, index) => {
+            const newRect = card.getBoundingClientRect();
+            const oldPos = positions[index];
             
             if (oldPos) {
-              const newRect = card.getBoundingClientRect();
               const dx = oldPos.x - newRect.left;
               const dy = oldPos.y - newRect.top;
               
@@ -329,31 +305,18 @@
               gsap.set(card, {
                 x: dx,
                 y: dy,
-                opacity: 0,
-                width: oldPos.width,
-                height: oldPos.height
+                opacity: 0
               });
               
-              // Animate to final position with smooth gliding
+              // Animate to final position
               gsap.to(card, {
                 x: 0,
                 y: 0,
                 opacity: 1,
-                width: '100%',
-                height: 'auto',
-                duration: 0.8,
-                delay: index * 0.03,
-                ease: "power2.inOut",
-                onComplete: () => {
-                  this.animatingCards = null;
-                }
+                duration: 0.5,
+                delay: index * 0.05,
+                ease: "back.out(1.7)"
               });
-            } else {
-              // For new cards (if any), fade in
-              gsap.fromTo(card, 
-                { opacity: 0, y: 20 },
-                { opacity: 1, y: 0, duration: 0.5, delay: index * 0.03 }
-              );
             }
           });
           
@@ -370,42 +333,13 @@
 
 <style scoped>
   /* Add these styles to your existing CSS */
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 260px));
-    gap: 15px;
-    position: relative;
-  }
-
-  .card-glide-move {
-    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .card-glide-enter-active,
-  .card-glide-leave-active {
-    transition: all 0.5s ease;
-    position: absolute;
-  }
-
-  .card-glide-enter-from,
-  .card-glide-leave-to {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  .card-glide-enter-to,
-  .card-glide-leave-from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  /* Add these styles to your existing CSS */
   .cards-container {
     position: relative;
   }
 
   .card-item {
-    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: transform, opacity;
+    transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    will-change: transform;
   }
 
   .list-move {
