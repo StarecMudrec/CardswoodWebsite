@@ -32,7 +32,7 @@
         </div>
       </div>
 
-      <transition :name="transitionName">
+      <transition :name="showTransition ? transitionName : ''">
         <div :key="card.id" class="card-detail-container">
           <div class="card-detail">
             <div class="card-image-container">
@@ -244,6 +244,8 @@
       const preloadedCards = ref({})
       const isPreloading = ref(false)
       const preloadError = ref(null)
+
+      const showTransition = ref(false);
 
       const findCurrentCardIndex = () => {
         if (!card.value?.id || !sortedCards.value.length) return -1;
@@ -529,6 +531,7 @@
 
       const goToPreviousCard = () => {
         if (isFirstCard.value || currentCardIndex.value === -1) return;
+        showTransition.value = true; // Set flag before navigation
         transitionName.value = 'slide-right';
         const prevCard = sortedCards.value[currentCardIndex.value - 1];
         
@@ -554,6 +557,7 @@
 
       const goToNextCard = () => {
         if (isLastCard.value || currentCardIndex.value === -1) return;
+        showTransition.value = true; // Set flag before navigation
         transitionName.value = 'slide-left';
         const nextCard = sortedCards.value[currentCardIndex.value + 1];
         
@@ -612,6 +616,7 @@
       watch(() => props.id, async (newId) => {
         if (newId && card.value?.id !== newId) {
           await loadData()
+          showTransition.value = false; // Reset after navigation
         }
       })
 
