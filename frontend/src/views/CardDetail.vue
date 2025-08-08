@@ -568,6 +568,20 @@
 </script>
 
 <style scoped>
+  html, body {
+    overflow: hidden;
+    -ms-overflow-style: none; /* For IE/Edge */
+    scrollbar-width: none; /* For Firefox */
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .card-detail-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+  .card-detail-container::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Transition styles */
   .slide-left-enter-active,
   .slide-left-leave-active,
