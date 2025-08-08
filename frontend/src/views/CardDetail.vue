@@ -634,7 +634,7 @@
   /* Add these new styles */
   .card-detail-wrapper {
     position: relative;
-    min-height: 100vh;
+    /* min-height: 100vh; */
   }
 
   .nav-arrow {
