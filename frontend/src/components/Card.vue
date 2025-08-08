@@ -83,11 +83,11 @@ export default {
       }
       // Navigate on any click unless it's the checkbox
       // This handler is primarily for desktop, mobile is handled by handleCardContentClick
-      this.$emit('card-clicked', this.card.uuid);
+      this.$emit('card-clicked', this.card.id);
     },
     handleCheckboxChange(event) {
       this.isSelected = event.target.checked;
-      this.$emit('card-selected', this.card.uuid, this.isSelected);
+      this.$emit('card-selected', this.card.id, this.isSelected);
     },
 
     toggleSelection() {
