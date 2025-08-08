@@ -201,7 +201,7 @@
       }
     },
     setup(props) {
-        const router = useRouter()
+      const router = useRouter()
       const fileInput = ref(null)
       // Refs для полей ввода
       const nameInput = ref(null)
@@ -229,8 +229,20 @@
         category: false,
         season: false
       })
-      const sortedCards = ref([]) // Add this to store the sorted card list
-      const currentSort = ref({ field: 'id', direction: 'asc' }) // Track current sort
+      
+      // Add these for card navigation
+      const sortedCards = ref([])
+      const currentSort = ref({ field: 'id', direction: 'asc' })
+
+      const isFirstCard = computed(() => {
+        if (!card.value || !sortedCards.value.length) return true
+        return sortedCards.value[0]?.uuid === card.value.uuid
+      })
+
+      const isLastCard = computed(() => {
+        if (!card.value || !sortedCards.value.length) return true
+        return sortedCards.value[sortedCards.value.length - 1]?.uuid === card.value.uuid
+      })
 
       const adjustFontSize = () => {
         nextTick(() => {
@@ -402,10 +414,10 @@
         try {
           loading.value = true;
           
-          // Загружаем карточку
+          // Load current card
           card.value = await fetchCardInfo(props.uuid);
           editableCard.value = { ...card.value };
-        
+          
           // Load all cards from the same season with current sort
           const cards = await fetchCardsForSeason(card.value.season_id, currentSort.value.field, currentSort.value.direction)
           sortedCards.value = cards
@@ -424,10 +436,10 @@
             editableCard.value.season_uuid = season.uuid;
           }
           
-          // Загружаем комментарии
+          // Load comments
           comments.value = await fetchComments(card.value.id)
           
-          // Проверяем права пользователя
+          // Check user permissions
           try {
             const userInfo = await fetchUserInfo()
             if (userInfo?.username) {
@@ -449,6 +461,8 @@
       }
 
       const goToPreviousCard = () => {
+        if (isFirstCard.value) return
+        
         const currentIndex = sortedCards.value.findIndex(c => c.uuid === card.value.uuid)
         if (currentIndex > 0) {
           const prevCard = sortedCards.value[currentIndex - 1]
@@ -457,6 +471,8 @@
       }
 
       const goToNextCard = () => {
+        if (isLastCard.value) return
+        
         const currentIndex = sortedCards.value.findIndex(c => c.uuid === card.value.uuid)
         if (currentIndex < sortedCards.value.length - 1) {
           const nextCard = sortedCards.value[currentIndex + 1]
@@ -532,16 +548,6 @@
         handleFileChange,
         goToPreviousCard,
         goToNextCard
-      }
-    },
-    computed: {
-      isFirstCard() {
-        if (!this.card.value || !this.sortedCards.value) return true
-        return this.sortedCards.value[0]?.uuid === this.card.value.uuid
-      },
-      isLastCard() {
-        if (!this.card.value || !this.sortedCards.value) return true
-        return this.sortedCards.value[this.sortedCards.value.length - 1]?.uuid === this.card.value.uuid
       }
     },
   }
