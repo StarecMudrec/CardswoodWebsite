@@ -115,7 +115,7 @@ export default {
 }
 
 .card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-5px) !important;
   cursor: pointer;
 }
 
