@@ -31,7 +31,6 @@ export async function fetchCardsForSeason(seasonId, sortField = 'id', sortDirect
     // Transform the data to match what your Card component expects
     return response.data.map(card => ({
       id: card.id,
-      uuid: card.uuid || card.id.toString(), // Fallback to id if uuid doesn't exist
       img: card.photo || card.img,           // Handle different field names
       name: card.name,
       rarity: card.rarity,
@@ -47,8 +46,8 @@ export async function fetchCardsForSeason(seasonId, sortField = 'id', sortDirect
 }
 
 // Fetch detailed card info
-export const fetchCardInfo = async (cardUuid) => {
-  const response = await fetch(`/api/card_info/${cardUuid}`)
+export const fetchCardInfo = async (cardId) => {
+  const response = await fetch(`/api/card_info/${cardId}`)
   if (!response.ok) throw new Error('Failed to fetch card info')
   return response.json()
 }
