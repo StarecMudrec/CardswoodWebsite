@@ -976,7 +976,6 @@
     margin-top: 30px;
     min-height: calc(100vh - 60px); /* Adjust based on your padding */
     display: flex;
-    flex-direction: column;
   }
 
   .card-image-container {
