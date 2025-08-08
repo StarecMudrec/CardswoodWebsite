@@ -429,6 +429,12 @@
     padding: 8px 15px;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 
   .sort-option:hover {
