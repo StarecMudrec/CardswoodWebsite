@@ -1100,7 +1100,7 @@
 
   .card-image-container {
     position: relative;
-    cursor: pointer; /* Add cursor pointer to indicate it's interactive */
+    /* cursor: pointer;  */
   }
 
   .card-detail-image {
