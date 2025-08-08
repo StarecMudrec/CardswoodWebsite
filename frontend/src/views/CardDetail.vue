@@ -639,6 +639,8 @@
   }
   /* Add these new styles */
   .card-detail-wrapper {
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For IE/Edge */
     position: relative;
   }
 
