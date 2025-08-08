@@ -974,7 +974,6 @@
     grid-template-columns: 1fr 2fr;
     gap: 40px;
     margin-top: 30px;
-    min-height: calc(100vh - 60px); /* Adjust based on your padding */
   }
 
   .card-image-container {
