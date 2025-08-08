@@ -983,7 +983,7 @@
 
   .card-detail-image {
     width: 100%;
-    max-height: 600px;
+    height: 571px;
     object-fit: contain;
     border-radius: 17px;
     border: 10px solid var(--bg-color);
