@@ -574,8 +574,6 @@
   .slide-right-enter-active,
   .slide-right-leave-active {
     transition: all 0.5s ease;
-    position: absolute;
-    width: 100%;
   }
 
   .slide-left-enter-from {
@@ -600,10 +598,8 @@
 
   .card-detail-container {
     position: relative;
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 30px;
+    left: 0;
+    right: 0;
   }
   .nav-arrow.disabled {
     opacity: 0.2;
@@ -613,8 +609,8 @@
   /* Add these new styles */
   .card-detail-wrapper {
     position: relative;
+    overflow: hidden;
     min-height: 100vh;
-    overflow: hidden; /* Ensure no content spills out */
   }
 
   .nav-arrow {
