@@ -203,7 +203,6 @@
     setup(props) {
       const router = useRouter()
       const fileInput = ref(null)
-      // Refs для полей ввода
       const nameInput = ref(null)
       const descriptionInput = ref(null)
       const categoryInput = ref(null)
@@ -217,10 +216,10 @@
       const loading = ref(true)
       const error = ref(null)
       const imageError = ref(false)
-      const saveError = ref(null); // New ref for save errors
-      const nameError = ref(null); // New ref for name errors
-      const descriptionError = ref(null); // New ref for description errors
-      const categoryError = ref(null); // New ref for category errors
+      const saveError = ref(null)
+      const nameError = ref(null)
+      const descriptionError = ref(null)
+      const categoryError = ref(null)
       const cardNameRef = ref(null)
       const isUserAllowed = ref(false)
       const editing = ref({
@@ -229,10 +228,9 @@
         category: false,
         season: false
       })
-      
-      // Add these for card navigation
+
+      // Card navigation
       const sortedCards = ref([])
-      const currentSort = ref({ field: 'id', direction: 'asc' })
       const currentCardIndex = ref(-1)
 
       const isFirstCard = computed(() => currentCardIndex.value <= 0)
@@ -240,17 +238,18 @@
 
       const findCurrentCardIndex = () => {
         if (!card.value?.uuid || !sortedCards.value.length) return -1
-        return sortedCards.value.findIndex(c => c.uuid === card.value.uuid)
+        return sortedCards.value.findIndex(c => c.id === card.value.id)
       }
 
       const loadSortedCards = async () => {
         try {
           if (!card.value?.season_id) return
           
-          // Fetch cards with the current sort (you might want to store sort params globally)
-          const cards = await fetchCardsForSeason(card.value.season_id, 'id', 'asc') // Default sort
+          const cards = await fetchCardsForSeason(card.value.season_id, 'id', 'asc')
           sortedCards.value = cards
           currentCardIndex.value = findCurrentCardIndex()
+          console.log('Loaded cards:', cards)
+          console.log('Current card index:', currentCardIndex.value)
         } catch (error) {
           console.error('Error loading sorted cards:', error)
         }
@@ -263,18 +262,15 @@
           const element = cardNameRef.value;
           const container = element.parentElement;
           
-          // Сброс стилей
           element.style.fontSize = '';
           element.style.whiteSpace = 'nowrap';
           
           const containerWidth = container.clientWidth;
-          let fontSize = 100; // Начальный размер
+          let fontSize = 100;
           
-          // Устанавливаем начальный размер
           element.style.fontSize = `${fontSize}px`;
-          void element.offsetWidth; // Принудительный рефлоу
+          void element.offsetWidth;
           
-          // Если текст не помещается - вычисляем оптимальный размер
           if (element.scrollWidth > containerWidth) {
             const ratio = containerWidth / element.scrollWidth;
             fontSize = Math.max(
@@ -293,7 +289,6 @@
           }
         });
       };
-      
 
       const toggleEdit = (field) => {
         if (editing.value[field]) {
@@ -306,7 +301,6 @@
       const cancelEdit = (field) => {
         editing.value = { ...editing.value, [field]: false }
       }
-
 
       const startEditing = (field) => {
         editing.value = { ...editing.value, [field]: true }
@@ -333,22 +327,18 @@
       }
 
       const saveField = async (field) => {
-        saveError.value = null; // Clear previous save errors
+        saveError.value = null;
         try {
-          // console.log('Saving field:', field, 'with data:', editableCard.value);
-
           let dataToSend = {};
           
-          // Особый случай для сезона
           if (field === 'season') {
             dataToSend = {
               season_uuid: editableCard.value.season_uuid
             };
           } else if (field === 'category') {
-              // Проверка длины для категории перед сохранением
               if (editableCard.value.category && editableCard.value.category.length > 20) {
                   categoryError.value = 'Category cannot exceed 20 characters.';
-                  throw new Error('Validation failed on frontend.'); // Prevent saving if validation fails
+                  throw new Error('Validation failed on frontend.');
               }
               dataToSend = { [field]: editableCard.value[field] };
           } else {
@@ -371,7 +361,6 @@
             throw new Error(errorData.error || 'Failed to update card');
           }
 
-          // Обновляем локальные данные
           if (field === 'season') {
             const season = allSeasons.value.find(s => s.uuid === editableCard.value.season_uuid);
             seasonName.value = season?.name || '';
@@ -383,7 +372,7 @@
           editing.value = { ...editing.value, [field]: false };
         } catch (err) {
           console.error('Error updating card:', err);
-          saveError.value = err.message || 'Failed to update card'; // Set save error
+          saveError.value = err.message || 'Failed to update card';
         }
       }
 
@@ -395,9 +384,7 @@
 
       const handleFileChange = async (event) => {
         const file = event.target.files[0];
-        if (!file || !isUserAllowed.value) {
-          return;
-        }
+        if (!file || !isUserAllowed.value) return;
 
         const formData = new FormData();
         formData.append('image', file);
@@ -416,27 +403,21 @@
             throw new Error(errorData.error || 'Failed to upload image');
           }
 
-          // Optionally refresh the card data to show the new image
           loadData();
         } catch (err) {
           console.error('Error uploading image:', err);
         }
       };
+
       const loadData = async () => {
         try {
           loading.value = true;
           
-          // Load current card
           card.value = await fetchCardInfo(props.uuid);
           editableCard.value = { ...card.value };
 
           await loadSortedCards()
           
-          // Load all cards from the same season with current sort
-          const cards = await fetchCardsForSeason(card.value.season_id, currentSort.value.field, currentSort.value.direction)
-          sortedCards.value = cards
-          
-          // Загружаем сезоны
           const seasons = await fetchSeasons();
           allSeasons.value = seasons.map(season => ({
             uuid: season.uuid,
@@ -567,7 +548,7 @@
         goToPreviousCard,
         goToNextCard
       }
-    },
+    }
   }
 </script>
 
