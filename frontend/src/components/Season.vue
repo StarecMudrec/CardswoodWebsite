@@ -50,8 +50,8 @@
           <div class="sort-dropdown" v-if="showSortDropdown" v-click-outside="closeSortDropdown">
             <div class="sort-option" @click="sortBy('id', 'asc')">Old first</div>
             <div class="sort-option" @click="sortBy('id', 'desc')">New first</div>
-            <div class="sort-option" @click="sortBy('points', 'asc')">Points (Low to High)</div>
-            <div class="sort-option" @click="sortBy('points', 'desc')">Points (High to Low)</div>
+            <!-- <div class="sort-option" @click="sortBy('points', 'asc')">Points (Low to High)</div>
+            <div class="sort-option" @click="sortBy('points', 'desc')">Points (High to Low)</div> -->
             <div class="sort-option" @click="sortBy('rarity', 'asc')">Rarity (Episodical to Achievements)</div>
             <div class="sort-option" @click="sortBy('rarity', 'desc')">Rarity (Achievements to Episodical)</div>
             <div class="sort-option" @click="sortBy('name', 'asc')">Name (A-Z)</div>
