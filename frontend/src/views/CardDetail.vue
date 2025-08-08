@@ -246,14 +246,16 @@
         try {
           if (!card.value.season_id) return
           
+          // Get sort parameters from route query or use defaults
           const sortField = route.query.sort || 'id'
           const sortDirection = route.query.direction || 'asc'
           
+          // Get the sorted list of cards for the current season
           const cards = await fetchCardsForSeason(card.value.season_id, sortField, sortDirection)
           cardList.value = cards
           
-          currentCardIndex.value = cards.findIndex(c => c.id === card.value.id || c.uuid === props.uuid)
-          console.log('Current card index:', currentCardIndex.value)
+          // Find current card's position in the sorted list
+          currentCardIndex.value = cards.findIndex(c => c.uuid === props.uuid)
         } catch (err) {
           console.error('Error loading card list:', err)
         }
@@ -263,9 +265,8 @@
         if (currentCardIndex.value > 0) {
           const prevCard = cardList.value[currentCardIndex.value - 1]
           router.push({
-            name: 'CardDetail', // Make sure this matches your route name
-            params: { uuid: prevCard.uuid },
-            query: route.query
+            path: `/card/${prevCard.uuid}`,
+            query: route.query // Preserve current query params
           })
         }
       }
@@ -274,9 +275,8 @@
         if (currentCardIndex.value < cardList.value.length - 1) {
           const nextCard = cardList.value[currentCardIndex.value + 1]
           router.push({
-            name: 'CardDetail', // Make sure this matches your route name
-            params: { uuid: nextCard.uuid },
-            query: route.query
+            path: `/card/${nextCard.uuid}`,
+            query: route.query // Preserve current query params
           })
         }
       }
@@ -453,7 +453,6 @@
           
           // Загружаем карточку
           card.value = await fetchCardInfo(props.uuid);
-          await loadCardList()
           editableCard.value = { ...card.value };
           
           // Загружаем сезоны
@@ -517,7 +516,6 @@
       })
 
       watch(() => props.uuid, loadData)
-      watch(() => route.query, loadCardList)
 
       watch(() => editableCard.value.name, (newName) => {
         if (newName && newName.length > 100) {
@@ -643,13 +641,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    pointer-events: none; /* Makes only the icon clickable */
   }
 
   .arrow-icon {
     width: 100%;
     height: 100%;
     fill: var(--accent-color);
-    pointer-events: auto;
+    pointer-events: auto; /* Re-enable pointer events for the icon */
   }
 
   /* Make sure your card container has proper z-index */
