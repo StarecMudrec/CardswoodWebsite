@@ -730,8 +730,6 @@
       transform 0.5s ease,
       opacity 0.4s ease 0.1s;
     position: absolute;
-    top: 0;  /* Add this to fix vertical position */
-    left: 0;  /* Add this to fix horizontal position */
     width: 100%;
     height: 100%;
   }
@@ -747,12 +745,12 @@
   }
 
   .slide-left-leave-from {
-    transform: translateX(0);
+    transform: translateX(0) translateY(0);
     opacity: 1;
   }
 
   .slide-left-leave-to {
-    transform: translateX(-100%);
+    transform: translateX(-100%) translateY(0);
     opacity: 0;
   }
 
@@ -767,12 +765,12 @@
   }
 
   .slide-right-leave-from {
-    transform: translateX(0);
+    transform: translateX(0) translateY(0);
     opacity: 1;
   }
 
   .slide-right-leave-to {
-    transform: translateX(100%);
+    transform: translateX(100%) translateY(0);
     opacity: 0;
   }
 
