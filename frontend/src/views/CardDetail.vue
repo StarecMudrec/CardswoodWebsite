@@ -973,7 +973,7 @@
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 40px;
-    margin-top: 30px;
+    margin-top: 140px;
   }
 
   .card-image-container {
