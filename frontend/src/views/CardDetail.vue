@@ -616,6 +616,7 @@
       watch(() => props.id, async (newId) => {
         if (newId && card.value?.id !== newId) {
           await loadData()
+          showTransition.value = false; // Reset after navigation
         }
       })
 
@@ -681,7 +682,8 @@
         preloadedCards,
         isPreloading,
         preloadError,
-        loadSeasonAndComments
+        loadSeasonAndComments,
+        showTransition,
       }
     }
   }
