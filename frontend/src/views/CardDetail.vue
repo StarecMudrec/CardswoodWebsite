@@ -237,7 +237,7 @@
       const isLastCard = computed(() => currentCardIndex.value >= sortedCards.value.length - 1)
 
       const findCurrentCardIndex = () => {
-        if (!card.value?.id || !sortedCards.value) return -1
+        if (!card.value?.id || !sortedCards.value.length) return -1
         return sortedCards.value.findIndex(c => c.id === card.value.id)
       }
 
@@ -249,6 +249,7 @@
           sortedCards.value = cards
           currentCardIndex.value = findCurrentCardIndex()
           console.log('Loaded cards:', cards)
+          console.log('Card id:', card.value.id)
           console.log('Current card index:', currentCardIndex.value)
         } catch (error) {
           console.error('Error loading sorted cards:', error)
