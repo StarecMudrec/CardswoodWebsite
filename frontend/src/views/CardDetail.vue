@@ -568,18 +568,24 @@
 </script>
 
 <style scoped>
-  html, body {
+  html {
     overflow: hidden;
-    -ms-overflow-style: none; /* For IE/Edge */
-    scrollbar-width: none; /* For Firefox */
+    width: 100%;
+    height: 100%;
   }
-
+  body {
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
   /* Hide scrollbar for Chrome, Safari and Opera */
-  .card-detail-wrapper::-webkit-scrollbar {
+  ::-webkit-scrollbar {
     display: none;
-  }
-  .card-detail-container::-webkit-scrollbar {
-    display: none;
+    width: 0 !important;
+    height: 0 !important;
+    -webkit-appearance: none;
+    background: transparent;
   }
 
   /* Transition styles */
