@@ -578,53 +578,56 @@
       opacity 0.4s ease 0.1s;
     position: absolute;
     width: 100%;
+    top: 0;
+    left: 0;
   }
 
   .slide-left-enter-from {
-    transform: translateX(100%);
+    transform: translateX(100%) translateY(20px); /* Added translateY */
     opacity: 0;
   }
 
   .slide-left-enter-to {
-    transform: translateX(0);
+    transform: translateX(0) translateY(20px); /* Added translateY */
     opacity: 1;
   }
 
   .slide-left-leave-from {
-    transform: translateX(0);
+    transform: translateX(0) translateY(0);
     opacity: 1;
   }
 
   .slide-left-leave-to {
-    transform: translateX(-100%);
+    transform: translateX(-100%) translateY(0);
     opacity: 0;
   }
 
   .slide-right-enter-from {
-    transform: translateX(-100%);
+    transform: translateX(-100%) translateY(20px); /* Added translateY */
     opacity: 0;
   }
 
   .slide-right-enter-to {
-    transform: translateX(0);
+    transform: translateX(0) translateY(20px); /* Added translateY */
     opacity: 1;
   }
 
   .slide-right-leave-from {
-    transform: translateX(0);
+    transform: translateX(0) translateY(0);
     opacity: 1;
   }
 
   .slide-right-leave-to {
-    transform: translateX(100%);
+    transform: translateX(100%) translateY(0);
     opacity: 0;
   }
 
   .card-detail-container {
-    position: absolute;
+    position: relative;
     width: 100%;
     top: 0;
     left: 0;
+    padding-bottom: 40px; /* Add space at the bottom */
   }
   .nav-arrow.disabled {
     opacity: 0.2;
@@ -634,7 +637,8 @@
   /* Add these new styles */
   .card-detail-wrapper {
     position: relative;
-    /* min-height: 100vh; */
+    overflow: hidden; /* Prevent any overflow during transitions */
+    padding-top: 20px; /* Add space at the top */
   }
 
   .nav-arrow {
