@@ -590,40 +590,6 @@
 </script>
 
 <style scoped>
-  /* Add these new styles */
-  .card-scroll-container {
-    width: 100%;
-    height: 100vh;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
-  }
-
-  .card-detail-wrapper {
-    display: flex;
-    width: max-content;
-    height: 100%;
-  }
-
-  .card-detail-container {
-    scroll-snap-align: start;
-    width: 100vw;
-    height: 100%;
-    flex-shrink: 0;
-  }
-
-  /* Hide scrollbar */
-  .card-scroll-container::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Adjust your existing card styles */
-  .card-detail {
-    height: calc(100% - 60px);
-    overflow-y: auto;
-  }
   .nav-arrow.disabled {
     opacity: 0.2;
     pointer-events: none;
