@@ -32,7 +32,7 @@
         </div>
       </div>
 
-      <transition :name="showTransition ? transitionName : ''">
+      <transition :name="showTransition ? transitionName : ''" mode="out-in">
         <div :key="card.id" class="card-detail-container">
           <div class="card-detail">
             <div class="card-image-container">
