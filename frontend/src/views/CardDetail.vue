@@ -31,149 +31,152 @@
           <div class="loading-text error-text">Error loading card: {{ error }}</div>
         </div>
       </div>
-
-      <transition :name="transitionName" mode="out-in">
-        <div :key="card.id" class="card-detail-container">
-          <div class="card-detail">
-            <div class="card-image-container">
-              <img 
-                v-if="card.img && !imageError" 
-                :src="`/card_imgs/${card.img}`" 
-                :alt="card.name" 
-                class="card-detail-image"
-                @error="imageError = true"
-                @dblclick="handleImageDoubleClick"
-              />
-              <!-- <button v-if="isUserAllowed" class="replace-image-button">Replace Image</button> -->
-              <div v-else class="image-placeholder">No image available</div>
-            </div>
-            
-            <div class="card-content-wrapper">
-              <!-- Название карточки и главная разделительная линия -->
-              <div class="card-header-section">
-                <div class="title-container">
-                  <h1 ref="cardNameRef">
-                    
-                    <span v-if="!editing.name">{{ card.name }}</span>
-                    <input 
+      
+      <div class="transition-wrapper">
+        <transition :name="transitionName" mode="out-in">
+          <div :key="card.id" class="card-detail-container">
+            <div class="card-detail">
+              <div class="card-image-container">
+                <img 
+                  v-if="card.img && !imageError" 
+                  :src="`/card_imgs/${card.img}`" 
+                  :alt="card.name" 
+                  class="card-detail-image"
+                  @error="imageError = true"
+                  @dblclick="handleImageDoubleClick"
+                />
+                <!-- <button v-if="isUserAllowed" class="replace-image-button">Replace Image</button> -->
+                <div v-else class="image-placeholder">No image available</div>
+              </div>
+              
+              <div class="card-content-wrapper">
+                <!-- Название карточки и главная разделительная линия -->
+                <div class="card-header-section">
+                  <div class="title-container">
+                    <h1 ref="cardNameRef">
+                      
+                      <span v-if="!editing.name">{{ card.name }}</span>
+                      <input 
+                        v-else
+                        v-model="editableCard.name"
+                        @blur="saveField('name')"
+                        @keyup.enter="saveField('name')"
+                        ref="nameInput"
+                        class="edit-input"
+                        maxlength="100"
+                      >
+                      <span v-if="isUserAllowed" class="edit-icon" @click="startEditing('name')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                      </span>
+                    </h1>
+                  </div>
+                  <div v-if="nameError" class="error-message">{{ nameError }}</div>
+                  <div class="main-divider"></div>
+                </div>
+                
+                <!-- Описание карточки -->
+                <div class="card-description-section">
+                  <div class="card-description">
+                    <p v-if="!editing.description">{{ card.description }}</p>
+                    <textarea
                       v-else
-                      v-model="editableCard.name"
-                      @blur="saveField('name')"
-                      @keyup.enter="saveField('name')"
-                      ref="nameInput"
-                      class="edit-input"
-                      maxlength="100"
-                    >
-                    <span v-if="isUserAllowed" class="edit-icon" @click="startEditing('name')">
+                      v-model="editableCard.description"
+                      @blur="saveField('description')"
+                      @keyup.enter="saveField('description')"
+                      ref="descriptionInput"
+                      maxlength="1000"
+                      class="edit-textarea"
+                    ></textarea>
+                    <span v-if="isUserAllowed" class="edit-icon" @click="startEditing('description')">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                       </svg>
                     </span>
-                  </h1>
+                  </div>
+                  <div v-if="descriptionError" class="error-message">{{ descriptionError }}</div>
+                  <div class="secondary-divider"></div>
                 </div>
-                <div v-if="nameError" class="error-message">{{ nameError }}</div>
-                <div class="main-divider"></div>
-              </div>
-              
-              <!-- Описание карточки -->
-              <div class="card-description-section">
-                <div class="card-description">
-                  <p v-if="!editing.description">{{ card.description }}</p>
-                  <textarea
-                    v-else
-                    v-model="editableCard.description"
-                    @blur="saveField('description')"
-                    @keyup.enter="saveField('description')"
-                    ref="descriptionInput"
-                    maxlength="1000"
-                    class="edit-textarea"
-                  ></textarea>
-                  <span v-if="isUserAllowed" class="edit-icon" @click="startEditing('description')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                  </span>
-                </div>
-                <div v-if="descriptionError" class="error-message">{{ descriptionError }}</div>
-                <div class="secondary-divider"></div>
-              </div>
-              
-              <!-- Информация о категории и сезоне -->
-              <div class="card-info-section">
-                <div class="card-info-columns">
-                  <div class="card-info-column">
-                    <h3>
-                      Rarity:
-                      <span v-if="isUserAllowed" class="edit-icon" @click.stop="toggleEdit('category')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                      </span>
-                    </h3>
-                    <div class="category-container">
-                      <p v-if="!editing.category">{{ card.category }}</p>
-                      <input
+                
+                <!-- Информация о категории и сезоне -->
+                <div class="card-info-section">
+                  <div class="card-info-columns">
+                    <div class="card-info-column">
+                      <h3>
+                        Rarity:
+                        <span v-if="isUserAllowed" class="edit-icon" @click.stop="toggleEdit('category')">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                          </svg>
+                        </span>
+                      </h3>
+                      <div class="category-container">
+                        <p v-if="!editing.category">{{ card.category }}</p>
+                        <input
+                          v-else
+                          v-model="editableCard.category"
+                          @blur="saveField('category')"
+                          @keyup.enter="saveField('category')"
+                          @keyup.esc="cancelEdit('category')"
+                          ref="categoryInput"
+                          class="edit-input"
+                          maxlength="20"
+                        >
+                      </div>
+                      <div v-if="categoryError" class="error-message">{{ categoryError }}</div>
+                    </div>
+                    <div class="card-info-column">
+                      <h3>
+                        Season:
+                        <span v-if="isUserAllowed" class="edit-icon" @click.stop="toggleEdit('season')">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                          </svg>
+                        </span>
+                      </h3>
+                      <div v-if="!isUserAllowed">
+                        <p>{{ seasonName }}</p>
+                      </div>
+                      <select
                         v-else
-                        v-model="editableCard.category"
-                        @blur="saveField('category')"
-                        @keyup.enter="saveField('category')"
-                        @keyup.esc="cancelEdit('category')"
-                        ref="categoryInput"
-                        class="edit-input"
-                        maxlength="20"
+                        v-if="isUserAllowed" 
+                        v-model="editableCard.season_uuid"
+                        @change="saveField('season')"
+                        @blur="cancelEdit('season')"
+                        ref="seasonInput"
+                        class="edit-input-select"
                       >
+                        <option class="edit-input-option" v-for="season in allSeasons" :key="season.uuid" :value="season.uuid">
+                          {{ season.name }}
+                        </option>
+                      </select>
                     </div>
-                    <div v-if="categoryError" class="error-message">{{ categoryError }}</div>
-                  </div>
-                  <div class="card-info-column">
-                    <h3>
-                      Season:
-                      <span v-if="isUserAllowed" class="edit-icon" @click.stop="toggleEdit('season')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                      </span>
-                    </h3>
-                    <div v-if="!isUserAllowed">
-                      <p>{{ seasonName }}</p>
-                    </div>
-                    <select
-                      v-else
-                      v-if="isUserAllowed" 
-                      v-model="editableCard.season_uuid"
-                      @change="saveField('season')"
-                      @blur="cancelEdit('season')"
-                      ref="seasonInput"
-                      class="edit-input-select"
-                    >
-                      <option class="edit-input-option" v-for="season in allSeasons" :key="season.uuid" :value="season.uuid">
-                        {{ season.name }}
-                      </option>
-                    </select>
                   </div>
                 </div>
-              </div>
-              
-              <!-- Комментарии -->
-              <div class="comments-section">
-                <div v-if="comments.length === 0" class="no-comments">
-                  No comments yet
-                </div>
-                <div v-else class="comments-list">
-                  <div v-for="comment in comments" :key="comment.id" class="comment">
-                    <div class="comment-text">{{ comment.text }}</div>
-                    <div class="comment-meta">User #{{ comment.user_id }}</div>
+                
+                <!-- Комментарии -->
+                <div class="comments-section">
+                  <div v-if="comments.length === 0" class="no-comments">
+                    No comments yet
+                  </div>
+                  <div v-else class="comments-list">
+                    <div v-for="comment in comments" :key="comment.id" class="comment">
+                      <div class="comment-text">{{ comment.text }}</div>
+                      <div class="comment-meta">User #{{ comment.user_id }}</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </transition>
+        </transition>
+      </div>
+
       <div v-if="saveError" class="error-message">{{ saveError }}</div>
       <!-- Right Arrow -->
       <div 
@@ -568,6 +571,16 @@
 </script>
 
 <style scoped>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
   /* Transition styles */
   .slide-left-enter-active,
   .slide-left-leave-active,
@@ -575,7 +588,11 @@
   .slide-right-leave-active {
     transition: all 0.5s ease;
     position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     width: 100%;
+    height: 100%;
   }
 
   .slide-left-enter-from {
@@ -601,6 +618,7 @@
   .card-detail-container {
     position: relative;
     width: 100%;
+    height: 100%;
     max-width: 1400px;
     margin: 0 auto;
     padding: 30px;
@@ -614,7 +632,13 @@
   .card-detail-wrapper {
     position: relative;
     min-height: 100vh;
-    overflow: hidden; /* Ensure no content spills out */
+    width: 100%;
+    overflow: hidden;
+  }
+  .transition-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
   }
 
   .nav-arrow {
