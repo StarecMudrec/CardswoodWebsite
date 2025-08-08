@@ -1065,7 +1065,7 @@
     color: white;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
+    /* cursor: pointer; */
     font-size: 26px;
     font-family: var(--font-family-main);
     font-weight: 500;
@@ -1110,7 +1110,7 @@
     border-radius: 17px;
     border: 10px solid var(--bg-color);
     background-color: #1e1e1e;
-    cursor: pointer; /* Add cursor pointer to indicate it's interactive */
+    /* cursor: pointer;  */
   }
 
   .image-placeholder {
