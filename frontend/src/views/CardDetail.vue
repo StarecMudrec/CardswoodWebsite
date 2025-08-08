@@ -635,6 +635,7 @@
     position: relative;
     width: 100%;
     max-height: 100vh;
+    overflow: hidden;
   }
   /* Add these new styles */
   .card-detail-wrapper {
