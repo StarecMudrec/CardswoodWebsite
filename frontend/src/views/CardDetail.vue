@@ -587,12 +587,12 @@
 
   .slide-left-enter-to {
     transform: translateX(0);
-    opacity: 1;
+    opacity: 0;
   }
 
   .slide-left-leave-from {
     transform: translateX(0);
-    opacity: 1;
+    opacity: 0;
   }
 
   .slide-left-leave-to {
@@ -607,12 +607,12 @@
 
   .slide-right-enter-to {
     transform: translateX(0);
-    opacity: 1;
+    opacity: 0;
   }
 
   .slide-right-leave-from {
     transform: translateX(0);
-    opacity: 1;
+    opacity: 0;
   }
 
   .slide-right-leave-to {
