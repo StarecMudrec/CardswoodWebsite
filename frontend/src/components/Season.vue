@@ -199,7 +199,7 @@
         }
       },
       handleCardClicked(cardUuid) {
-        this.$emit('card-clicked', cardUuid);
+        this.$emit('card-clicked', cardUuid, this.currentSortField, this.currentSortDirection);
       },
       handleCardSelected(cardId, isSelected) {
         if (isSelected) {
@@ -303,6 +303,7 @@
             const rect = card.getBoundingClientRect();
             return { x: rect.left, y: rect.top };
           });
+          this.currentSortField, this.currentSortDirection = field, direction
 
           // Fetch sorted cards
           this.cards = await fetchCardsForSeason(this.season.uuid, field, direction);
