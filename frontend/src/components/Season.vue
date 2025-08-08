@@ -80,6 +80,7 @@
           @card-clicked="handleCardClicked"
           @delete-card="handleCardDeleted(card.id)"
           :allow-selection="isUserAllowed"
+          class="card-item"
         />
         <div v-if="!loading && cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666; margin-top: 17px;">
           No cards in this season
@@ -93,6 +94,7 @@
 </template>
 
 <script>
+  import { gsap } from 'gsap';
   import Card from './Card.vue'
   import { fetchCardsForSeason, deleteCard, checkUserPermission, fetchUserInfo, updateSeason, deleteSeason } from '@/api'
   export default {
@@ -274,12 +276,50 @@
         try {
           this.loading = true;
           this.currentSort = { field, direction };
-          
-          // Close dropdown immediately
           this.showSortDropdown = false;
           
-          // Fetch sorted cards from API
+          // Store current positions before sorting
+          const cards = this.$el.querySelectorAll('.card-item');
+          const positions = Array.from(cards).map(card => {
+            const rect = card.getBoundingClientRect();
+            return { x: rect.left, y: rect.top };
+          });
+
+          // Fetch sorted cards
           this.cards = await fetchCardsForSeason(this.season.uuid, field, direction);
+          
+          // Wait for Vue to update the DOM
+          await this.$nextTick();
+          
+          // Animate cards to their new positions
+          const newCards = this.$el.querySelectorAll('.card-item');
+          newCards.forEach((card, index) => {
+            const newRect = card.getBoundingClientRect();
+            const oldPos = positions[index];
+            
+            if (oldPos) {
+              const dx = oldPos.x - newRect.left;
+              const dy = oldPos.y - newRect.top;
+              
+              // Set initial position
+              gsap.set(card, {
+                x: dx,
+                y: dy,
+                opacity: 0
+              });
+              
+              // Animate to final position
+              gsap.to(card, {
+                x: 0,
+                y: 0,
+                opacity: 1,
+                duration: 0.5,
+                delay: index * 0.05,
+                ease: "back.out(1.7)"
+              });
+            }
+          });
+          
         } catch (error) {
           console.error('Error sorting cards:', error);
           this.error = error;
@@ -292,6 +332,19 @@
 </script>
 
 <style scoped>
+  /* Add these styles to your existing CSS */
+  .cards-container {
+    position: relative;
+  }
+
+  .card-item {
+    transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    will-change: transform;
+  }
+
+  .list-move {
+    transition: transform 0.5s ease;
+  }
   /* Add these new styles */
   .sort-controls {
     position: relative;
