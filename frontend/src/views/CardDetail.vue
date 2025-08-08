@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="fixed-container">
     <div class="background-container"></div>
     <div class="card-detail-wrapper">
       <!-- Left Arrow -->
@@ -588,6 +588,17 @@
     background: transparent;
   }
 
+  .fixed-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
   /* Transition styles */
   .slide-left-enter-active,
   .slide-left-leave-active,
@@ -598,6 +609,7 @@
       opacity 0.4s ease 0.1s;
     position: absolute;
     width: 100%;
+    height: 100%;
   }
 
   .slide-left-enter-from {
@@ -641,10 +653,15 @@
   }
 
   .card-detail-container {
-    position: relative;
-    width: 100%;
+    position: absolute;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    width: 100%;
     overflow: hidden;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
@@ -676,6 +693,11 @@
   }
   /* Add these new styles */
   .card-detail-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     overflow: hidden;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
@@ -952,6 +974,9 @@
     grid-template-columns: 1fr 2fr;
     gap: 40px;
     margin-top: 30px;
+    min-height: calc(100vh - 60px); /* Adjust based on your padding */
+    display: flex;
+    flex-direction: column;
   }
 
   .card-image-container {
