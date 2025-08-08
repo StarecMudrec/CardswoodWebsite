@@ -984,7 +984,7 @@
   .card-detail-image {
     width: 100%;
     height: 571px;
-    object-fit: contain;
+    object-fit: fill;
     border-radius: 17px;
     border: 10px solid var(--bg-color);
     background-color: #1e1e1e;
