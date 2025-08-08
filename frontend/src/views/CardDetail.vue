@@ -190,7 +190,7 @@
 
 <script>
   import { fetchCardInfo, fetchSeasonInfo, fetchComments, checkUserPermission, fetchUserInfo, fetchSeasons, fetchCardsForSeason } from '@/api'
-  import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
+  import { ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue'
   import { useRouter } from 'vue-router'
 
   export default {
