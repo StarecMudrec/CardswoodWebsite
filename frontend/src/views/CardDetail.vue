@@ -657,6 +657,11 @@
     display: none;
     background: transparent;
   }
+
+  /* Disable overscroll behavior */
+  .card-detail-container {
+    overscroll-behavior: contain;
+  }
   
   .nav-arrow.disabled {
     opacity: 0.2;
