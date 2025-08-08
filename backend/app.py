@@ -347,6 +347,20 @@ def get_cards(season_id):
                     cards.reverse()
                 
                 return jsonify(cards), 200
+            elif sort_field == 'amount':
+                # For amount sorting, we need to join with filmstrips table
+                query = """
+                    SELECT c.id, c.photo, c.name, c.rarity, c.points, COUNT(f.card_id) as amount 
+                    FROM cards c
+                    LEFT JOIN filmstrips f ON c.id = f.card_id
+                    WHERE c.season = ?
+                    GROUP BY c.id, c.photo, c.name, c.rarity, c.points
+                    ORDER BY amount {}
+                """.format(sort_direction)
+                
+                result = conn.execute(query, (int(season_id),))
+                cards = [dict(zip(['id', 'img', 'name', 'rarity', 'points', 'amount'], row)) for row in result]
+                return jsonify(cards), 200
             else:
                 # Make sure your query selects all required fields
                 query = """
