@@ -358,7 +358,7 @@
 
   .card-item {
     transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-    /* will-change: transform; */
+    will-change: transform;
   }
 
   .list-move {
