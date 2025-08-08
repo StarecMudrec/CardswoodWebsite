@@ -416,8 +416,6 @@
           
           card.value = await fetchCardInfo(props.id);
           editableCard.value = { ...card.value };
-
-          await loadSortedCards()
           
           const seasons = await fetchSeasons();
           allSeasons.value = seasons.map(season => ({
@@ -430,6 +428,8 @@
             const season = await fetchSeasonInfo(card.value.season_id);
             seasonName.value = season.name;
             editableCard.value.season_uuid = season.uuid;
+
+            await loadSortedCards()
           }
           
           // Load comments
