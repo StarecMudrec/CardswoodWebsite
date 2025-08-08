@@ -631,6 +631,11 @@
     pointer-events: none;
     cursor: not-allowed;
   }
+  .transition-container {
+    position: relative;
+    width: 100%;
+    max-height: 100vh;
+  }
   /* Add these new styles */
   .card-detail-wrapper {
     position: relative;
