@@ -237,22 +237,30 @@
       const isLastCard = computed(() => currentCardIndex.value >= sortedCards.value.length - 1)
 
       const findCurrentCardIndex = () => {
-        if (!card.value?.id || !sortedCards.value.length) return -1
-        return sortedCards.value.findIndex(c => c.id === card.value.id)
+        if (!card.value?.id || !sortedCards.value.length) return -1;
+        
+        // Convert both IDs to strings for comparison
+        const currentCardId = card.value.id.toString();
+        return sortedCards.value.findIndex(c => c.id.toString() === currentCardId);
       }
 
       const loadSortedCards = async () => {
         try {
-          if (!card.value?.season_id) return
+          if (!card.value?.season_id) {
+            console.log('No season_id on card:', card.value);
+            return;
+          }
           
-          const cards = await fetchCardsForSeason(card.value.season_id, 'id', 'asc')
-          sortedCards.value = cards
-          currentCardIndex.value = findCurrentCardIndex()
-          console.log('Loaded cards:', cards)
-          console.log('Card id:', card.value.id)
-          console.log('Current card index:', currentCardIndex.value)
+          const cards = await fetchCardsForSeason(card.value.season_id, 'id', 'asc');
+          sortedCards.value = cards;
+          currentCardIndex.value = findCurrentCardIndex();
+          
+          console.log('Loaded cards:', cards);
+          console.log('Current card ID:', card.value.id);
+          console.log('Current card index:', currentCardIndex.value);
+          console.log('Card IDs in sortedCards:', sortedCards.value.map(c => c.id));
         } catch (error) {
-          console.error('Error loading sorted cards:', error)
+          console.error('Error loading sorted cards:', error);
         }
       }
 
