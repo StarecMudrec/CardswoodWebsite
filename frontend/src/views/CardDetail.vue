@@ -3,17 +3,13 @@
     <div class="background-container"></div>
     <div class="card-detail-wrapper">
       <!-- Left Arrow -->
-      <div 
-        class="nav-arrow left-arrow" 
-        :class="{ disabled: currentCardIndex <= 0 }"
-        @click="goToPreviousCard"
-      >
+      <div class="nav-arrow left-arrow" @click="goToPreviousCard">
         <div class="arrow-icon-wrapper">
           <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 20.1L6.9 12 15 3.9z"/>
+            <path d="M15 20.1L6.9 12 15 3.9z"/> <!-- Rotated left version -->
           </svg>
         </div>
-      </div>  
+      </div>
       <div class="card-detail-container">
         <div v-if="loading" class="loading-overlay">
           <div class="loading-content">
@@ -172,14 +168,10 @@
       </div>
       <div v-if="saveError" class="error-message">{{ saveError }}</div>
       <!-- Right Arrow -->
-      <div 
-        class="nav-arrow right-arrow" 
-        :class="{ disabled: currentCardIndex >= cardList.length - 1 }"
-        @click="goToNextCard"
-      >
+      <div class="nav-arrow right-arrow" @click="goToNextCard">
         <div class="arrow-icon-wrapper">
           <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 3.9L17.1 12 9 20.1z"/>
+            <path d="M9 3.9L17.1 12 9 20.1z"/> <!-- Rotated right version -->
           </svg>
         </div>
       </div>
@@ -191,26 +183,15 @@
 <script>
   import { fetchCardInfo, fetchSeasonInfo, fetchComments, checkUserPermission, fetchUserInfo, fetchSeasons } from '@/api'
   import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
-  import { useRouter } from 'vue-router'
 
   export default {
     props: {
       uuid: {
         type: String,
         required: true
-      },
-      // Add these new props to receive sort information
-      sortField: {
-        type: String,
-        default: 'id'
-      },
-      sortDirection: {
-        type: String,
-        default: 'asc'
       }
     },
     setup(props) {
-      const router = useRouter()
       const fileInput = ref(null)
       // Refs для полей ввода
       const nameInput = ref(null)
@@ -238,35 +219,6 @@
         category: false,
         season: false
       })
-      const cardList = ref([]) // To store the sorted list of cards
-      const currentCardIndex = ref(-1)
-
-      const loadCardList = async () => {
-        try {
-          // Get the sorted list of cards for the current season
-          const cards = await fetchCardsForSeason(card.value.season_id, props.sortField, props.sortDirection)
-          cardList.value = cards
-          
-          // Find current card's position in the sorted list
-          currentCardIndex.value = cards.findIndex(c => c.uuid === props.uuid)
-        } catch (err) {
-          console.error('Error loading card list:', err)
-        }
-      }
-
-      const goToPreviousCard = async () => {
-        if (currentCardIndex.value > 0) {
-          const prevCard = cardList.value[currentCardIndex.value - 1]
-          router.push(`/card/${prevCard.uuid}?sort=${props.sortField}&direction=${props.sortDirection}`)
-        }
-      }
-
-      const goToNextCard = async () => {
-        if (currentCardIndex.value < cardList.value.length - 1) {
-          const nextCard = cardList.value[currentCardIndex.value + 1]
-          router.push(`/card/${nextCard.uuid}?sort=${props.sortField}&direction=${props.sortDirection}`)
-        }
-      }
 
       const adjustFontSize = () => {
         nextTick(() => {
@@ -488,12 +440,6 @@
       onUnmounted(() => {
         window.removeEventListener('resize', adjustFontSize)
       })
-      
-      watch(() => card.value, (newCard) => {
-        if (newCard && newCard.season_id) {
-          loadCardList()
-        }
-      }, { immediate: true })
 
       watch(() => props.uuid, loadData)
 
@@ -550,11 +496,7 @@
         cancelEdit,
         fileInput,
         handleImageDoubleClick,
-        handleFileChange,
-        goToPreviousCard,
-        goToNextCard,
-        cardList,
-        currentCardIndex
+        handleFileChange
       }
     },
     methods: {
@@ -571,16 +513,6 @@
 </script>
 
 <style scoped>
-  /* Add to your existing styles */
-  .nav-arrow.disabled {
-    opacity: 0.2;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-
-  .nav-arrow.disabled .arrow-icon {
-    fill: #666; /* Gray out the icon */
-  }
   /* Add these new styles */
   .card-detail-wrapper {
     position: relative;

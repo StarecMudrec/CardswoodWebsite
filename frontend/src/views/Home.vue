@@ -144,13 +144,7 @@ export default {
     ...mapActions(['fetchSeasons']),
     ...mapMutations(['REMOVE_SEASON']), // Add mapMutations
     navigateToCard(cardUuid) { // Deprecated - use @card-clicked on card component directly
-      this.$router.push({
-        path: `/card/${cardUuid}`,
-        query: {
-          sort: currentSortField,
-          direction: currentSortDirection
-        }
-      });
+      this.$router.push(`/card/${cardUuid}`);
     },
     updateUserAllowedStatus(isAllowed) {
       console.log('Received user allowed status:', isAllowed);
