@@ -1,21 +1,21 @@
 <template>
   <div>
     <div class="background-container"></div>
-    <div class="card-detail-wrapper">
-      <!-- Left Arrow -->
-      <div 
-        class="nav-arrow left-arrow" 
-        :class="{ 'disabled': isFirstCard }"
-        @click="goToPreviousCard"
-      >
-        <div class="arrow-icon-wrapper">
-          <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 20.1L6.9 12 15 3.9z"/>
-          </svg>
+    <transition name="card-slide" mode="out-in">
+      <div class="card-detail-wrapper" :key="card.id">
+        <!-- Left Arrow -->
+        <div 
+          class="nav-arrow left-arrow" 
+          :class="{ 'disabled': isFirstCard }"
+          @click="goToPreviousCard"
+        >
+          <div class="arrow-icon-wrapper">
+            <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 20.1L6.9 12 15 3.9z"/>
+            </svg>
+          </div>
         </div>
-      </div>
-      <transition name="card-slide" mode="out-in">
-        <div class="card-detail-container" :key="card.id">
+        <div class="card-detail-container">
           <div v-if="loading" class="loading-overlay">
             <div class="loading-content">
               <svg class="spinner" viewBox="0 0 50 50">
@@ -171,21 +171,21 @@
             </div>
           </div>
         </div>
-      </transition>
-      <div v-if="saveError" class="error-message">{{ saveError }}</div>
-      <!-- Right Arrow -->
-      <div 
-        class="nav-arrow right-arrow" 
-        :class="{ 'disabled': isLastCard }"
-        @click="goToNextCard"
-      >
-        <div class="arrow-icon-wrapper">
-          <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 3.9L17.1 12 9 20.1z"/>
-          </svg>
+        <div v-if="saveError" class="error-message">{{ saveError }}</div>
+        <!-- Right Arrow -->
+        <div 
+          class="nav-arrow right-arrow" 
+          :class="{ 'disabled': isLastCard }"
+          @click="goToNextCard"
+        >
+          <div class="arrow-icon-wrapper">
+            <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 3.9L17.1 12 9 20.1z"/>
+            </svg>
+          </div>
         </div>
       </div>
-    </div>
+    </transition>
   <input type="file" ref="fileInput" @change="handleFileChange" accept="image/*" style="display: none;">
   </div>
 </template>
