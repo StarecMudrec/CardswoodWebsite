@@ -38,8 +38,8 @@ services:
       - ./backend:/app
       - ./frontend/public:/app/public
       # - card_images:/app/card_imgs
-      - cardswoos_db:/app/db/
-      - cardswoos_photos:/app/card_imgs
+      - /root/CARDSWOOS/db:/app/db:ro
+      - /root/CARDSWOOS/photos:/app/card_imgs
     depends_on:
       db:
         condition: service_healthy
@@ -58,15 +58,15 @@ volumes:
   postgres_data: {}
   frontend_node_modules: {}
   card_images: {}
-  cardswoos_db:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /root/CARDSWOOS/db
-  cardswoos_photos:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /root/CARDSWOOS/photos
+  # cardswoos_db:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     o: bind
+  #     device: /root/CARDSWOOS/db
+  # cardswoos_photos:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     o: bind
+  #     device: /root/CARDSWOOS/photos
