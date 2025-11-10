@@ -1,7 +1,7 @@
 <template>
   <div class="donate-background">
     <div class="donate-view">
-      <h1>Здесь скоро будет оплата...</h1>
+      <h1 class="text">Здесь скоро будет оплата...</h1>
       <!-- <p>This is the donate page content.</p> -->
     </div>
   </div>
@@ -14,6 +14,16 @@ export default {
 </script>
 
 <style scoped>
+.text {
+  color: white;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -100%);
+  font-size: 100px;
+  white-space: nowrap;
+}
 .donate-background {
   position: absolute;
   top: 0;
