@@ -90,12 +90,22 @@ def telegram_callback():
     query_hash = request.args.get("hash")
     print(query_hash)
 
+    
+    print("=== TELEGRAM CALLBACK DEBUG ===")
+    print(f"User ID: {user_id}")
+    print(f"Auth date: {auth_date}")
+    print(f"Query hash: {query_hash}")
+    print(f"All args: {dict(request.args)}")
+
     if user_id is None or query_hash is None:
+        print("Missing user_id or hash")
         return "Invalid request", 400
 
     # Extract parameters and sort them
     params = request.args.to_dict()
+    print(f"Params before filtering: {params}")
     data_check_string = "\n".join(sorted(f"{x}={y}" for x, y in params.items() if x not in ("hash", "next")))
+    print(f"Data check string: {data_check_string}")
 
     # Compute HMAC hash using BOT_TOKEN_HASH
     computed_hash = hmac.new(Config.BOT_TOKEN_HASH.digest(), data_check_string.encode(), sha256).hexdigest()

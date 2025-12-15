@@ -8,7 +8,14 @@ load_dotenv()
 class Config:
     # Configuration
     JWT_SECRET_KEY = "COOL"  # Replace with your actual secret key
-    BOT_TOKEN_HASH = sha256(os.getenv("BOT_TOKEN").encode())  # Replace with your actual token
+
+    BOT_TOKEN = os.getenv("BOT_TOKEN")
+    
+    if not BOT_TOKEN:
+        raise ValueError("BOT_TOKEN environment variable is not set")
+    
+    BOT_TOKEN_HASH = sha256(BOT_TOKEN.encode()).digest()  # digest() возвращает bytes
+    
     SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres:postgres@db:5432/cards"  # SQLite database
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.getenv("SECRET_KEY")
