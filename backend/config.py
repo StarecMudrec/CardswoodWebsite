@@ -1,9 +1,6 @@
 import os
 from hashlib import sha256
 from sqlalchemy import create_engine
-from dotenv import load_dotenv
-
-load_dotenv(dotenv_path='/app/.env')
 
 class Config:
     # Configuration
