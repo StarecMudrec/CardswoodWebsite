@@ -46,6 +46,9 @@ services:
     environment:
       BOT_TOKEN: ${BOT_TOKEN}
       SECRET_KEY: ${SECRET_KEY}
+      PAYANYWAY_MNT_ID: ${PAYANYWAY_MNT_ID}
+      PAYANYWAY_MNT_INTEGRITY_CODE: ${PAYANYWAY_MNT_INTEGRITY_CODE}
+      PAYANYWAY_TEST_MODE: ${PAYANYWAY_TEST_MODE}
       SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:postgres@db:5432/cards
       FLASK_APP: wsgi:app
     command: >      
