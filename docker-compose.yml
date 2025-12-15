@@ -45,8 +45,6 @@ services:
         condition: service_healthy
     environment:      
       SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:postgres@db:5432/cards
-      BOT_TOKEN_HASH: 7505659847:AAHkYpqOlCBlenERMIS3lDlefyrbC98eedk
-      SECRET_KEY: VUPSENPUPSENROSTIC)
       FLASK_APP: wsgi:app
     command: >      
       sh -c "gunicorn --bind 0.0.0.0:8000 --worker-class gevent --timeout 120 wsgi:app"
