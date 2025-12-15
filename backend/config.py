@@ -3,7 +3,7 @@ from hashlib import sha256
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path='/app/.env')
 
 class Config:
     # Configuration
@@ -15,7 +15,7 @@ class Config:
         raise ValueError("BOT_TOKEN environment variable is not set")
     
     BOT_TOKEN_HASH = sha256(BOT_TOKEN.encode()).digest()  # digest() возвращает bytes
-    
+
     SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres:postgres@db:5432/cards"  # SQLite database
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.getenv("SECRET_KEY")

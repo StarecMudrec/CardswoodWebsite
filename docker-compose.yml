@@ -40,12 +40,13 @@ services:
       # - card_images:/app/card_imgs
       - /root/CARDSWOOS/db:/app/db:ro
       - /root/CARDSWOOS/photos:/app/card_imgs
+      - ./.env:/app/.env:ro
     depends_on:
       db:
         condition: service_healthy
-    environment:      
-      BOT_TOKEN: ${BOT_TOKEN}
-      SECRET_KEY: ${SECRET_KEY}
+    env_file:
+      - .env
+    environment:
       SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:postgres@db:5432/cards
       FLASK_APP: wsgi:app
     command: >      
