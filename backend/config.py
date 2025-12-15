@@ -11,7 +11,7 @@ class Config:
     if not BOT_TOKEN:
         raise ValueError("BOT_TOKEN environment variable is not set")
     
-    BOT_TOKEN_HASH = sha256(BOT_TOKEN.encode()).digest()  # digest() возвращает bytes
+    BOT_TOKEN_HASH = sha256(BOT_TOKEN.encode())
 
     SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres:postgres@db:5432/cards"  # SQLite database
     SQLALCHEMY_TRACK_MODIFICATIONS = False
