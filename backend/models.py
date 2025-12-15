@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import BigInteger
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -67,4 +68,25 @@ class Comment(db.Model):
                 "user_id": self.user_id, 
                 "text": self.text, 
                 "card_id": self.card_id}
-    
+
+
+class Donation(db.Model):
+    """
+    Simple donation record used to reconcile PayAnyWay transactions.
+    """
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    transaction_id = db.Column(db.String(64), unique=True, nullable=False)
+    amount = db.Column(db.Numeric(precision=12, scale=2), nullable=False)
+    currency = db.Column(db.String(3), nullable=False, default="RUB")
+    status = db.Column(db.String(20), nullable=False, default="pending")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    def present(self):
+        return {
+            "id": self.id,
+            "transaction_id": self.transaction_id,
+            "amount": float(self.amount),
+            "currency": self.currency,
+            "status": self.status,
+        }

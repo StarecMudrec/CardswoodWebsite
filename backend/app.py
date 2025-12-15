@@ -1,7 +1,9 @@
 import os
 import hmac
-from hashlib import sha256
+from hashlib import sha256, md5
 import uuid  # For generating unique tokens
+from decimal import Decimal, InvalidOperation
+from urllib.parse import urlencode
 
 from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify, send_from_directory, session
 from flask_migrate import Migrate
@@ -10,7 +12,7 @@ import requests  # Import the requests library
 from joserfc.errors import JoseError
 import logging
 from flask_sqlalchemy import SQLAlchemy  # Database integration
-from models import db, AuthToken, Card, Season, Comment, AllowedUser
+from models import db, AuthToken, Card, Season, Comment, AllowedUser, Donation
 from config import Config
 from sqlalchemy import create_engine, select, and_, text
 from sqlalchemy.orm import Session, sessionmaker
@@ -33,6 +35,41 @@ with app.app_context():
 
 def get_sqlite_conn():
     return connect(Config.SQLITE_DB_PATH, uri=True)  # uri=True enables ?mode=ro
+
+
+def payanyway_amount_to_str(amount: Decimal) -> str:
+    """
+    Format Decimal amount to string with 2 decimal places as required by PayAnyWay.
+    """
+    return f"{amount:.2f}"
+
+
+def payanyway_request_signature(mnt_id: str,
+                                transaction_id: str,
+                                amount_str: str,
+                                currency_code: str,
+                                test_mode: str,
+                                integrity_code: str) -> str:
+    """
+    Signature for payment request according to PayAnyWay Merchant API:
+    md5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_TEST_MODE + MNT_INTEGRITY_CODE)
+    See: PayAnyWay Merchant API documentation.
+    """
+    raw = f"{mnt_id}{transaction_id}{amount_str}{currency_code}{test_mode}{integrity_code}"
+    return md5(raw.encode("utf-8")).hexdigest()
+
+
+def payanyway_result_signature(result_code: str,
+                               mnt_id: str,
+                               transaction_id: str,
+                               integrity_code: str) -> str:
+    """
+    Signature for responses to PayAnyWay check/pay notifications:
+    md5(MNT_RESULT_CODE + MNT_ID + MNT_TRANSACTION_ID + MNT_INTEGRITY_CODE)
+    As described in the CMS specification PDF.
+    """
+    raw = f"{result_code}{mnt_id}{transaction_id}{integrity_code}"
+    return md5(raw.encode("utf-8")).hexdigest()
 
 @app.route('/placeholder.jpg')
 def serve_placeholder():
@@ -229,6 +266,220 @@ def db_status():
         "sqlite_version": sqlite_version,
         "cards_count": cards_count
     })
+
+
+@app.route("/api/donations/create", methods=["POST"])
+def create_donation():
+    """
+    Create a donation and return a PayAnyWay payment URL the frontend can redirect to.
+    """
+    try:
+        data = request.get_json(force=True, silent=False) or {}
+    except Exception:
+        return jsonify({"error": "Invalid JSON"}), 400
+
+    amount_raw = data.get("amount")
+    description = data.get("description") or "Donation"
+
+    if amount_raw is None:
+        return jsonify({"error": "Amount is required"}), 400
+
+    try:
+        amount = Decimal(str(amount_raw))
+    except (InvalidOperation, TypeError):
+        return jsonify({"error": "Invalid amount"}), 400
+
+    if amount <= 0:
+        return jsonify({"error": "Amount must be greater than zero"}), 400
+
+    # Respect limits from spec (number_amount)
+    if amount > Decimal("10000000000000"):
+        return jsonify({"error": "Amount is too large"}), 400
+
+    # Basic currency & config
+    mnt_id = Config.PAYANYWAY_MNT_ID
+    integrity_code = Config.PAYANYWAY_MNT_INTEGRITY_CODE
+    test_mode = Config.PAYANYWAY_TEST_MODE or "1"
+    currency_code = "643"  # RUB ISO code used by PayAnyWay
+
+    if not mnt_id or not integrity_code:
+        return jsonify({"error": "Payment system is not configured on the server"}), 500
+
+    # Generate transaction id and persist donation
+    transaction_id = str(uuid.uuid4())
+    amount_str = payanyway_amount_to_str(amount)
+
+    donation = Donation(
+        transaction_id=transaction_id,
+        amount=amount,
+        currency="RUB",
+        status="pending",
+    )
+    try:
+        db.session.add(donation)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        logging.exception(f"Error creating donation: {e}")
+        return jsonify({"error": "Failed to create donation"}), 500
+
+    # Sanitize description for PayAnyWay (no quotes, &,$,#, slashes etc. per spec)
+    forbidden_chars = ['"', "'", "&", "$", "#", "\\", "/"]
+    for ch in forbidden_chars:
+        description = description.replace(ch, " ")
+    description = description.strip() or "Donation"
+
+    signature = payanyway_request_signature(
+        mnt_id=mnt_id,
+        transaction_id=transaction_id,
+        amount_str=amount_str,
+        currency_code=currency_code,
+        test_mode=test_mode,
+        integrity_code=integrity_code,
+    )
+
+    # Build PayAnyWay hosted payment URL
+    base_url = "https://www.payanyway.ru/assistant.htm"
+    query = {
+        "MNT_ID": mnt_id,
+        "MNT_TRANSACTION_ID": transaction_id,
+        "MNT_CURRENCY_CODE": currency_code,
+        "MNT_AMOUNT": amount_str,
+        "MNT_DESCRIPTION": description,
+        "MNT_TEST_MODE": test_mode,
+        "MNT_SIGNATURE": signature,
+    }
+
+    # Optional parameters if configured
+    if Config.PAYANYWAY_MNT_UNIT_ID:
+        query["MNT_UNIT_ID"] = Config.PAYANYWAY_MNT_UNIT_ID
+    if Config.PAYANYWAY_MNT_CMS:
+        query["MNT_CMS"] = Config.PAYANYWAY_MNT_CMS
+
+    payment_url = f"{base_url}?{urlencode(query)}"
+
+    return jsonify({
+        "paymentUrl": payment_url,
+        "transactionId": transaction_id,
+        "status": donation.status,
+    }), 201
+
+
+@app.route("/payments/payanyway/check", methods=["POST"])
+def payanyway_check():
+    """
+    Check URL handler called by PayAnyWay before processing a payment.
+    Responds with JSON containing resultCode and signature, and ensures
+    our donation record exists and matches the requested amount.
+    """
+    # Accept both JSON and form-encoded payloads
+    data = request.get_json(silent=True) or request.form or request.args
+
+    mnt_id = data.get("MNT_ID") or Config.PAYANYWAY_MNT_ID
+    transaction_id = data.get("MNT_TRANSACTION_ID") or data.get("transactionId")
+    amount_str = data.get("MNT_AMOUNT") or data.get("amount")
+
+    if not transaction_id:
+        return jsonify({"resultCode": "500", "description": "Missing transaction id"}), 400
+
+    donation = Donation.query.filter_by(transaction_id=transaction_id).first()
+    if not donation:
+        result_code = "500"
+        description = "Donation not found"
+    else:
+        # Optionally verify amount if provided
+        if amount_str:
+            try:
+                incoming_amount = Decimal(str(amount_str))
+                if incoming_amount != donation.amount:
+                    result_code = "500"
+                    description = "Amount mismatch"
+                else:
+                    result_code = "200"
+                    description = "OK"
+            except (InvalidOperation, TypeError):
+                result_code = "500"
+                description = "Invalid amount"
+        else:
+            result_code = "200"
+            description = "OK"
+
+    if not mnt_id or not Config.PAYANYWAY_MNT_INTEGRITY_CODE:
+        # If configuration is broken, we still respond with an error code
+        result_code = "500"
+        description = "Payment system is not configured"
+
+    signature = payanyway_result_signature(
+        result_code=result_code,
+        mnt_id=mnt_id,
+        transaction_id=transaction_id,
+        integrity_code=Config.PAYANYWAY_MNT_INTEGRITY_CODE or "",
+    )
+
+    response_body = {
+        "id": mnt_id,
+        "transactionId": transaction_id,
+        "amount": float(donation.amount) if donation else None,
+        "resultCode": result_code,
+        "description": description,
+        "signature": signature,
+    }
+
+    return jsonify(response_body), 200 if result_code == "200" else 400
+
+
+@app.route("/payments/payanyway/pay", methods=["POST"])
+def payanyway_pay():
+    """
+    Pay URL handler called by PayAnyWay after successful payment.
+    Marks the donation as paid and responds with resultCode/signature JSON.
+    """
+    data = request.get_json(silent=True) or request.form or request.args
+
+    mnt_id = data.get("MNT_ID") or Config.PAYANYWAY_MNT_ID
+    transaction_id = data.get("MNT_TRANSACTION_ID") or data.get("transactionId")
+
+    if not transaction_id:
+        return jsonify({"resultCode": "500", "description": "Missing transaction id"}), 400
+
+    donation = Donation.query.filter_by(transaction_id=transaction_id).first()
+    if not donation:
+        result_code = "500"
+        description = "Donation not found"
+    else:
+        # Mark as paid
+        try:
+            donation.status = "paid"
+            db.session.commit()
+            result_code = "200"
+            description = "OK"
+        except Exception as e:
+            db.session.rollback()
+            logging.exception(f"Error updating donation status: {e}")
+            result_code = "500"
+            description = "Database error"
+
+    if not mnt_id or not Config.PAYANYWAY_MNT_INTEGRITY_CODE:
+        result_code = "500"
+        description = "Payment system is not configured"
+
+    signature = payanyway_result_signature(
+        result_code=result_code,
+        mnt_id=mnt_id,
+        transaction_id=transaction_id,
+        integrity_code=Config.PAYANYWAY_MNT_INTEGRITY_CODE or "",
+    )
+
+    response_body = {
+        "id": mnt_id,
+        "transactionId": transaction_id,
+        "amount": float(donation.amount) if donation else None,
+        "resultCode": result_code,
+        "description": description,
+        "signature": signature,
+    }
+
+    return jsonify(response_body), 200 if result_code == "200" else 400
 
 @app.route('/card_imgs/<filename>')
 def serve_card_image(filename):

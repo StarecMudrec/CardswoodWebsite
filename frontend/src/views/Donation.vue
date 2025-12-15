@@ -1,29 +1,116 @@
 <template>
   <div class="donate-background">
     <div class="donate-view">
-      <h1 class="text">Здесь скоро будет оплата...</h1>
-      <!-- <p>This is the donate page content.</p> -->
+      <h1 class="title">Support the project</h1>
+
+      <p class="subtitle">
+        Choose an amount and you will be redirected to the secure PayAnyWay payment page.
+      </p>
+
+      <div class="card">
+        <div class="amounts">
+          <button
+            v-for="preset in presets"
+            :key="preset"
+            type="button"
+            class="amount-btn"
+            :class="{ active: amount === preset }"
+            @click="selectPreset(preset)"
+          >
+            {{ preset }} ₽
+          </button>
+        </div>
+
+        <div class="custom-row">
+          <label class="custom-label" for="custom-amount">Or enter your own amount</label>
+          <input
+            id="custom-amount"
+            v-model.number="customAmount"
+            type="number"
+            min="10"
+            step="10"
+            class="custom-input"
+            placeholder="e.g. 300"
+          />
+        </div>
+
+        <div class="actions">
+          <button
+            type="button"
+            class="donate-btn"
+            :disabled="loading || !validAmount"
+            @click="startDonation"
+          >
+            <span v-if="loading">Redirecting...</span>
+            <span v-else>Donate via PayAnyWay</span>
+          </button>
+        </div>
+
+        <p v-if="error" class="error">{{ error }}</p>
+      </div>
+
+      <p class="hint">
+        Payments are processed by PayAnyWay (MONETA.ru). We never store your card data on this site.
+      </p>
     </div>
   </div>
 </template>
 
 <script>
+import { createDonation } from '@/api'
+
 export default {
-  name: 'DonationView'
+  name: 'DonationView',
+  data () {
+    return {
+      presets: [100, 300, 500],
+      amount: 300,
+      customAmount: null,
+      loading: false,
+      error: null
+    }
+  },
+  computed: {
+    effectiveAmount () {
+      if (this.customAmount && this.customAmount > 0) {
+        return this.customAmount
+      }
+      return this.amount
+    },
+    validAmount () {
+      return this.effectiveAmount && this.effectiveAmount > 0
+    }
+  },
+  methods: {
+    selectPreset (value) {
+      this.amount = value
+      this.customAmount = null
+      this.error = null
+    },
+    async startDonation () {
+      if (!this.validAmount || this.loading) return
+      this.loading = true
+      this.error = null
+
+      try {
+        const { paymentUrl } = await createDonation(this.effectiveAmount, 'Donation')
+        if (paymentUrl) {
+          window.location.href = paymentUrl
+        } else {
+          this.error = 'Server did not return payment URL'
+        }
+      } catch (e) {
+        console.error(e)
+        this.error = e.message || 'Failed to start donation'
+      } finally {
+        this.loading = false
+      }
+    }
+  }
 }
 </script>
 
 <style scoped>
-.text {
-  color: white;
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -100%);
-  font-size: 100px;
-  white-space: nowrap;
-}
 .donate-background {
   position: absolute;
   top: 0;
@@ -32,12 +119,140 @@ export default {
   height: 100%;
   background-image: url('/background.jpg');
   background-size: cover;
-  background-position: center 95%; /* Position the vertical center 80% down from the top, center horizontally */
-  z-index: 1; /* Ensure it's behind the content */
+  background-position: center 95%;
+  z-index: 1;
 }
+
 .donate-view {
-  padding: 20px;
-  max-width: 1200px;
+  padding: 40px 20px;
+  max-width: 600px;
   margin: 0 auto;
+  color: #fff;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+.title {
+  font-size: 42px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  margin-bottom: 24px;
+  font-size: 18px;
+}
+
+.card {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+}
+
+.amounts {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.amount-btn {
+  flex: 1;
+  min-width: 90px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.amount-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7);
+}
+
+.amount-btn.active {
+  background: #ffb947;
+  color: #000;
+  border-color: #ffb947;
+}
+
+.custom-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.custom-label {
+  font-size: 14px;
+}
+
+.custom-input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  outline: none;
+  font-size: 16px;
+}
+
+.custom-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 8px;
+}
+
+.donate-btn {
+  padding: 10px 24px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ffb947, #ff7a3c);
+  color: #000;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  transition: transform 0.1s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.donate-btn:hover:enabled {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.8);
+}
+
+.donate-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.error {
+  color: #ffb4b4;
+  margin-top: 8px;
+}
+
+.hint {
+  margin-top: 16px;
+  font-size: 13px;
+  max-width: 480px;
+}
+
+@media (max-width: 600px) {
+  .title {
+    font-size: 32px;
+  }
+
+  .card {
+    padding: 20px;
+  }
 }
 </style>
