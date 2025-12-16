@@ -334,6 +334,17 @@ def create_donation():
     # MNT_SUBSCRIBER_ID is optional - use empty string if not configured
     subscriber_id = Config.PAYANYWAY_MNT_SUBSCRIBER_ID or ''
     
+    # Debug logging for signature calculation
+    signature_raw = f"{mnt_id}{transaction_id}{amount_str}{currency_code}{subscriber_id}{test_mode}{integrity_code}"
+    logging.debug(f"PayAnyWay signature calculation:")
+    logging.debug(f"  MNT_ID: {mnt_id}")
+    logging.debug(f"  MNT_TRANSACTION_ID: {transaction_id}")
+    logging.debug(f"  MNT_AMOUNT: {amount_str}")
+    logging.debug(f"  MNT_CURRENCY_CODE: {currency_code}")
+    logging.debug(f"  MNT_SUBSCRIBER_ID: '{subscriber_id}' (empty if not used)")
+    logging.debug(f"  MNT_TEST_MODE: {test_mode}")
+    logging.debug(f"  Raw string length: {len(signature_raw)}")
+    
     signature = payanyway_request_signature(
         mnt_id=mnt_id,
         transaction_id=transaction_id,
@@ -343,6 +354,7 @@ def create_donation():
         test_mode=test_mode,
         integrity_code=integrity_code,
     )
+    logging.debug(f"  Computed signature: {signature}")
 
     # Build PayAnyWay hosted payment URL
     base_url = "https://www.payanyway.ru/assistant.htm"
