@@ -360,7 +360,8 @@ def create_donation():
     logging.debug(f"  Computed signature: {signature}")
 
     # Build PayAnyWay hosted payment URL
-    base_url = "https://www.payanyway.ru/assistant.htm"
+    # Use assistant.moneta.ru for production, www.payanyway.ru for test
+    base_url = "https://assistant.moneta.ru/assistant.htm" if test_mode == "0" else "https://www.payanyway.ru/assistant.htm"
     query = {
         "MNT_ID": mnt_id,
         "MNT_TRANSACTION_ID": transaction_id,
@@ -372,6 +373,8 @@ def create_donation():
     }
 
     # Optional parameters if configured
+    # Note: MNT_SUBSCRIBER_ID is included in signature calculation even if empty,
+    # but typically not sent in URL if empty (unless PayAnyWay specifically requires it)
     if subscriber_id:
         query["MNT_SUBSCRIBER_ID"] = subscriber_id
     if Config.PAYANYWAY_MNT_UNIT_ID:
@@ -380,6 +383,7 @@ def create_donation():
         query["MNT_CMS"] = Config.PAYANYWAY_MNT_CMS
 
     payment_url = f"{base_url}?{urlencode(query)}"
+    logging.debug(f"PayAnyWay payment URL: {payment_url}")
 
     return jsonify({
         "paymentUrl": payment_url,
