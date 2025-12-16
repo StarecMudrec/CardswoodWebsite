@@ -26,6 +26,7 @@ class Config:
     # Optional parameters – configure if you use non-default values
     PAYANYWAY_MNT_INLINE_FORM = os.getenv("PAYANYWAY_MNT_INLINE_FORM")  # \"1\" to use inline form
     PAYANYWAY_MNT_UNIT_ID = os.getenv("PAYANYWAY_MNT_UNIT_ID")  # specific payment method id
+    PAYANYWAY_MNT_SUBSCRIBER_ID = os.getenv("PAYANYWAY_MNT_SUBSCRIBER_ID")  # subscriber id (optional)
     PAYANYWAY_MNT_CMS = os.getenv("PAYANYWAY_MNT_CMS", "TaskListCMS")
 
     # For SQLite over TCP proxy

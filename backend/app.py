@@ -48,14 +48,16 @@ def payanyway_request_signature(mnt_id: str,
                                 transaction_id: str,
                                 amount_str: str,
                                 currency_code: str,
+                                subscriber_id: str,
                                 test_mode: str,
                                 integrity_code: str) -> str:
     """
     Signature for payment request according to PayAnyWay Merchant API:
-    md5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_TEST_MODE + MNT_INTEGRITY_CODE)
+    md5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + MNT_TEST_MODE + MNT_INTEGRITY_CODE)
     See: PayAnyWay Merchant API documentation.
+    Note: MNT_SUBSCRIBER_ID can be empty string if not used.
     """
-    raw = f"{mnt_id}{transaction_id}{amount_str}{currency_code}{test_mode}{integrity_code}"
+    raw = f"{mnt_id}{transaction_id}{amount_str}{currency_code}{subscriber_id}{test_mode}{integrity_code}"
     return md5(raw.encode("utf-8")).hexdigest()
 
 
@@ -329,11 +331,15 @@ def create_donation():
         description = description.replace(ch, " ")
     description = description.strip() or "Donation"
 
+    # MNT_SUBSCRIBER_ID is optional - use empty string if not configured
+    subscriber_id = Config.PAYANYWAY_MNT_SUBSCRIBER_ID or ''
+    
     signature = payanyway_request_signature(
         mnt_id=mnt_id,
         transaction_id=transaction_id,
         amount_str=amount_str,
         currency_code=currency_code,
+        subscriber_id=subscriber_id,
         test_mode=test_mode,
         integrity_code=integrity_code,
     )
@@ -351,6 +357,8 @@ def create_donation():
     }
 
     # Optional parameters if configured
+    if subscriber_id:
+        query["MNT_SUBSCRIBER_ID"] = subscriber_id
     if Config.PAYANYWAY_MNT_UNIT_ID:
         query["MNT_UNIT_ID"] = Config.PAYANYWAY_MNT_UNIT_ID
     if Config.PAYANYWAY_MNT_CMS:
