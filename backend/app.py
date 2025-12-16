@@ -307,8 +307,9 @@ def create_donation():
     if not mnt_id or not integrity_code:
         return jsonify({"error": "Payment system is not configured on the server"}), 500
     
-    # Debug: log integrity code length (for security, don't log the actual value)
-    logging.debug(f"PayAnyWay config check: MNT_ID={mnt_id}, TEST_MODE={test_mode}, INTEGRITY_CODE length={len(integrity_code) if integrity_code else 0}")
+    # Debug: log integrity code (first and last char for security)
+    integrity_preview = f"{integrity_code[0] if integrity_code else '?'}...{integrity_code[-1] if integrity_code and len(integrity_code) > 1 else '?'}" if integrity_code else "None"
+    logging.debug(f"PayAnyWay config check: MNT_ID={mnt_id}, TEST_MODE={test_mode}, INTEGRITY_CODE preview={integrity_preview} (length={len(integrity_code) if integrity_code else 0})")
 
     # Generate transaction id and persist donation
     transaction_id = str(uuid.uuid4())
@@ -348,6 +349,8 @@ def create_donation():
     logging.debug(f"  MNT_CURRENCY_CODE: {currency_code}")
     logging.debug(f"  MNT_SUBSCRIBER_ID: '{subscriber_id}' (empty if not used)")
     logging.debug(f"  MNT_TEST_MODE: {test_mode}")
+    logging.debug(f"  MNT_INTEGRITY_CODE: {integrity_code}")
+    logging.debug(f"  Formula: md5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + MNT_TEST_MODE + MNT_INTEGRITY_CODE)")
     logging.debug(f"  Raw string WITH subscriber_id: {repr(signature_raw_with_sub)}")
     logging.debug(f"  Raw string WITHOUT subscriber_id: {repr(signature_raw_without_sub)}")
     
