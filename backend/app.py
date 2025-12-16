@@ -338,7 +338,9 @@ def create_donation():
     subscriber_id = Config.PAYANYWAY_MNT_SUBSCRIBER_ID or ''
     
     # Debug logging for signature calculation
-    signature_raw = f"{mnt_id}{transaction_id}{amount_str}{currency_code}{subscriber_id}{test_mode}{integrity_code}"
+    signature_raw_with_sub = f"{mnt_id}{transaction_id}{amount_str}{currency_code}{subscriber_id}{test_mode}{integrity_code}"
+    signature_raw_without_sub = f"{mnt_id}{transaction_id}{amount_str}{currency_code}{test_mode}{integrity_code}"
+    
     logging.debug(f"PayAnyWay signature calculation:")
     logging.debug(f"  MNT_ID: {mnt_id}")
     logging.debug(f"  MNT_TRANSACTION_ID: {transaction_id}")
@@ -346,8 +348,10 @@ def create_donation():
     logging.debug(f"  MNT_CURRENCY_CODE: {currency_code}")
     logging.debug(f"  MNT_SUBSCRIBER_ID: '{subscriber_id}' (empty if not used)")
     logging.debug(f"  MNT_TEST_MODE: {test_mode}")
-    logging.debug(f"  Raw string length: {len(signature_raw)}")
+    logging.debug(f"  Raw string WITH subscriber_id: {repr(signature_raw_with_sub)}")
+    logging.debug(f"  Raw string WITHOUT subscriber_id: {repr(signature_raw_without_sub)}")
     
+    # Standard signature with subscriber_id (even if empty)
     signature = payanyway_request_signature(
         mnt_id=mnt_id,
         transaction_id=transaction_id,
@@ -357,7 +361,12 @@ def create_donation():
         test_mode=test_mode,
         integrity_code=integrity_code,
     )
-    logging.debug(f"  Computed signature: {signature}")
+    logging.debug(f"  Computed signature (with subscriber_id): {signature}")
+    
+    # Also compute variant without subscriber_id for debugging
+    if not subscriber_id:
+        signature_no_sub = md5(signature_raw_without_sub.encode("utf-8")).hexdigest()
+        logging.debug(f"  Computed signature (WITHOUT subscriber_id): {signature_no_sub}")
 
     # Build PayAnyWay hosted payment URL
     # Use assistant.moneta.ru for production, www.payanyway.ru for test
