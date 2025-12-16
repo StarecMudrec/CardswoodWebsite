@@ -306,6 +306,9 @@ def create_donation():
 
     if not mnt_id or not integrity_code:
         return jsonify({"error": "Payment system is not configured on the server"}), 500
+    
+    # Debug: log integrity code length (for security, don't log the actual value)
+    logging.debug(f"PayAnyWay config check: MNT_ID={mnt_id}, TEST_MODE={test_mode}, INTEGRITY_CODE length={len(integrity_code) if integrity_code else 0}")
 
     # Generate transaction id and persist donation
     transaction_id = str(uuid.uuid4())
