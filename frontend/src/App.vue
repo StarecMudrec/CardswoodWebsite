@@ -65,6 +65,13 @@ html {
   background-color: var(--bg-color);
 }
 
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background-color: var(--bg-color);
+}
+
 .global-container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   -webkit-font-smoothing: antialiased;
