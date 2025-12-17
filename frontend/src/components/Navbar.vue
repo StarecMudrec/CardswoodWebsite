@@ -28,11 +28,15 @@ export default {
   display: flex;
   justify-content: center;
   gap: 30px;
-  margin: 30px 0 50px 0;
-  padding: 0;
-  position: relative;
-  z-index: 100;
+  margin: 0;
+  padding: 18px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   background-color: transparent;
+  pointer-events: auto;
 }
 
 .nav-btn {
@@ -78,7 +82,7 @@ export default {
 @media (max-width: 480px) {
   .menu {
     gap: 20px;
-    margin-bottom: 30px;
+    padding: 14px 0;
   }
   
   .nav-btn {
