@@ -39,7 +39,7 @@ export default {
         }
       })
       .catch(error => {
-        console.error('Error fetching user data:', error);
+        console.error('Ошибка получения данных пользователя:', error);
         this.user = null; // Ensure user is null on error
       });
   },

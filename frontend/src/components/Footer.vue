@@ -6,11 +6,11 @@
         <div class="footer-text">Лукьянов Савелий Романович</div>
         <div class="footer-text">ИНН: 772158474048</div>
         <div class="footer-text">
-          Email:
+          Эл. почта:
           <a class="footer-link" href="mailto:otect84@gmail.com">otect84@gmail.com</a>
         </div>
         <div class="footer-text">
-          Telegram:
+          Телеграм:
           <a class="footer-link" href="https://t.me/youngmintman" target="_blank" rel="noopener noreferrer">@youngmintman</a>
         </div>
       </div>

@@ -3,13 +3,13 @@
     <!-- Модальное окно подтверждения удаления -->
     <div v-if="showDeleteConfirmation" class="modal-overlay">
       <div class="modal-content">
-        <h3 class="modal-title">Are you sure?</h3>
+        <h3 class="modal-title">Вы уверены?</h3>
         <div class="modal-buttons">
           <button @click="confirmDelete" class="delete-button">
-            <span class="button-text">Delete</span>
+            <span class="button-text">Удалить</span>
           </button>
           <button @click="cancelDelete" class="cancel-button">
-            <span class="button-text">Cancel</span>
+            <span class="button-text">Отмена</span>
           </button>
         </div>
       </div>
@@ -48,14 +48,14 @@
         </div>
         <transition name="sort-dropdown">
           <div class="sort-dropdown" v-if="showSortDropdown" v-click-outside="closeSortDropdown">
-            <div class="sort-option" @click="sortBy('id', 'asc')">Old first</div>
-            <div class="sort-option" @click="sortBy('id', 'desc')">New first</div>
-            <div class="sort-option" @click="sortBy('amount', 'asc')">Amount (Low to High)</div>
-            <div class="sort-option" @click="sortBy('amount', 'desc')">Amount (High to Low)</div>
-            <div class="sort-option" @click="sortBy('rarity', 'asc')">Rarity (Episodical to Achievements)</div>
-            <div class="sort-option" @click="sortBy('rarity', 'desc')">Rarity (Achievements to Episodical)</div>
-            <div class="sort-option" @click="sortBy('name', 'asc')">Name (A-Z)</div>
-            <div class="sort-option" @click="sortBy('name', 'desc')">Name (Z-A)</div>
+            <div class="sort-option" @click="sortBy('id', 'asc')">Сначала старые</div>
+            <div class="sort-option" @click="sortBy('id', 'desc')">Сначала новые</div>
+            <div class="sort-option" @click="sortBy('amount', 'asc')">Количество (по возрастанию)</div>
+            <div class="sort-option" @click="sortBy('amount', 'desc')">Количество (по убыванию)</div>
+            <div class="sort-option" @click="sortBy('rarity', 'asc')">Редкость (Episodical → Achievements)</div>
+            <div class="sort-option" @click="sortBy('rarity', 'desc')">Редкость (Achievements → Episodical)</div>
+            <div class="sort-option" @click="sortBy('name', 'asc')">Имя (A–Z)</div>
+            <div class="sort-option" @click="sortBy('name', 'desc')">Имя (Z–A)</div>
           </div>
         </transition>
       </div>
@@ -63,7 +63,7 @@
         <i class="bi bi-trash"></i> ({{ selectedCards.length }})
       </button>
       <button v-if="isUserAllowed" @click="$router.push('/add-card')" class="add-card-button desktop-only">
-        + Add New Card
+        + Добавить карточку
       </button>
     </div>
     <div class="cards-container-wrapper">
@@ -83,10 +83,10 @@
           class="card-item"
         />
         <div v-if="!loading && cards.length === 0" style="grid-column: 1/-1; text-align: center; color: #666; margin-top: 17px;">
-          No cards in this season
+          В этом сезоне нет карточек
         </div>
         <div v-if="isUserAllowed" class="add-card-as-card mobile-only" @click="$router.push('/add-card')">
-          + Add New Card
+          + Добавить карточку
         </div>
       </div>
     </div>
@@ -167,7 +167,7 @@
 
       } catch (err) {
         this.error = err;
-        console.error('Error loading cards:', err);
+        console.error('Ошибка загрузки карточек:', err);
       } finally {
         this.loading = false;
       }
@@ -193,7 +193,7 @@
           this.cards = await fetchCardsForSeason(this.season.uuid);
         } catch (err) {
           this.error = err;
-          console.error('Error deleting card:', err);
+          console.error('Ошибка удаления карточки:', err);
         } finally {
           this.loading = false;
         }
@@ -216,7 +216,7 @@
           this.cards = await fetchCardsForSeason(this.season.uuid); // Refetch cards
         } catch (err) {
           this.error = err;
-          console.error('Error deleting selected cards:', err);
+          console.error('Ошибка удаления выбранных карточек:', err);
         } finally {
           this.loading = false;
         }
@@ -245,7 +245,7 @@
           this.$emit('season-deleted', this.season.uuid);
         } catch (err) {
           this.error = err;
-          console.error('Error deleting season:', err);
+          console.error('Ошибка удаления сезона:', err);
         } finally {
           this.loading = false;
         }
@@ -279,7 +279,7 @@
           this.editingSeasonName = false;
         } catch (err) {
           this.error = err;
-          console.error('Error updating season name:', err);
+          console.error('Ошибка обновления названия сезона:', err);
         } finally {
           this.loading = false;
         }
@@ -340,7 +340,7 @@
           });
           
         } catch (error) {
-          console.error('Error sorting cards:', error);
+          console.error('Ошибка сортировки карточек:', error);
           this.error = error;
         } finally {
           this.loading = false;

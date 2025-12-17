@@ -1,11 +1,11 @@
 <template>
   <div class="donate-background">
     <div class="donate-view">
-      <h1 class="title">Thank you!</h1>
+      <h1 class="title">Спасибо!</h1>
       <p class="subtitle">
-        Your donation has been received. We really appreciate your support.
+        Платёж получен. Спасибо за поддержку!
       </p>
-      <router-link to="/" class="home-link">Back to cards</router-link>
+      <router-link to="/" class="home-link">Вернуться к карточкам</router-link>
     </div>
   </div>
 </template>

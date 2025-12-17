@@ -1,10 +1,10 @@
 <template>
   <div class="donate-background">
     <div class="donate-view">
-      <h1 class="title">Support the project</h1>
+      <h1 class="title">Поддержать проект</h1>
 
       <p class="subtitle">
-        Choose an amount and you will be redirected to the secure PayAnyWay payment page.
+        Выберите сумму — и вы будете перенаправлены на защищённую страницу оплаты PayAnyWay.
       </p>
 
       <div class="card">
@@ -22,7 +22,7 @@
         </div>
 
         <div class="custom-row">
-          <label class="custom-label" for="custom-amount">Or enter your own amount</label>
+          <label class="custom-label" for="custom-amount">Или введите свою сумму</label>
           <input
             id="custom-amount"
             v-model.number="customAmount"
@@ -30,7 +30,7 @@
             min="10"
             step="10"
             class="custom-input"
-            placeholder="e.g. 300"
+            placeholder="например, 300"
           />
         </div>
 
@@ -41,8 +41,8 @@
             :disabled="loading || !validAmount"
             @click="startDonation"
           >
-            <span v-if="loading">Redirecting...</span>
-            <span v-else>Donate via PayAnyWay</span>
+            <span v-if="loading">Перенаправляем...</span>
+            <span v-else>Оплатить через PayAnyWay</span>
           </button>
         </div>
 
@@ -50,7 +50,7 @@
       </div>
 
       <p class="hint">
-        Payments are processed by PayAnyWay (MONETA.ru). We never store your card data on this site.
+        Платежи обрабатываются PayAnyWay (MONETA.ru). Мы никогда не храним данные вашей карты на этом сайте.
       </p>
     </div>
   </div>
@@ -93,15 +93,15 @@ export default {
       this.error = null
 
       try {
-        const { paymentUrl } = await createDonation(this.effectiveAmount, 'Donation')
+        const { paymentUrl } = await createDonation(this.effectiveAmount, 'Пожертвование')
         if (paymentUrl) {
           window.location.href = paymentUrl
         } else {
-          this.error = 'Server did not return payment URL'
+          this.error = 'Сервер не вернул ссылку на оплату'
         }
       } catch (e) {
         console.error(e)
-        this.error = e.message || 'Failed to start donation'
+        this.error = e.message || 'Не удалось начать оплату'
       } finally {
         this.loading = false
       }

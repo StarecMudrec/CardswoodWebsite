@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cards Collection</title>
+    <title>Коллекция карточек</title>
     <style>
         :root {
             --bg-color: #121212;
@@ -147,30 +147,30 @@
 </head>
 <body>
     <div class="menu">
-        <a href="/home" class="nav-btn">CARDS</a>
-        <a href="/donate" class="nav-btn">DONATE</a>
+        <a href="/home" class="nav-btn">КАРТОЧКИ</a>
+        <a href="/donate" class="nav-btn">ПОДДЕРЖАТЬ</a>
         {% if is_auth %}
-            <a href="/auth/logout" class="nav-btn">LOGOUT</a>
+            <a href="/auth/logout" class="nav-btn">ВЫЙТИ</a>
         {% else %}
-            <a href="/login" class="nav-btn">LOGIN</a>
+            <a href="/login" class="nav-btn">ВОЙТИ</a>
         {% endif %}
     </div>
 
     <div id="seasons-container">
-        <div class="loading">Loading cards...</div>
+        <div class="loading">Загрузка карточек...</div>
     </div>
 
     <script>
         async function loadSeasonsAndCards() {
             try {
                 const seasonsContainer = document.getElementById('seasons-container');
-                seasonsContainer.innerHTML = '<div class="loading">Loading data...</div>';
+                seasonsContainer.innerHTML = '<div class="loading">Загрузка данных...</div>';
                 
                 const seasonsResponse = await fetch('/api/seasons');
                 const seasonUuids = await seasonsResponse.json();
                 
                 if (seasonUuids.length === 0) {
-                    seasonsContainer.innerHTML = '<div class="loading">No seasons found</div>';
+                    seasonsContainer.innerHTML = '<div class="loading">Сезоны не найдены</div>';
                     return;
                 }
                 
@@ -193,7 +193,7 @@
                     const cardsContainer = document.getElementById(`cards-${season.uuid}`);
                     
                     if (cardUuids.length === 0) {
-                        cardsContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #666;">No cards in this season</div>';
+                        cardsContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #666;">В этом сезоне нет карточек</div>';
                         continue;
                     }
                     
@@ -216,7 +216,7 @@
                         
                         img.onerror = function() {
                             cardElement.innerHTML = `
-                                <div class="image-placeholder">No image</div>
+                                <div class="image-placeholder">Нет изображения</div>
                                 <div class="card-name">${card.name}</div>
                             `;
                         };
@@ -229,8 +229,8 @@
                     }
                 }
             } catch (error) {
-                console.error('Error loading data:', error);
-                seasonsContainer.innerHTML = '<div class="loading" style="color: #ff5555;">Error loading data. Please try again later.</div>';
+                console.error('Ошибка загрузки данных:', error);
+                seasonsContainer.innerHTML = '<div class="loading" style="color: #ff5555;">Ошибка загрузки данных. Пожалуйста, попробуйте позже.</div>';
             }
         }
 

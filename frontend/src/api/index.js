@@ -4,13 +4,13 @@ import axios from 'axios'
 // Fetch all seasons
 export const fetchSeasons = async () => {
   const response = await fetch('/api/seasons')
-  if (!response.ok) throw new Error('Failed to fetch seasons')
+  if (!response.ok) throw new Error('Не удалось получить список сезонов')
   const seasonIds = await response.json()
 
   const seasons = await Promise.all(
     seasonIds.map(async seasonId => {
       const seasonResponse = await fetch(`/api/season_info/${seasonId}`)
-      if (!seasonResponse.ok) throw new Error('Failed to fetch season info')
+      if (!seasonResponse.ok) throw new Error('Не удалось получить информацию о сезоне')
       return seasonResponse.json()
     })
   )
@@ -29,7 +29,7 @@ export const createDonation = async (amount, description = 'Donation') => {
   })
 
   if (!response.ok) {
-    let message = 'Failed to create donation'
+    let message = 'Не удалось создать платёж'
     try {
       const errorBody = await response.json()
       if (errorBody && errorBody.error) {
@@ -67,7 +67,7 @@ export async function fetchCardsForSeason(seasonId, sortField = 'id', sortDirect
     }));
     
   } catch (error) {
-    console.error('Error fetching cards:', error);
+    console.error('Ошибка получения карточек:', error);
     throw error;
   }
 }
@@ -75,14 +75,14 @@ export async function fetchCardsForSeason(seasonId, sortField = 'id', sortDirect
 // Fetch detailed card info
 export const fetchCardInfo = async (cardId) => {
   const response = await fetch(`/api/card_info/${cardId}`)
-  if (!response.ok) throw new Error('Failed to fetch card info')
+  if (!response.ok) throw new Error('Не удалось получить информацию о карточке')
   return response.json()
 }
 
 // Fetch season info
 export const fetchSeasonInfo = async (seasonId) => {
   const response = await fetch(`/api/season_info/${seasonId}`)
-  if (!response.ok) throw new Error('Failed to fetch season info')
+  if (!response.ok) throw new Error('Не удалось получить информацию о сезоне')
   return response.json()
 }
 
@@ -95,21 +95,21 @@ export const updateSeason = async (seasonId, data) => {
     },
     body: JSON.stringify(data)
   })
-  if (!response.ok) throw new Error('Failed to update season')
+  if (!response.ok) throw new Error('Не удалось обновить сезон')
   return response.json()
 }
 
 // Fetch comments for a card
 export const fetchComments = async (cardId) => {
   const response = await fetch(`/api/comments/${cardId}`)
-  if (!response.ok) throw new Error('Failed to fetch comments')
+  if (!response.ok) throw new Error('Не удалось получить комментарии')
   return response.json()
 }
 
 export const checkAuth = async () => {
   try {
     const response = await fetch('/api/check_auth')
-    if (!response.ok) throw new Error('Auth check failed')
+    if (!response.ok) throw new Error('Не удалось проверить авторизацию')
     return await response.json()
   } catch (error) {
     console.error('Auth check error:', error)
@@ -122,14 +122,14 @@ export const deleteCard = async (cardId) => {
   const response = await fetch(`/api/cards/${cardId}`, {
     method: 'DELETE'
   });
-  if (!response.ok) throw new Error('Failed to delete card');
+  if (!response.ok) throw new Error('Не удалось удалить карточку');
 };
 
 // Check user permission
 export const checkUserPermission = async (username) => {
   try {
     const response = await fetch(`/api/check_permission?username=${username}`);
-    if (!response.ok) throw new Error('Permission check failed');
+    if (!response.ok) throw new Error('Не удалось проверить права доступа');
     const data = await response.json();
     return data;
   } catch (error) {
@@ -141,7 +141,7 @@ export const checkUserPermission = async (username) => {
 // Fetch user information
 export const fetchUserInfo = async () => {
   const response = await fetch('/api/user');
-  if (!response.ok) throw new Error('Failed to fetch user info');
+  if (!response.ok) throw new Error('Не удалось получить данные пользователя');
   return response.json();
 };
 
@@ -150,7 +150,7 @@ export const createSeason = async () => {
   const response = await fetch('/api/seasons', {
     method: 'POST'
   });
-  if (!response.ok) throw new Error('Failed to create season');
+  if (!response.ok) throw new Error('Не удалось создать сезон');
   return response.json();
 };
 
@@ -159,5 +159,5 @@ export const deleteSeason = async (seasonUuid) => {
   const response = await fetch(`/api/seasons/${seasonUuid}`, {
     method: 'DELETE'
   });
-  if (!response.ok) throw new Error('Failed to delete season');
+  if (!response.ok) throw new Error('Не удалось удалить сезон');
 };

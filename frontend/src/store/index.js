@@ -51,7 +51,7 @@ export default createStore({
         commit('SET_AUTH', { isAuthenticated: false, userId: null })
         window.location.reload();
       } catch (error) {
-        console.error('Logout failed:', error)
+        console.error('Ошибка выхода:', error)
       }
     },
     async fetchSeasons({ commit }) {
@@ -59,14 +59,14 @@ export default createStore({
       commit('SET_ERROR', null)
       try {
         const response = await fetch('/api/seasons');
-        if (!response.ok) throw new Error('Failed to fetch season IDs');
+        if (!response.ok) throw new Error('Не удалось получить список сезонов');
         const seasonIds = await response.json();
         const seasonPromises = seasonIds.map(id => fetch(`/api/season_info/${id}`).then(res => res.json()));
         const orderedSeasonsData = await Promise.all(seasonPromises);
         commit('SET_SEASONS', orderedSeasonsData);
       } catch (error) {
         commit('SET_ERROR', error)
-        console.error('Error fetching seasons:', error)
+        console.error('Ошибка получения сезонов:', error)
       } finally {
         commit('SET_LOADING', false)
       }
@@ -77,7 +77,7 @@ export default createStore({
         commit('UPDATE_SEASON', updatedSeason);
         return updatedSeason;
       } catch (error) {
-        console.error('Error updating season:', error);
+        console.error('Ошибка обновления сезона:', error);
         throw error;
       }
     }

@@ -20,7 +20,7 @@
           <svg class="spinner" viewBox="0 0 50 50">
             <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
           </svg>
-          <div class="loading-text">Loading card details...</div>
+          <div class="loading-text">Загрузка карточки...</div>
         </div>
       </div>
       <div v-if="error" class="loading-overlay error-overlay">
@@ -28,7 +28,7 @@
           <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <div class="loading-text error-text">Error loading card: {{ error }}</div>
+          <div class="loading-text error-text">Ошибка загрузки карточки: {{ error }}</div>
         </div>
       </div>
 
@@ -44,8 +44,8 @@
                 @error="imageError = true"
                 @dblclick="handleImageDoubleClick"
               />
-              <!-- <button v-if="isUserAllowed" class="replace-image-button">Replace Image</button> -->
-              <div v-else class="image-placeholder">No image available</div>
+              <!-- <button v-if="isUserAllowed" class="replace-image-button">Заменить изображение</button> -->
+              <div v-else class="image-placeholder">Нет изображения</div>
             </div>
             
             <div class="card-content-wrapper">
@@ -105,7 +105,7 @@
                 <div class="card-info-columns">
                   <div class="card-info-column">
                     <h3>
-                      Rarity:
+                      Редкость:
                       <span v-if="isUserAllowed" class="edit-icon" @click.stop="toggleEdit('category')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -130,7 +130,7 @@
                   </div>
                   <div class="card-info-column">
                     <h3>
-                      Season:
+                      Сезон:
                       <span v-if="isUserAllowed" class="edit-icon" @click.stop="toggleEdit('season')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -161,12 +161,12 @@
               <!-- Комментарии -->
               <div class="comments-section">
                 <div v-if="comments.length === 0" class="no-comments">
-                  No comments yet
+                  Комментариев пока нет
                 </div>
                 <div v-else class="comments-list">
                   <div v-for="comment in comments" :key="comment.id" class="comment">
                     <div class="comment-text">{{ comment.text }}</div>
-                    <div class="comment-meta">User #{{ comment.user_id }}</div>
+                    <div class="comment-meta">Пользователь #{{ comment.user_id }}</div>
                   </div>
                 </div>
               </div>
@@ -274,7 +274,7 @@
           // Preload adjacent cards after we have the sorted list
           preloadAdjacentCards();
         } catch (error) {
-          console.error('Error loading sorted cards:', error);
+          console.error('Ошибка загрузки отсортированных карточек:', error);
         }
       }
 
@@ -298,7 +298,7 @@
                     preloadedCards.value[prevCardId] = cardData;
                   })
                   .catch(err => {
-                    console.error(`Failed to preload card ${prevCardId}:`, err);
+                    console.error(`Не удалось предзагрузить карточку ${prevCardId}:`, err);
                   })
               );
             }
@@ -314,7 +314,7 @@
                     preloadedCards.value[nextCardId] = cardData;
                   })
                   .catch(err => {
-                    console.error(`Failed to preload card ${nextCardId}:`, err);
+                    console.error(`Не удалось предзагрузить карточку ${nextCardId}:`, err);
                   })
               );
             }
@@ -322,8 +322,8 @@
           
           await Promise.all(preloadPromises);
         } catch (err) {
-          preloadError.value = err.message || 'Failed to preload cards';
-          console.error('Error preloading cards:', err);
+          preloadError.value = err.message || 'Не удалось предзагрузить карточки';
+          console.error('Ошибка предзагрузки карточек:', err);
         } finally {
           isPreloading.value = false;
         }
@@ -411,8 +411,8 @@
             };
           } else if (field === 'category') {
               if (editableCard.value.category && editableCard.value.category.length > 20) {
-                  categoryError.value = 'Category cannot exceed 20 characters.';
-                  throw new Error('Validation failed on frontend.');
+                  categoryError.value = 'Редкость не может превышать 20 символов.';
+                  throw new Error('Ошибка валидации на фронтенде.');
               }
               dataToSend = { [field]: editableCard.value[field] };
           } else {
@@ -432,7 +432,7 @@
 
           if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to update card');
+            throw new Error(errorData.error || 'Не удалось обновить карточку');
           }
 
           if (field === 'season') {
@@ -445,8 +445,8 @@
 
           editing.value = { ...editing.value, [field]: false };
         } catch (err) {
-          console.error('Error updating card:', err);
-          saveError.value = err.message || 'Failed to update card';
+          console.error('Ошибка обновления карточки:', err);
+          saveError.value = err.message || 'Не удалось обновить карточку';
         }
       }
 
@@ -474,12 +474,12 @@
 
           if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to upload image');
+            throw new Error(errorData.error || 'Не удалось загрузить изображение');
           }
 
           loadData();
         } catch (err) {
-          console.error('Error uploading image:', err);
+          console.error('Ошибка загрузки изображения:', err);
         }
       };
 
@@ -522,8 +522,8 @@
           
           setTimeout(adjustFontSize, 0)
         } catch (err) {
-          error.value = err.message || 'Failed to load card details'
-          console.error('Error loading card:', err)
+          error.value = err.message || 'Не удалось загрузить данные карточки'
+          console.error('Ошибка загрузки карточки:', err)
         } finally {
           loading.value = false
         }
@@ -592,7 +592,7 @@
           comments.value = await fetchComments(card.value.id);
           adjustFontSize();
         } catch (err) {
-          console.error('Error loading season or comments:', err);
+          console.error('Ошибка загрузки сезона или комментариев:', err);
         }
       }
 
@@ -622,7 +622,7 @@
 
       watch(() => editableCard.value.name, (newName) => {
         if (newName && newName.length > 100) {
-          nameError.value = 'Name cannot exceed 100 characters.';
+          nameError.value = 'Название не может превышать 100 символов.';
         } else {
           nameError.value = null;
         }
@@ -630,7 +630,7 @@
 
       watch(() => editableCard.value.description, (newDescription) => {
         if (newDescription && newDescription.length > 1000) {
-          descriptionError.value = 'Description cannot exceed 1000 characters.';
+          descriptionError.value = 'Описание не может превышать 1000 символов.';
         } else {
           descriptionError.value = null;
         }
@@ -638,7 +638,7 @@
 
       watch(() => editableCard.value.category, (newCategory) => {
         if (newCategory && newCategory.length > 20) {
-          categoryError.value = 'Category cannot exceed 20 characters.';
+          categoryError.value = 'Редкость не может превышать 20 символов.';
         } else {
           categoryError.value = null;
         }

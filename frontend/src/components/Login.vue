@@ -1,11 +1,11 @@
 <template>
   <div class="login-background">
     <div class="login-container">
-      <h1>Please log in</h1>
+      <h1>Пожалуйста, войдите</h1>
       <p></p>
       <div ref="telegramWidget"></div>
 
-      <router-link to="/" class="back-link">← Back to home</router-link>
+      <router-link to="/" class="back-link">← На главную</router-link>
     </div>
   </div>
 </template>

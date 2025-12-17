@@ -1,11 +1,11 @@
 <template>
   <div class="donate-background">
     <div class="donate-view">
-      <h1 class="title">Payment not completed</h1>
+      <h1 class="title">Платёж не завершён</h1>
       <p class="subtitle">
-        The donation was cancelled or an error occurred. You can try again at any time.
+        Платёж был отменён или произошла ошибка. Вы можете попробовать снова в любое время.
       </p>
-      <router-link to="/donate" class="home-link">Try again</router-link>
+      <router-link to="/donate" class="home-link">Попробовать снова</router-link>
     </div>
   </div>
 </template>

@@ -1,14 +1,14 @@
 <template>
   <div class="page-container">
     <div class="background-container"></div>
-    <img src="/logo_noph.png" alt="Logo" class="background-logo">
+    <img src="/logo_noph.png" alt="Логотип" class="background-logo">
     <hr class="separator-line">
 
     <div class="content-wrapper">
       <div id="seasons-container">
-        <div v-if="loading" class="loading">Loading cards...</div>
-        <div v-else-if="error" class="error-message">Error loading data: {{ error.message || error }}. Please try again later.</div>
-        <div v-else-if="seasons.length === 0" class="loading">No seasons found</div>
+        <div v-if="loading" class="loading">Загрузка карточек...</div>
+        <div v-else-if="error" class="error-message">Ошибка загрузки данных: {{ error.message || error }}. Пожалуйста, попробуйте позже.</div>
+        <div v-else-if="seasons.length === 0" class="loading">Сезоны не найдены</div>
         <Season 
           v-for="season in seasons" 
           :key="season.uuid" 
@@ -22,7 +22,7 @@
 
       <div v-if="isUserAllowed" class="add-season-footer">
         <div class="add-new-season-btn" @click="navigateToAddSeason">
-          + Add New Season
+          + Добавить сезон
         </div>
       </div>
 
@@ -163,8 +163,8 @@ export default {
         // Removed automatic navigation after season creation
         // this.$router.push(`/season/${newSeason.uuid}`); // Navigate to the new season's page
       } catch (error) {
-        console.error('Error creating new season:', error);
-        alert('Failed to create new season.'); // Provide user feedback
+        console.error('Ошибка создания сезона:', error);
+        alert('Не удалось создать сезон.'); // Provide user feedback
       }
     }
     ,

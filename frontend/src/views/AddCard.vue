@@ -3,46 +3,46 @@
     <!-- Модальное окно для ошибок -->
     <div v-if="showErrorModal" class="modal-overlay">
       <div class="modal-content">
-        <h3 class="error-title">Error</h3>
+        <h3 class="error-title">Ошибка</h3>
         <p>{{ errorMessage }}</p>
-        <button @click="closeModal" class="modal-button">ok</button>
+        <button @click="closeModal" class="modal-button">ОК</button>
       </div>
     </div>
 
     <div v-if="!isUserAllowed" class="permission-denied-message">
-      <p>You do not have permission to add cards.</p>
+      <p>У вас нет прав добавлять карточки.</p>
     </div>
 
     <div v-if="isUserAllowed"  class="add-card-container">
-      <h1>Add New Card</h1>
+      <h1>Добавить карточку</h1>
       <form @submit.prevent="submitForm" class="card-form">
         <div class="form-group">
-          <label for="name">Card Name:</label>
+          <label for="name">Название карточки:</label>
           <input type="text" id="name" v-model="card.name" required>
         </div>
         <div class="form-group">
-          <label for="description">Description:</label>
+          <label for="description">Описание:</label>
           <textarea id="description" v-model="card.description" required></textarea>
         </div>
         <div class="form-group">
-          <label for="category">Category:</label>
+          <label for="category">Редкость:</label>
           <input type="text" id="category" v-model="card.category" required>
         </div>
         <div class="form-group">
-          <label for="season">Season:</label>
+          <label for="season">Сезон:</label>
           <select id="season" v-model="card.season" required>
-            <option disabled value="">Select a season</option>
+            <option disabled value="">Выберите сезон</option>
             <option v-for="seasonId in seasonIds" :key="seasonId" :value="seasonId">
-              Season {{ seasonId }}
+              Сезон {{ seasonId }}
             </option>
           </select>
         </div>
         <div class="form-group file-upload-group">
           <label for="image" class="file-upload-label">
             <span class="file-upload-text">
-              {{ card.image ? card.image.name : 'Choose card image...' }}
+              {{ card.image ? card.image.name : 'Выберите изображение карточки...' }}
             </span>
-            <span class="file-upload-button">Browse</span>
+            <span class="file-upload-button">Обзор</span>
             <input 
               type="file" 
               id="image" 
@@ -54,10 +54,10 @@
           </label>
         </div>
         <button type="submit" class="submit-button">
-          <span class="submit-button-text">Add Card</span>
+          <span class="submit-button-text">Добавить</span>
         </button>
       </form>
-      <router-link to="/" class="back-link">← Back to home</router-link>
+      <router-link to="/" class="back-link">← На главную</router-link>
     </div>
   </div>
 </template>
@@ -91,9 +91,9 @@ export default {
         const response = await axios.get('/api/seasons');
         this.seasonIds = response.data; // Предполагаем, что API возвращает массив ID
       } catch (error) {
-        this.errorMessage = 'Failed to load seasons: ' + (error.response?.data?.message || error.message);
+        this.errorMessage = 'Не удалось загрузить сезоны: ' + (error.response?.data?.message || error.message);
         this.showErrorModal = true;
-        console.error('Error loading seasons:', error);
+        console.error('Ошибка загрузки сезонов:', error);
       }
     },
     handleFileUpload(event) {
@@ -101,7 +101,7 @@ export default {
       if (file && file.type.startsWith('image/')) {
         this.card.image = file;
       } else {
-        this.errorMessage = 'Please select an image file (JPEG, PNG, GIF, etc.).';
+        this.errorMessage = 'Пожалуйста, выберите файл изображения (JPEG, PNG, GIF и т.д.).';
         this.showErrorModal = true;
         event.target.value = '';
         this.card.image = null;
@@ -113,7 +113,7 @@ export default {
     },
     async submitForm() {
       if (!this.card.image) {
-        this.errorMessage = 'Please select an image file.';
+        this.errorMessage = 'Пожалуйста, выберите файл изображения.';
         this.showErrorModal = true;
         return;
       }
@@ -146,9 +146,9 @@ export default {
         console.log('Card added successfully:', response.data);
         this.resetForm();
       } catch (error) {
-        this.errorMessage = 'Error adding card: ' + (error.response?.data?.message || error.message);
+        this.errorMessage = 'Ошибка при добавлении карточки: ' + (error.response?.data?.message || error.message);
         this.showErrorModal = true;
-        console.error('Error adding card:', error);
+        console.error('Ошибка при добавлении карточки:', error);
       }
     },
     resetForm() {
@@ -177,7 +177,7 @@ export default {
           this.isUserAllowed = permissionResponse.is_allowed;
         }
       } catch (error) {
-        console.error('Error checking user permission:', error);
+        console.error('Ошибка проверки прав доступа:', error);
         this.isUserAllowed = false; // Assume not allowed on error
       }
     }
