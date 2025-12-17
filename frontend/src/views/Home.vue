@@ -1,35 +1,52 @@
 <template>
-  <div>
+  <div class="page-container">
     <div class="background-container"></div>
     <img src="/logo_noph.png" alt="Logo" class="background-logo">
     <hr class="separator-line">
-    <div id="seasons-container">
-      <div v-if="loading" class="loading">Loading cards...</div>
-      <div v-else-if="error" class="error-message">Error loading data: {{ error.message || error }}. Please try again later.</div>
-      <div v-else-if="seasons.length === 0" class="loading">No seasons found</div>
-      <Season 
-        v-for="season in seasons" 
-        :key="season.uuid" 
-        :season="season" 
-        @card-clicked="navigateToCard" deprecated
-        @add-card="navigateToAddCard"
-        @emitUserAllowedStatus="updateUserAllowedStatus"
-        @season-deleted="handleSeasonDeleted"
-      />
-    </div>
-    <div v-if="isUserAllowed" class="add-season-footer">
-      <div class="add-new-season-btn" @click="navigateToAddSeason">
-        + Add New Season
+
+    <div class="content-wrapper">
+      <div id="seasons-container">
+        <div v-if="loading" class="loading">Loading cards...</div>
+        <div v-else-if="error" class="error-message">Error loading data: {{ error.message || error }}. Please try again later.</div>
+        <div v-else-if="seasons.length === 0" class="loading">No seasons found</div>
+        <Season 
+          v-for="season in seasons" 
+          :key="season.uuid" 
+          :season="season" 
+          @card-clicked="navigateToCard" deprecated
+          @add-card="navigateToAddCard"
+          @emitUserAllowedStatus="updateUserAllowedStatus"
+          @season-deleted="handleSeasonDeleted"
+        />
       </div>
-    </div>
-    <div>
-      <h2>.</h2>
+
+      <div v-if="isUserAllowed" class="add-season-footer">
+        <div class="add-new-season-btn" @click="navigateToAddSeason">
+          + Add New Season
+        </div>
+      </div>
+
+      <Footer />
     </div>
   </div>
 
 </template>
 
 <style scoped>
+.page-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 .background-container {
   position: absolute;
   top: 0;
@@ -66,28 +83,12 @@
   position: relative; /* Essential for z-index to work correctly relative to the background */
   margin-top: 30px; /* Push content down by the height of the background */
   z-index: 2; /* Ensure content is above the background */
-  /* Add other styles for your seasons container here */
-  padding-bottom: 50px;
+  flex: 1;
 }
 .error-message {
   text-align: center;
   margin: 50px 0;
   color: #ff5555; /* Red color for errors */
-}
-
-page-container {
-  position: relative;
-  min-height: 100vh;
-}
-
-.content-wrapper {
-  display: flex;
-  flex-direction: column;
-  min-height: calc(100vh - 400px); /* Учитываем высоту хедера */
-}
-
-#seasons-container {
-  flex: 1; /* Занимает все доступное пространство */
 }
 
 .add-season-footer {
@@ -117,20 +118,18 @@ page-container {
   border-color: var(--accent-color);
   color: var(--accent-color);
 }
-/* Добавляем отступ для основного контента */
-#seasons-container {
-  padding-bottom: 0px; /* Чтобы контент не перекрывался кнопкой */
-}
 
 </style>
 
 <script>
 import Season from '@/components/Season.vue'
+import Footer from '@/components/Footer.vue'
 import { mapActions, mapState, mapMutations } from 'vuex' // Import mapMutations
 
 export default {
   components: {
-    Season
+    Season,
+    Footer
   },
   computed: {
     ...mapState(['seasons', 'loading', 'error'])
