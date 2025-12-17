@@ -71,7 +71,7 @@
 
 .separator-line {
   position: relative;
-  margin-top: 370px; /* Adjust to be below the background image */
+  margin-top: 430px; /* Adjust to be below the background image */
   height: 2px;
   background-color: white;
   border: none;
