@@ -70,11 +70,10 @@ body {
   padding: 0;
   min-height: 100%;
   background-color: var(--bg-color);
-  font-family: "Bitter", serif;
 }
 
 .global-container {
-  font-family: "Bitter", serif;
+  font-family: "EB Garamond", serif;
   font-optical-sizing: auto;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
