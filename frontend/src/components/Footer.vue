@@ -93,10 +93,10 @@ export default {
   transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.footer-col:hover {
+/* .footer-col:hover {
   background: rgba(255, 255, 255, 0.05);
   transform: translateY(-2px);
-}
+} */
 
 .footer-title {
   font-weight: 700;
@@ -134,16 +134,16 @@ export default {
 }
 
 .footer-label {
-  font-weight: 600;
+  font-weight: 500;
   color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   min-width: 80px;
 }
 
 .footer-text {
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 .footer-link {
