@@ -121,19 +121,27 @@ export default {
   background-size: cover;
   background-position: center 95%;
   z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 90px 16px 40px; /* отступ от верхнего меню + нижний воздух */
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .donate-view {
-  padding: 40px 20px;
-  max-width: 600px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 640px;
   color: #fff;
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+  position: relative;
 }
 
 .title {
-  font-size: 42px;
-  margin-bottom: 10px;
+  font-size: 40px;
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .subtitle {
@@ -142,11 +150,13 @@ export default {
 }
 
 .card {
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(6px);
+  background: radial-gradient(circle at top left, rgba(255, 185, 71, 0.16), transparent 55%),
+              rgba(0, 0, 0, 0.7);
+  border-radius: 18px;
+  padding: 26px 24px 22px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .amounts {
@@ -165,8 +175,9 @@ export default {
   background: rgba(0, 0, 0, 0.4);
   color: #fff;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
 }
 
 .amount-btn:hover {
@@ -219,7 +230,7 @@ export default {
   cursor: pointer;
   background: linear-gradient(135deg, #ffb947, #ff7a3c);
   color: #000;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
   transition: transform 0.1s ease, box-shadow 0.2s ease, opacity 0.2s ease;
@@ -244,6 +255,31 @@ export default {
   margin-top: 16px;
   font-size: 13px;
   max-width: 480px;
+}
+
+@media (max-width: 768px) {
+  .donate-background {
+    align-items: flex-start;
+    padding-top: 80px;
+  }
+
+  .title {
+    font-size: 30px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+  }
+
+  .card {
+    padding: 20px 18px 18px;
+  }
+
+  .donate-btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 600px) {
