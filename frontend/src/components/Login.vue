@@ -75,8 +75,9 @@ export default {
 h1 {
   color: var(--accent-color);
   font-weight: 500;
+  margin-top: 10px;
   margin-bottom: 15px;
-  font-size: 28px;
+  font-size: 35px;
 }
 
 .back-link {
