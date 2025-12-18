@@ -201,8 +201,12 @@ export default {
 </script>
 
 <style scoped>
+.page-container,
+.page-container * {
+  font-family: "Tinos", serif !important;
+}
+
 .page-container {
-  font-family: "Tinos", serif;
   position: relative;
   min-height: 100vh;
   display: flex;
