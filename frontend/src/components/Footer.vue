@@ -69,8 +69,8 @@ export default {
 .footer {
   position: relative;
   z-index: 2;
-  margin-top: 60px;
-  padding: 32px 0 20px;
+  margin-top: 40px;
+  padding: 20px 0 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.16);
   background: linear-gradient(180deg, rgba(18, 18, 18, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%);
   backdrop-filter: blur(12px);
@@ -82,13 +82,13 @@ export default {
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 32px;
+  gap: 20px;
   color: var(--text-color, #fff);
 }
 
 .footer-col {
-  padding: 16px;
-  border-radius: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.03);
   transition: transform 0.3s ease, background-color 0.3s ease;
 }
@@ -101,8 +101,8 @@ export default {
 .footer-title {
   font-weight: 700;
   letter-spacing: 0.5px;
-  margin-bottom: 16px;
-  font-size: 1.5rem;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
   color: var(--text-color, #fff);
   position: relative;
   padding-bottom: 8px;
@@ -136,14 +136,14 @@ export default {
 .footer-label {
   font-weight: 500;
   color: rgba(255, 255, 255, 0.8);
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   min-width: 80px;
 }
 
 .footer-text {
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .footer-link {
@@ -152,8 +152,8 @@ export default {
   gap: 8px;
   color: var(--accent-color, #4a90e2);
   text-decoration: none;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
   transition: all 0.3s ease;
   background: rgba(74, 144, 226, 0.1);
   border: 1px solid transparent;
@@ -181,15 +181,15 @@ export default {
 
 .document-link {
   margin-top: 8px;
-  padding: 10px 16px;
+  padding: 6px 10px;
   background: rgba(255, 255, 255, 0.05);
   border-left: 3px solid var(--accent-color, #4a90e2);
 }
 
 .footer-bottom {
   grid-column: 1 / -1;
-  margin-top: 20px;
-  padding-top: 20px;
+  margin-top: 12px;
+  padding-top: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   text-align: center;
 }
