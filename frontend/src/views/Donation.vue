@@ -111,7 +111,7 @@
           </div>
         </div>
 
-        <div class="features">
+        <!-- <div class="features">
           <div class="feature-item">
             <div class="feature-icon">🎁</div>
             <h3 class="feature-title">Благодарность</h3>
@@ -127,7 +127,7 @@
             <h3 class="feature-title">Сделайте вклад</h3>
             <p class="feature-text">Ваша поддержка помогает реализовать новые идеи</p>
           </div>
-        </div>
+        </div> -->
       </section>
 
       <Footer />
@@ -478,11 +478,11 @@ export default {
 
 .custom-input {
   flex: 1;
-  padding: 16px 12px;
+  padding: 6px 12px;
   background: transparent;
   border: none;
   color: #fff;
-  font-size: 32px;
+  font-size: 22px;
   font-weight: 700;
   text-align: center;
   outline: none;
