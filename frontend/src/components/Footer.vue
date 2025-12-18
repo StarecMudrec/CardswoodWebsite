@@ -102,7 +102,7 @@ export default {
   font-weight: 700;
   letter-spacing: 0.5px;
   margin-bottom: 16px;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   color: var(--text-color, #fff);
   position: relative;
   padding-bottom: 8px;
@@ -113,8 +113,8 @@ export default {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 40px;
-  height: 2px;
+  width: 90%;
+  height: 1px;
   background: var(--accent-color, #4a90e2);
   border-radius: 2px;
 }
