@@ -19,6 +19,11 @@
             <p class="card-subtitle">Выберите готовый вариант или укажите свой.</p>
           </div>
 
+          <p class="current-amount">
+            Итого:&nbsp;
+            <span class="current-amount__value">{{ effectiveAmount }} ₽</span>
+          </p>
+
           <div class="amounts" role="list">
             <button
               v-for="preset in presets"
@@ -34,15 +39,18 @@
 
           <div class="custom-row">
             <label class="custom-label" for="custom-amount">Или введите свою сумму</label>
-            <input
-              id="custom-amount"
-              v-model.number="customAmount"
-              type="number"
-              min="10"
-              step="10"
-              class="custom-input"
-              placeholder="например, 300"
-            />
+            <div class="custom-input-wrap">
+              <input
+                id="custom-amount"
+                v-model.number="customAmount"
+                type="number"
+                min="10"
+                step="10"
+                class="custom-input"
+                placeholder="например, 300"
+              />
+              <span class="currency-suffix">₽</span>
+            </div>
           </div>
 
           <div class="actions">
@@ -227,6 +235,22 @@ export default {
   opacity: 0.85;
 }
 
+.current-amount {
+  margin-bottom: 16px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.current-amount__value {
+  font-weight: 600;
+  font-size: 17px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.6);
+}
+
 .amounts {
   display: flex;
   gap: 12px;
@@ -271,6 +295,12 @@ export default {
   font-size: 14px;
 }
 
+.custom-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .custom-input {
   padding: 10px 12px;
   border-radius: 8px;
@@ -279,10 +309,25 @@ export default {
   color: #fff;
   outline: none;
   font-size: 16px;
+  width: 100%;
+  padding-right: 40px;
 }
 
 .custom-input::placeholder {
   color: rgba(255, 255, 255, 0.6);
+}
+
+.custom-input:focus {
+  border-color: #ffb947;
+  box-shadow: 0 0 0 1px rgba(255, 185, 71, 0.6);
+}
+
+.currency-suffix {
+  position: absolute;
+  right: 12px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.8);
+  pointer-events: none;
 }
 
 .actions {
