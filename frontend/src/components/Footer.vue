@@ -102,7 +102,8 @@ export default {
   font-weight: 700;
   letter-spacing: 0.5px;
   margin-bottom: 10px;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
+  padding-left: 10px;
   color: var(--text-color, #fff);
   position: relative;
   padding-bottom: 8px;
@@ -122,7 +123,8 @@ export default {
 .footer-content {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  /* gap: 12px; */
+  padding-left: 10px;
 }
 
 .footer-item {
@@ -136,14 +138,14 @@ export default {
 .footer-label {
   font-weight: 500;
   color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
+  font-size: 1rem;
   min-width: 80px;
 }
 
 .footer-text {
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .footer-link {
