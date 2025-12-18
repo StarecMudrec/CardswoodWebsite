@@ -71,11 +71,11 @@
 
 .separator-line {
   position: relative;
-  margin-top: 430px; /* Adjust to be below the background image */
+  margin-top: 47vh;
   height: 2px;
   background-color: white;
   border: none;
-  z-index: 2; /* Ensure it's above the background */
+  z-index: 2;
   width: 75%;
 }
 

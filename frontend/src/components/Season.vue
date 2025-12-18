@@ -415,10 +415,10 @@
     border-radius: 8px;
     padding: 10px 0;
     z-index: 100;
-    min-width: 181px;
+    min-width: 291px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
-  @media (max-width: 1492px) {
+  @media (max-width: 1920px) {
     .sort-dropdown {
       right: 0;
       left: auto;
