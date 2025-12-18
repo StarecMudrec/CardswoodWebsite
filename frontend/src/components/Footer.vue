@@ -81,7 +81,7 @@ export default {
   width: min(1200px, 92vw);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   color: var(--text-color, #fff);
 }
