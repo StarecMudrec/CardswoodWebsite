@@ -1,5 +1,5 @@
 <template>
-  <div class="login-background page-with-navbar">
+  <div class="login-background">
     <div class="login-container">
       <h1>Пожалуйста, войдите</h1>
       <p></p>

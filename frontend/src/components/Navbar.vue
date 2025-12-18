@@ -1,25 +1,10 @@
 <template>
-  <header class="navbar">
-    <div class="navbar-inner">
-      <router-link to="/" class="navbar-logo">
-        CARDSWOOD
-      </router-link>
-
-      <nav class="menu" aria-label="Основная навигация">
-        <router-link to="/" class="nav-btn" exact-active-class="nav-btn-active">КАРТОЧКИ</router-link>
-        <router-link to="/donate" class="nav-btn" active-class="nav-btn-active">ПОДДЕРЖАТЬ</router-link>
-        <a
-          v-if="isAuthenticated"
-          href="/auth/logout"
-          class="nav-btn"
-          @click.prevent="logout"
-        >
-          ВЫЙТИ
-        </a>
-        <router-link v-else to="/login" class="nav-btn" active-class="nav-btn-active">ВОЙТИ</router-link>
-      </nav>
-    </div>
-  </header>
+  <div class="menu">
+    <router-link to="/" class="nav-btn">КАРТОЧКИ</router-link>
+    <router-link to="/donate" class="nav-btn">ПОДДЕРЖАТЬ</router-link>
+    <a v-if="isAuthenticated" href="/auth/logout" class="nav-btn" @click.prevent="logout">ВЫЙТИ</a>
+    <router-link v-else to="/login" class="nav-btn">ВОЙТИ</router-link>
+  </div>
 </template>
 
 <script>
@@ -39,45 +24,19 @@ export default {
 </script>
 
 <style scoped>
-.navbar {
+.menu {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 0;
+  padding: 18px 0;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  backdrop-filter: blur(14px);
-  background: linear-gradient(
-      to bottom,
-      rgba(10, 10, 10, 0.92),
-      rgba(10, 10, 10, 0.75),
-      rgba(10, 10, 10, 0.4)
-  );
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.navbar-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.navbar-logo {
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  font-size: 16px;
-  color: var(--accent-color);
-  text-decoration: none;
-  text-transform: uppercase;
-  opacity: 0.9;
-}
-
-.menu {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
+  background-color: transparent;
+  pointer-events: auto;
 }
 
 .nav-btn {
@@ -96,10 +55,6 @@ export default {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-
-.nav-btn-active {
-  color: var(--hover-color);
 }
 
 .nav-btn:hover {
@@ -125,16 +80,13 @@ export default {
 }
 
 @media (max-width: 480px) {
-  .nav-btn {
-    font-size: 15px;
-  }
-
-  .navbar-inner {
-    padding-inline: 14px;
-  }
-
   .menu {
-    gap: 16px;
+    gap: 20px;
+    padding: 14px 0;
+  }
+  
+  .nav-btn {
+    font-size: 16px;
   }
 }
 </style>
