@@ -1,7 +1,7 @@
 <template>
   <div class="login-background">
     <div class="login-container">
-      <h1>Пожалуйста, войдите</h1>
+      <h1>Вход</h1>
       <p></p>
       <div ref="telegramWidget"></div>
 
