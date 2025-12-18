@@ -1,5 +1,5 @@
 <template>
-  <div class="add-card-background">
+  <div class="add-card-background page-with-navbar">
     <!-- Модальное окно для ошибок -->
     <div v-if="showErrorModal" class="modal-overlay">
       <div class="modal-content">

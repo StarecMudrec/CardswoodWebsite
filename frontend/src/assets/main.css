@@ -1,39 +1,47 @@
-body {
-  overflow-x: hidden;
-}
-
 @import './base.css';
 
+/* Global layout overrides for the app */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  background-color: #121212;
+}
+
+body {
+  color: #e0e0e0;
+}
+
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  min-height: 100vh;
+  width: 100%;
   font-weight: normal;
+  display: flex;
+  flex-direction: column;
 }
 
-a,
-.green {
+/* Generic link styling that works on dark background */
+a {
+  color: var(--accent-color, #ffffff);
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+  transition: color 0.2s ease;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+a:hover {
+  color: var(--hover-color, #b3b3b3);
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
+/* Utility: page content that sits below fixed navbar */
+.page-with-navbar {
+  padding-top: 70px; /* match navbar height */
+}
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+@media (max-width: 480px) {
+  .page-with-navbar {
+    padding-top: 60px;
   }
 }

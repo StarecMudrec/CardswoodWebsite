@@ -1,5 +1,5 @@
 <template>
-  <div class="donate-background">
+  <div class="donate-background page-with-navbar">
     <div class="donate-view">
       <h1 class="title">Платёж не завершён</h1>
       <p class="subtitle">

@@ -47,44 +47,23 @@ export default {
 </script>
 
 <style>
-/* Глобальные стили */
+/* Theme variables and global helpers */
 :root {
   --bg-color: #121212;
   --card-bg: #1e1e1e;
   --text-color: #e0e0e0;
   --accent-color: #ffffff;
-  --hover-color: #898989;
+  --hover-color: #b3b3b3;
   --hover-border-color: #777777;
-  --card-border-color:  #bebebe;
+  --card-border-color: #bebebe;
+  --font-family-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
-html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background-color: var(--bg-color);
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-  background-color: var(--bg-color);
-}
-
-.global-container {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  align-items: center;
-  margin: 0;
-}
-/* Глобальные стили для всех элементов */
 
 * {
   box-sizing: border-box;
 }
-/* Анимации переходов */
 
+/* Page transition */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
@@ -96,7 +75,6 @@ body {
 }
 
 .user-info {
-
   position: absolute;
   top: 10px;
   right: 10px;
@@ -104,21 +82,21 @@ body {
   align-items: center;
   color: var(--text-color);
   font-size: 14px;
-  z-index: 10; /* Ensure user info is above other elements */
+  z-index: 10;
 }
 
 .user-info .avatar {
-
   width: 30px;
   height: 30px;
-  border-radius: 50%; /* Make the avatar round */
+  border-radius: 50%;
   margin-right: 10px;
-  border: 1px solid var(--border-color);
-  object-fit: cover; /* Ensure the image covers the area without distortion */
+  border: 1px solid var(--card-border-color);
+  object-fit: cover;
 }
 
-button, .button {
-
-  padding: 10px 15px; /* Increased padding for larger buttons */
+button,
+.button {
+  padding: 10px 15px;
+  font-family: var(--font-family-main);
 }
 </style>

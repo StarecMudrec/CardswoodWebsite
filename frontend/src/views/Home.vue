@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="page-container page-with-navbar">
     <div class="background-container"></div>
     <img src="/logo_noph.png" alt="Логотип" class="background-logo">
     <hr class="separator-line">

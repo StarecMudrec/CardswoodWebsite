@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed-container">
+  <div class="fixed-container page-with-navbar">
     <div class="background-container"></div>
     <div class="card-detail-wrapper">
       <!-- Left Arrow -->
