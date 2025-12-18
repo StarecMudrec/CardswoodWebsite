@@ -202,6 +202,7 @@ export default {
 
 <style scoped>
 .page-container {
+  font-family: "Tinos", serif;
   position: relative;
   min-height: 100vh;
   display: flex;
@@ -237,8 +238,8 @@ export default {
   top: 120px;
   left: 50%;
   transform: translate(-50%, 0);
-  width: 180px;
-  height: 180px;
+  width: 16%;
+  aspect-ratio: 1;
   z-index: 2;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
   animation: float 6s ease-in-out infinite;
