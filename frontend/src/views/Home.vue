@@ -1,9 +1,8 @@
 <template>
   <div class="page-container">
-    <div class="background-container">
-      <hr class="separator-line">
-    </div>
+    <div class="background-container"></div>
     <img src="/logo_noph.png" alt="Логотип" class="background-logo">
+    <hr class="separator-line">
 
     <div class="content-wrapper">
       <div id="seasons-container">
@@ -46,7 +45,6 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin-top: 50vh;
 }
 
 .background-container {
@@ -54,11 +52,11 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 70vh;
+  height: 400px; /* Adjust height as needed */
   background-image: url('/background.jpg');
   background-size: cover;
-  background-position: center 57%;
-  z-index: 1;
+  background-position: center 57%; /* Position the vertical center 80% down from the top, center horizontally */
+  z-index: 1; /* Ensure it's behind the content */
 }
 
 .background-logo {
@@ -66,20 +64,19 @@
   top: 100px;
   left: 50%;
   transform: translate(-50%, 0);
-  max-width: 25%;
-  max-height: 25%;
-  z-index: 1;
+  max-width: 250px; /* Adjust size as needed */
+  max-height: 250px; /* Adjust size as needed */
+  z-index: 1; /* Ensure it's behind the content */
 }
 
 .separator-line {
   position: relative;
-  margin-top: 70vh;
+  margin-top: 430px; /* Adjust to be below the background image */
   height: 2px;
   background-color: white;
   border: none;
-  z-index: 2;
-  width: 100%;
-  border-radius: 2px;
+  z-index: 2; /* Ensure it's above the background */
+  width: 75%;
 }
 
 #seasons-container {
