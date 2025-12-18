@@ -1,66 +1,85 @@
 <template>
-  <div class="donate-background">
-    <div class="donate-view">
-      <h1 class="title">Поддержать проект</h1>
+  <div class="page-container">
+    <div class="background-container"></div>
+    <img src="/logo_noph.png" alt="Логотип" class="background-logo">
+    <hr class="separator-line">
 
-      <p class="subtitle">
-        Выберите сумму — и вы будете перенаправлены на защищённую страницу оплаты PayAnyWay.
-      </p>
-
-      <div class="card">
-        <div class="amounts">
-          <button
-            v-for="preset in presets"
-            :key="preset"
-            type="button"
-            class="amount-btn"
-            :class="{ active: amount === preset }"
-            @click="selectPreset(preset)"
-          >
-            {{ preset }} ₽
-          </button>
+    <div class="content-wrapper">
+      <section class="donate-section" aria-labelledby="donate-title">
+        <div class="donate-header">
+          <h1 id="donate-title" class="title">Поддержать проект</h1>
+          <p class="subtitle">
+            Выберите сумму — и вы будете перенаправлены на защищённую страницу оплаты PayAnyWay.
+          </p>
         </div>
 
-        <div class="custom-row">
-          <label class="custom-label" for="custom-amount">Или введите свою сумму</label>
-          <input
-            id="custom-amount"
-            v-model.number="customAmount"
-            type="number"
-            min="10"
-            step="10"
-            class="custom-input"
-            placeholder="например, 300"
-          />
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Сумма пожертвования</h2>
+            <p class="card-subtitle">Выберите готовый вариант или укажите свой.</p>
+          </div>
+
+          <div class="amounts" role="list">
+            <button
+              v-for="preset in presets"
+              :key="preset"
+              type="button"
+              class="amount-btn"
+              :class="{ active: amount === preset }"
+              @click="selectPreset(preset)"
+            >
+              {{ preset }} ₽
+            </button>
+          </div>
+
+          <div class="custom-row">
+            <label class="custom-label" for="custom-amount">Или введите свою сумму</label>
+            <input
+              id="custom-amount"
+              v-model.number="customAmount"
+              type="number"
+              min="10"
+              step="10"
+              class="custom-input"
+              placeholder="например, 300"
+            />
+          </div>
+
+          <div class="actions">
+            <button
+              type="button"
+              class="donate-btn"
+              :disabled="loading || !validAmount"
+              @click="startDonation"
+            >
+              <span v-if="loading">Перенаправляем...</span>
+              <span v-else>Оплатить через PayAnyWay</span>
+            </button>
+          </div>
+
+          <p v-if="error" class="error">{{ error }}</p>
+
+          <p class="hint">
+            Платежи обрабатываются PayAnyWay (MONETA.ru). Мы никогда не храним данные вашей карты на
+            этом сайте.
+          </p>
         </div>
+      </section>
 
-        <div class="actions">
-          <button
-            type="button"
-            class="donate-btn"
-            :disabled="loading || !validAmount"
-            @click="startDonation"
-          >
-            <span v-if="loading">Перенаправляем...</span>
-            <span v-else>Оплатить через PayAnyWay</span>
-          </button>
-        </div>
-
-        <p v-if="error" class="error">{{ error }}</p>
-      </div>
-
-      <p class="hint">
-        Платежи обрабатываются PayAnyWay (MONETA.ru). Мы никогда не храним данные вашей карты на этом сайте.
-      </p>
+      <Footer />
     </div>
   </div>
 </template>
 
 <script>
 import { createDonation } from '@/api'
+import Footer from '@/components/Footer.vue'
 
 export default {
   name: 'DonationView',
+  components: {
+    Footer
+  },
   data () {
     return {
       presets: [100, 300, 500],
@@ -111,30 +130,63 @@ export default {
 </script>
 
 <style scoped>
-.donate-background {
+.page-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.background-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 400px;
   background-image: url('/background.jpg');
   background-size: cover;
-  background-position: center 95%;
+  background-position: center 57%;
   z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 90px 16px 40px; /* отступ от верхнего меню + нижний воздух */
-  box-sizing: border-box;
-  overflow-y: auto;
 }
 
-.donate-view {
-  width: 100%;
-  max-width: 640px;
-  color: #fff;
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+.background-logo {
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  max-width: 250px;
+  max-height: 250px;
+  z-index: 1;
+}
+
+.separator-line {
   position: relative;
+  margin-top: 47vh;
+  height: 2px;
+  background-color: white;
+  border: none;
+  z-index: 2;
+  width: 75%;
+}
+
+.content-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  z-index: 2;
+}
+
+.donate-section {
+  padding: 32px 16px 40px;
+  width: min(720px, 100%);
+  margin: 0 auto;
+  color: var(--text-color, #fff);
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+.donate-header {
+  margin-bottom: 16px;
 }
 
 .title {
@@ -145,18 +197,34 @@ export default {
 }
 
 .subtitle {
-  margin-bottom: 24px;
+  margin-bottom: 12px;
   font-size: 18px;
+  max-width: 520px;
 }
 
 .card {
-  background: radial-gradient(circle at top left, rgba(255, 185, 71, 0.16), transparent 55%),
-              rgba(0, 0, 0, 0.7);
+  background: radial-gradient(circle at top left, rgba(255, 185, 71, 0.12), transparent 55%),
+    rgba(0, 0, 0, 0.75);
   border-radius: 18px;
-  padding: 26px 24px 22px;
+  padding: 24px 22px 22px;
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.card-header {
+  margin-bottom: 18px;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.card-subtitle {
+  font-size: 14px;
+  opacity: 0.85;
 }
 
 .amounts {
@@ -255,12 +323,32 @@ export default {
   margin-top: 16px;
   font-size: 13px;
   max-width: 480px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 1024px) {
+  .separator-line {
+    width: 90%;
+  }
+
+  .donate-section {
+    padding-top: 24px;
+  }
 }
 
 @media (max-width: 768px) {
-  .donate-background {
-    align-items: flex-start;
-    padding-top: 80px;
+  .background-logo {
+    max-width: 200px;
+    max-height: 200px;
+    top: 90px;
+  }
+
+  .separator-line {
+    margin-top: 42vh;
+  }
+
+  .donate-section {
+    padding-inline: 12px;
   }
 
   .title {
@@ -284,11 +372,11 @@ export default {
 
 @media (max-width: 600px) {
   .title {
-    font-size: 32px;
+    font-size: 28px;
   }
 
   .card {
-    padding: 20px;
+    padding: 18px 16px 16px;
   }
 }
 </style>
