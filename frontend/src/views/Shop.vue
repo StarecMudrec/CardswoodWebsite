@@ -1,1 +1,3 @@
-hi
+<template>
+  <a>hi</a>
+</template>
