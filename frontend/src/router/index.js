@@ -38,19 +38,9 @@ const routes = [
     }
   },
   {
-    path: '/donate',
-    name: 'Donation',
-    component: () => import('@/views/Donation.vue')
-  },
-  {
-    path: '/donate/success',
-    name: 'DonationSuccess',
-    component: () => import('@/views/DonationSuccess.vue')
-  },
-  {
-    path: '/donate/fail',
-    name: 'DonationFail',
-    component: () => import('@/views/DonationFail.vue')
+    path: '/shop',
+    name: 'Shop',
+    component: () => import('@/views/Shop.vue')
   }
 ]
 

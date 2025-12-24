@@ -1,7 +1,7 @@
 <template>
   <div class="menu">
     <router-link to="/" class="nav-btn">КАРТОЧКИ</router-link>
-    <router-link to="/donate" class="nav-btn">ПОДДЕРЖАТЬ</router-link>
+    <router-link to="/donate" class="nav-btn">ВИТРИНА</router-link>
     <a v-if="isAuthenticated" href="/auth/logout" class="nav-btn" @click.prevent="logout">ВЫЙТИ</a>
     <router-link v-else to="/login" class="nav-btn">ВОЙТИ</router-link>
   </div>
