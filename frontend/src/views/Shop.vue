@@ -1,3 +1,739 @@
 <template>
-  <a>hi</a>
+  <div class="page-container">
+    <div class="background-container"></div>
+    <img src="/logo_noph.png" alt="Логотип" class="background-logo">
+    <div class="background-overlay"></div>
+    <div class="separator-line"></div>
+
+    <div class="content-wrapper">
+      <section class="shop-section" aria-labelledby="shop-title">
+        <div class="shop-header">
+          <div class="header-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 18C5.9 18 5.01 18.9 5.01 20C5.01 21.1 5.9 22 7 22C8.1 22 9 21.1 9 20C9 18.9 8.1 18 7 18ZM1 2V4H3L6.6 11.59L5.25 14.04C5.09 14.32 5 14.65 5 15C5 16.1 5.9 17 7 17H19V15H7.42C7.28 15 7.17 14.89 7.17 14.75L7.2 14.63L8.1 13H15.55C16.3 13 16.96 12.59 17.3 11.97L21.16 4.96C21.35 4.61 21.45 4.22 21.45 3.82C21.45 3.41 21.35 3.01 21.16 2.66C20.96 2.31 20.68 2.02 20.35 1.8C20.02 1.59 19.65 1.45 19.27 1.41C18.88 1.37 18.49 1.42 18.12 1.56C17.75 1.7 17.42 1.92 17.14 2.21C16.86 2.5 16.65 2.85 16.52 3.23L16.48 3.36H6.52L5.75 1.36C5.64 1.09 5.47 0.85 5.25 0.65C5.03 0.45 4.77 0.3 4.49 0.21C4.21 0.12 3.91 0.09 3.62 0.12C3.33 0.15 3.05 0.25 2.8 0.4C2.55 0.55 2.34 0.75 2.18 0.99C2.02 1.23 1.92 1.5 1.88 1.78C1.84 2.06 1.87 2.35 1.96 2.62C2.05 2.89 2.2 3.14 2.4 3.35C2.6 3.56 2.85 3.72 3.12 3.83C3.39 3.94 3.68 4 3.98 4H5.98L1 2Z" fill="#ffb947"/>
+              <path d="M17 18C15.9 18 15.01 18.9 15.01 20C15.01 21.1 15.9 22 17 22C18.1 22 19 21.1 19 20C19 18.9 18.1 18 17 18Z" fill="#ffb947"/>
+            </svg>
+          </div>
+          <h1 id="shop-title" class="title">Магазин Cardswood</h1>
+          <p class="subtitle">
+            Приобретайте эксклюзивные подписки, наборы карт и редкие карты для улучшения вашего игрового опыта
+          </p>
+        </div>
+
+        <div class="products-grid">
+          <div 
+            v-for="product in products" 
+            :key="product.id"
+            class="product-card glass-effect"
+          >
+            <div class="product-image-container">
+              <img 
+                :src="product.image" 
+                :alt="product.name" 
+                class="product-image"
+                @error="handleImageError"
+              >
+              <div v-if="product.tag" class="product-tag">
+                {{ product.tag }}
+              </div>
+            </div>
+            
+            <div class="product-content">
+              <h3 class="product-name">{{ product.name }}</h3>
+              <p class="product-description">{{ product.description }}</p>
+              
+              <div class="product-footer">
+                <div class="product-price">
+                  <span class="price-value">{{ product.price.toLocaleString('ru-RU') }}</span>
+                  <span class="currency">₽</span>
+                </div>
+                
+                <button 
+                  class="buy-btn"
+                  :disabled="product.loading"
+                  @click="addToCart(product)"
+                >
+                  <span v-if="product.loading" class="spinner"></span>
+                  <template v-else>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="cart-icon">
+                      <path d="M17 18C15.89 18 15 18.89 15 20C15 20.5304 15.2107 21.0391 15.5858 21.4142C15.9609 21.7893 16.4696 22 17 22C17.5304 22 18.0391 21.7893 18.4142 21.4142C18.7893 21.0391 19 20.5304 19 20C19 18.89 18.1 18 17 18ZM1 2V4H3L6.6 11.59L5.25 14.04C5.09 14.32 5 14.65 5 15C5 16.1 5.9 17 7 17H19V15H7.42C7.28 15 7.17 14.89 7.17 14.75L7.2 14.63L8.1 13H15.55C16.3 13 16.96 12.58 17.3 11.97L21.16 4.96C21.35 4.61 21.45 4.21 21.45 3.82C21.45 3.41 21.35 3.01 21.16 2.66C20.96 2.31 20.68 2.02 20.35 1.8C20.02 1.59 19.65 1.45 19.27 1.41C18.88 1.37 18.49 1.42 18.12 1.56C17.75 1.7 17.42 1.92 17.14 2.21C16.86 2.5 16.65 2.85 16.52 3.23L16.48 3.36H6.52L5.75 1.36C5.64 1.09 5.47 0.85 5.25 0.65C5.03 0.45 4.77 0.3 4.49 0.21C4.21 0.12 3.91 0.09 3.62 0.12C3.33 0.15 3.05 0.25 2.8 0.4C2.55 0.55 2.34 0.75 2.18 0.99C2.02 1.23 1.92 1.5 1.88 1.78C1.84 2.06 1.87 2.35 1.96 2.62C2.05 2.89 2.2 3.14 2.4 3.35C2.6 3.56 2.85 3.72 3.12 3.83C3.39 3.94 3.68 4 3.98 4H5.98L1 2Z" fill="currentColor"/>
+                    </svg>
+                    В корзину
+                  </template>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cart-section glass-effect" v-if="cart.length > 0">
+          <h2 class="cart-title">Ваша корзина</h2>
+          <div class="cart-items">
+            <div v-for="item in cart" :key="item.id" class="cart-item">
+              <div class="cart-item-info">
+                <span class="cart-item-name">{{ item.name }}</span>
+                <span class="cart-item-price">{{ item.price.toLocaleString('ru-RU') }} ₽</span>
+              </div>
+              <button class="remove-btn" @click="removeFromCart(item.id)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="cart-total">
+            <span>Итого:</span>
+            <span class="total-amount">{{ totalAmount.toLocaleString('ru-RU') }} ₽</span>
+          </div>
+          <button class="checkout-btn" @click="proceedToCheckout">
+            Перейти к оплате
+          </button>
+        </div>
+
+        <div v-if="error" class="error-message glass-effect">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="#ff6b6b"/>
+          </svg>
+          <span>{{ error }}</span>
+        </div>
+
+        <div class="features glass-effect">
+          <div class="feature-item">
+            <div class="feature-icon">🚚</div>
+            <h3 class="feature-title">Мгновенная доставка</h3>
+            <p class="feature-text">Цифровые товары доступны сразу после оплаты</p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🔒</div>
+            <h3 class="feature-title">Безопасная оплата</h3>
+            <p class="feature-text">Защищённые платежи через PayAnyWay</p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🎮</div>
+            <h3 class="feature-title">Улучшите игру</h3>
+            <p class="feature-text">Эксклюзивный контент для лучшего опыта</p>
+          </div>
+        </div>
+
+      </section>
+
+      <Footer />
+    </div>
+  </div>
 </template>
+
+<script>
+import Footer from '@/components/Footer.vue'
+
+export default {
+  name: 'ShopView',
+  components: {
+    Footer
+  },
+  data() {
+    return {
+      products: [
+        {
+          id: 1,
+          name: 'Cardswood Подписка',
+          description: 'Ежемесячная подписка на базовый доступ ко всем функциям Cardswood. Включает 5 стандартных бустер-паков.',
+          price: 299,
+          image: '/cw_sub_lvl1.jpg',
+          tag: 'Популярное'
+        },
+        {
+          id: 2,
+          name: 'Cardswood Подписка Уровень 2',
+          description: 'Премиум подписка с расширенным доступом. 10 бустер-паков ежемесячно + эксклюзивные карты.',
+          price: 599,
+          image: '/cw_sub_lvl2.jpg',
+          tag: 'Выгодно'
+        },
+        {
+          id: 3,
+          name: 'Хэллоуин Бустер-пак',
+          description: 'Набор из 5 специальных карт в тематике Хэллоуина. Ограниченное издание!',
+          price: 249,
+          image: '/halloween_booster_pack.png',
+          tag: 'Лимитированно'
+        },
+        {
+          id: 4,
+          name: 'Зимний Бустер-пак',
+          description: 'Праздничный набор зимних карт. Идеально для зимнего сезона игр.',
+          price: 249,
+          image: '/winter_booster_pack.png',
+          tag: 'Сезонное'
+        },
+        {
+          id: 5,
+          name: 'Карта: Доминик Торретто',
+          description: 'Эксклюзивная легендарная карта Доминика Торретто. Редкая коллекционная карта.',
+          price: 499,
+          image: '/dominic.png',
+          tag: 'Легендарная'
+        }
+      ],
+      cart: [],
+      loading: false,
+      error: null
+    }
+  },
+  computed: {
+    totalAmount() {
+      return this.cart.reduce((sum, item) => sum + item.price, 0)
+    }
+  },
+  methods: {
+    handleImageError(event) {
+      event.target.src = '/logo_noph.png'
+    },
+    addToCart(product) {
+      this.loading = true
+      this.error = null
+      
+      // Check if product is already in cart
+      if (this.cart.some(item => item.id === product.id)) {
+        this.error = 'Этот товар уже в корзине'
+        this.loading = false
+        return
+      }
+      
+      // Simulate API call
+      setTimeout(() => {
+        this.cart.push({
+          id: product.id,
+          name: product.name,
+          price: product.price
+        })
+        this.loading = false
+        
+        // Show success message
+        this.$notify({
+          title: 'Добавлено в корзину',
+          message: `${product.name} успешно добавлен в корзину`,
+          type: 'success'
+        })
+      }, 300)
+    },
+    removeFromCart(productId) {
+      this.cart = this.cart.filter(item => item.id !== productId)
+    },
+    async proceedToCheckout() {
+      if (this.cart.length === 0) {
+        this.error = 'Корзина пуста'
+        return
+      }
+      
+      try {
+        // In a real app, you would create an order and redirect to payment
+        // For now, we'll simulate and redirect to donation page
+        this.$router.push('/donation')
+      } catch (err) {
+        this.error = 'Ошибка при оформлении заказа'
+        console.error(err)
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+.page-container,
+.page-container * {
+  font-family: "Tinos", serif !important;
+}
+
+.page-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+}
+
+.background-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 450px;
+  background-image: url('/background.jpg');
+  background-size: cover;
+  background-position: center 57%;
+  z-index: 1;
+  opacity: 0.7;
+}
+
+.background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 450px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%);
+  z-index: 1;
+}
+
+.background-logo {
+  position: absolute;
+  top: 120px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 16%;
+  aspect-ratio: 1;
+  z-index: 2;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(-50%, 0) translateY(0px); }
+  50% { transform: translate(-50%, 0) translateY(-10px); }
+}
+
+.separator-line {
+  position: relative;
+  margin-top: 45vh;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 185, 71, 0.5), transparent);
+  border: none;
+  z-index: 3;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.content-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  z-index: 3;
+}
+
+.shop-section {
+  padding: 48px 16px 60px;
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  color: #fff;
+}
+
+.shop-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.header-icon {
+  margin-bottom: 20px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.title {
+  font-size: 48px;
+  margin-bottom: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #ffb947 0%, #ff7a3c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+}
+
+.subtitle {
+  margin: 0 auto 24px;
+  font-size: 18px;
+  max-width: 600px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.glass-effect {
+  background: rgba(30, 30, 30, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 25px 70px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.product-image-container {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+.product-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #ffb947 0%, #ff7a3c 100%);
+  color: #000;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.product-content {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-name {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.product-description {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.product-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.product-price {
+  display: flex;
+  align-items: baseline;
+}
+
+.price-value {
+  font-size: 24px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffb947 0%, #ff7a3c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.currency {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffb947;
+  margin-left: 4px;
+}
+
+.buy-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #ffb947 0%, #ff7a3c 100%);
+  color: #000;
+  border: none;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.buy-btn:hover:enabled {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 185, 71, 0.3);
+}
+
+.buy-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.cart-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  border-top-color: #000;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.cart-section {
+  padding: 24px;
+  margin-bottom: 40px;
+}
+
+.cart-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.cart-items {
+  margin-bottom: 20px;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cart-item-info {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  margin-right: 16px;
+}
+
+.cart-item-name {
+  color: #fff;
+  font-weight: 500;
+}
+
+.cart-item-price {
+  color: #ffb947;
+  font-weight: 600;
+}
+
+.remove-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.3s ease;
+}
+
+.remove-btn:hover {
+  color: #ff6b6b;
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.total-amount {
+  font-size: 24px;
+  color: #ffb947;
+}
+
+.checkout-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #4cd964 0%, #2ecc71 100%);
+  color: #000;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 16px;
+}
+
+.checkout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(76, 217, 100, 0.3);
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 12px;
+  margin-bottom: 24px;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  padding: 32px;
+  margin-top: 40px;
+}
+
+.feature-item {
+  text-align: center;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 185, 71, 0.2);
+}
+
+.feature-icon {
+  font-size: 40px;
+  margin-bottom: 16px;
+}
+
+.feature-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.feature-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .separator-line {
+    width: 90%;
+  }
+  
+  .title {
+    font-size: 42px;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .background-logo {
+    width: 140px;
+    height: 140px;
+    top: 100px;
+  }
+  
+  .separator-line {
+    margin-top: 40vh;
+  }
+  
+  .shop-section {
+    padding: 32px 16px 48px;
+  }
+  
+  .title {
+    font-size: 36px;
+  }
+  
+  .subtitle {
+    font-size: 16px;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  
+  .features {
+    grid-template-columns: 1fr;
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 32px;
+  }
+  
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .price-value {
+    font-size: 20px;
+  }
+  
+  .buy-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+</style>
