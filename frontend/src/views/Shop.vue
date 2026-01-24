@@ -160,6 +160,14 @@ export default {
           price: 499,
           image: '/dominic.png',
           tag: 'Легендарная'
+        },
+        {
+          id: 6,
+          name: 'Оскарс',
+          description: 'Набор из 5 базовых серых карт для спокойной игры.',
+          price: 199,
+          image: '/gray_pack.jpg',
+          tag: 'Классика'
         }
       ],
       cart: [],
