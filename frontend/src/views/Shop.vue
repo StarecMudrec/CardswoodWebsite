@@ -9,7 +9,7 @@
       <main class="shop-section" aria-labelledby="shop-title">
         <header class="shop-header">
           <div class="header-icon">
-            <img src="/shopping-cart.svg" class="cart-icon" alt="" />
+            <img src="/shopping-cart.svg" class="header-cart-icon" alt="" />
           </div>
           <h1 id="shop-title" class="title">Магазин Cardswood</h1>
           <p class="subtitle">
@@ -329,6 +329,11 @@ export default {
 .header-icon {
   margin-bottom: 20px;
   animation: pulse 2s infinite;
+}
+
+.header-cart-icon {
+  width: 48px;
+  height: 48px;
 }
 
 @keyframes pulse {
