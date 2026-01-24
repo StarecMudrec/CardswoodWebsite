@@ -1,33 +1,40 @@
 <template>
   <div class="page-container">
-    <div class="background-container"></div>
-    <img src="/logo_noph.png" alt="Логотип" class="background-logo">
-    <hr class="separator-line">
+    <div class="background-container" aria-hidden="true"></div>
+    <header class="page-header">
+      <img src="/logo_noph.png" alt="Логотип" class="background-logo">
+      <hr class="separator-line">
+    </header>
 
-    <div class="content-wrapper">
-      <div id="seasons-container">
+    <main class="content-wrapper">
+      <section id="seasons-container" class="seasons-section" aria-labelledby="seasons-title">
+        <h1 id="seasons-title" class="visually-hidden">Сезоны</h1>
         <div v-if="loading" class="loading">Загрузка карточек...</div>
-        <div v-else-if="error" class="error-message">Ошибка загрузки данных: {{ error.message || error }}. Пожалуйста, попробуйте позже.</div>
+        <div v-else-if="error" class="error-message" role="alert">
+          Ошибка загрузки данных: {{ error.message || error }}. Пожалуйста, попробуйте позже.
+        </div>
         <div v-else-if="seasons.length === 0" class="loading">Сезоны не найдены</div>
-        <Season 
-          v-for="season in seasons" 
-          :key="season.uuid" 
-          :season="season" 
-          @card-clicked="navigateToCard" deprecated
+        <Season
+          v-for="season in seasons"
+          :key="season.uuid"
+          :season="season"
+          @card-clicked="navigateToCard"
           @add-card="navigateToAddCard"
           @emitUserAllowedStatus="updateUserAllowedStatus"
           @season-deleted="handleSeasonDeleted"
         />
-      </div>
+      </section>
 
       <div v-if="isUserAllowed" class="add-season-footer">
         <div class="add-new-season-btn" @click="navigateToAddSeason">
           + Добавить сезон
         </div>
       </div>
+    </main>
 
+    <footer class="page-footer">
       <Footer />
-    </div>
+    </footer>
   </div>
 
 </template>
@@ -40,11 +47,20 @@
   flex-direction: column;
 }
 
+.page-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
 .content-wrapper {
   position: relative;
   display: flex;
   flex-direction: column;
   flex: 1;
+  z-index: 2;
 }
 
 .background-container {
@@ -66,7 +82,7 @@
   transform: translate(-50%, 0);
   max-width: 250px; /* Adjust size as needed */
   max-height: 250px; /* Adjust size as needed */
-  z-index: 1; /* Ensure it's behind the content */
+  z-index: 2; /* Ensure it's behind the content */
 }
 
 .separator-line {
@@ -82,8 +98,22 @@
 #seasons-container {
   position: relative; /* Essential for z-index to work correctly relative to the background */
   margin-top: 30px; /* Push content down by the height of the background */
-  z-index: 2; /* Ensure content is above the background */
   flex: 1;
+}
+
+.seasons-section {
+  z-index: 2;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }
 .error-message {
   text-align: center;
@@ -117,6 +147,11 @@
   transform: translateY(-5px);
   border-color: var(--accent-color);
   color: var(--accent-color);
+}
+
+.page-footer {
+  position: relative;
+  z-index: 2;
 }
 
 </style>
@@ -166,8 +201,7 @@ export default {
         console.error('Ошибка создания сезона:', error);
         alert('Не удалось создать сезон.'); // Provide user feedback
       }
-    }
-    ,
+    },
     // Add a new method to handle season deletion
     handleSeasonDeleted(deletedSeasonUuid) {
       // Call the mutation to remove the season from the VueX store
@@ -176,11 +210,6 @@ export default {
   },
   mounted() {
     this.fetchSeasons()
-  },
-  // Add a new method to handle season deletion
-  handleSeasonDeleted(deletedSeasonUuid) {
-    // Call the mutation to remove the season from the VueX store
-    this.REMOVE_SEASON(deletedSeasonUuid);
   }
 }
 </script>

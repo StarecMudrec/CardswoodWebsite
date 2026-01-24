@@ -1,13 +1,13 @@
 <template>
   <div class="page-container">
-    <div class="background-container"></div>
+    <div class="background-container" aria-hidden="true"></div>
     <img src="/logo_noph.png" alt="Логотип" class="background-logo">
-    <div class="background-overlay"></div>
-    <div class="separator-line"></div>
+    <div class="background-overlay" aria-hidden="true"></div>
+    <div class="separator-line" aria-hidden="true"></div>
 
     <div class="content-wrapper">
-      <section class="shop-section" aria-labelledby="shop-title">
-        <div class="shop-header">
+      <main class="shop-section" aria-labelledby="shop-title">
+        <header class="shop-header">
           <div class="header-icon">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M7 18C5.9 18 5.01 18.9 5.01 20C5.01 21.1 5.9 22 7 22C8.1 22 9 21.1 9 20C9 18.9 8.1 18 7 18ZM1 2V4H3L6.6 11.59L5.25 14.04C5.09 14.32 5 14.65 5 15C5 16.1 5.9 17 7 17H19V15H7.42C7.28 15 7.17 14.89 7.17 14.75L7.2 14.63L8.1 13H15.55C16.3 13 16.96 12.59 17.3 11.97L21.16 4.96C21.35 4.61 21.45 4.22 21.45 3.82C21.45 3.41 21.35 3.01 21.16 2.66C20.96 2.31 20.68 2.02 20.35 1.8C20.02 1.59 19.65 1.45 19.27 1.41C18.88 1.37 18.49 1.42 18.12 1.56C17.75 1.7 17.42 1.92 17.14 2.21C16.86 2.5 16.65 2.85 16.52 3.23L16.48 3.36H6.52L5.75 1.36C5.64 1.09 5.47 0.85 5.25 0.65C5.03 0.45 4.77 0.3 4.49 0.21C4.21 0.12 3.91 0.09 3.62 0.12C3.33 0.15 3.05 0.25 2.8 0.4C2.55 0.55 2.34 0.75 2.18 0.99C2.02 1.23 1.92 1.5 1.88 1.78C1.84 2.06 1.87 2.35 1.96 2.62C2.05 2.89 2.2 3.14 2.4 3.35C2.6 3.56 2.85 3.72 3.12 3.83C3.39 3.94 3.68 4 3.98 4H5.98L1 2Z" fill="#ffb947"/>
@@ -18,9 +18,9 @@
           <p class="subtitle">
             Приобретайте эксклюзивные подписки, наборы карт и редкие карты для улучшения вашего игрового опыта
           </p>
-        </div>
+        </header>
 
-        <div class="products-grid">
+        <section class="products-grid" aria-label="Каталог товаров">
           <div 
             v-for="product in products" 
             :key="product.id"
@@ -64,9 +64,9 @@
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div class="cart-section glass-effect" v-if="cart.length > 0">
+        <aside class="cart-section glass-effect" v-if="cart.length > 0" aria-label="Корзина">
           <h2 class="cart-title">Ваша корзина</h2>
           <div class="cart-items">
             <div v-for="item in cart" :key="item.id" class="cart-item">
@@ -88,16 +88,16 @@
           <button class="checkout-btn" @click="proceedToCheckout">
             Перейти к оплате
           </button>
-        </div>
+        </aside>
 
-        <div v-if="error" class="error-message glass-effect">
+        <div v-if="error" class="error-message glass-effect" role="alert">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="#ff6b6b"/>
           </svg>
           <span>{{ error }}</span>
         </div>
 
-        <div class="features glass-effect">
+        <section class="features glass-effect" aria-label="Преимущества">
           <div class="feature-item">
             <div class="feature-icon">🚚</div>
             <h3 class="feature-title">Мгновенная доставка</h3>
@@ -113,11 +113,13 @@
             <h3 class="feature-title">Улучшите игру</h3>
             <p class="feature-text">Эксклюзивный контент для лучшего опыта</p>
           </div>
-        </div>
+        </section>
 
-      </section>
+      </main>
 
-      <Footer />
+      <footer class="page-footer">
+        <Footer />
+      </footer>
     </div>
   </div>
 </template>
@@ -309,6 +311,11 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 1;
+  z-index: 3;
+}
+
+.page-footer {
+  position: relative;
   z-index: 3;
 }
 
