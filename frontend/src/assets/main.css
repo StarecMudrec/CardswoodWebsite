@@ -37,8 +37,3 @@ a,
     padding: 0 2rem;
   }
 }
-
-:root {
-  --gradient-color-text: #ffb947;
-  --gradient-color-text-sec: #ff7a3c;
-}

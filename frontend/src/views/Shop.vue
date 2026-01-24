@@ -328,7 +328,7 @@ export default {
   width: 48px;
   height: 48px;
   display: inline-block;
-  background: linear-gradient(135deg, var(--gradient-color-text) 0%, var(--gradient-color-text-sec) 100%);
+  background: linear-gradient(135deg, var(--gradient-color) 0%, var(--gradient-color-sec) 100%);
   -webkit-mask: url('/shopping-cart.svg') no-repeat center / contain;
   mask: url('/shopping-cart.svg') no-repeat center / contain;
 }
@@ -343,7 +343,7 @@ export default {
   margin-bottom: 16px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  background: linear-gradient(135deg, var(--gradient-color-text) 0%, var(--gradient-color-text-sec) 100%);
+  background: linear-gradient(135deg, var(--gradient-color) 0%, var(--gradient-color-sec) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -412,7 +412,7 @@ export default {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: linear-gradient(135deg, var(--gradient-color-text) 0%, var(--gradient-color-text-sec) 100%);
+  background: linear-gradient(135deg, var(--gradient-color) 0%, var(--gradient-color-sec) 100%);
   color: #000;
   font-size: 12px;
   font-weight: 700;
@@ -461,7 +461,7 @@ export default {
 .price-value {
   font-size: 35px;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--gradient-color-text) 0%, var(--gradient-color-text-sec) 100%);
+  background: linear-gradient(135deg, var(--gradient-color) 0%, var(--gradient-color-sec) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -471,7 +471,7 @@ export default {
 .currency {
   font-size: 35px;
   font-weight: 600;
-  color: var(--gradient-color-text);
+  color: var(--gradient-color);
   margin-left: 4px;
 }
 
@@ -480,7 +480,7 @@ export default {
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background: linear-gradient(135deg, var(--gradient-color-text) 0%, var(--gradient-color-text-sec) 100%);
+  background: linear-gradient(135deg, var(--gradient-color) 0%, var(--gradient-color-sec) 100%);
   color: #000;
   border: none;
   border-radius: 16px;
@@ -557,7 +557,7 @@ export default {
 }
 
 .cart-item-price {
-  color: var(--gradient-color-text);
+  color: var(--gradient-color);
   font-weight: 600;
   font-size: 22px;
 }
@@ -589,7 +589,7 @@ export default {
 
 .total-amount {
   font-size: 25px;
-  color: var(--gradient-color-text);
+  color: var(--gradient-color);
 }
 
 .checkout-btn {
