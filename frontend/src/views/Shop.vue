@@ -125,7 +125,7 @@ export default {
           id: 1,
           name: 'Cardswood Подписка',
           description: 'Ежемесячная подписка на базовый доступ ко всем функциям Cardswood. Включает 5 стандартных бустер-паков.',
-          price: 299,
+          price: 99,
           image: '/cw_sub_lvl1.jpg',
           tag: 'Популярное'
         },
@@ -133,7 +133,7 @@ export default {
           id: 2,
           name: 'Cardswood Подписка Уровень 2',
           description: 'Премиум подписка с расширенным доступом. 10 бустер-паков ежемесячно + эксклюзивные карты.',
-          price: 599,
+          price: 199,
           image: '/cw_sub_lvl2.jpg',
           tag: 'Выгодно'
         },
@@ -141,7 +141,7 @@ export default {
           id: 3,
           name: 'Хэллоуин Бустер-пак',
           description: 'Набор из 5 специальных карт в тематике Хэллоуина. Ограниченное издание!',
-          price: 249,
+          price: 29,
           image: '/halloween_booster_pack.png',
           tag: 'Лимитированно'
         },
@@ -149,7 +149,7 @@ export default {
           id: 4,
           name: 'Зимний Бустер-пак',
           description: 'Праздничный набор зимних карт. Идеально для зимнего сезона игр.',
-          price: 249,
+          price: 69,
           image: '/winter_booster_pack.png',
           tag: 'Сезонное'
         },
@@ -157,7 +157,7 @@ export default {
           id: 6,
           name: 'Оскарс',
           description: 'Набор из 5 базовых серых карт для спокойной игры.',
-          price: 199,
+          price: 109,
           image: '/gray_pack.jpg',
           tag: 'Классика'
         },
@@ -165,7 +165,7 @@ export default {
           id: 5,
           name: 'Карта: Доминик Торретто',
           description: 'Эксклюзивная легендарная карта Доминика Торретто. Редкая коллекционная карта.',
-          price: 499,
+          price: 99,
           image: '/dominic.png',
           tag: 'Легендарная'
         }

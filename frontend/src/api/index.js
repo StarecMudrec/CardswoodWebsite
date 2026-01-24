@@ -5,7 +5,16 @@ import axios from 'axios'
 export const fetchSeasons = async () => {
   const response = await fetch('/api/seasons')
   if (!response.ok) throw new Error('Не удалось получить список сезонов')
-  const seasons = await response.json()
+  const seasonIds = await response.json()
+
+  const seasons = await Promise.all(
+    seasonIds.map(async seasonId => {
+      const seasonResponse = await fetch(`/api/season_info/${seasonId}`)
+      if (!seasonResponse.ok) throw new Error('Не удалось получить информацию о сезоне')
+      return seasonResponse.json()
+    })
+  )
+  
   return seasons
 }
 
