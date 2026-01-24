@@ -529,11 +529,11 @@ def serve_card_image(filename):
 @app.route("/api/seasons")
 def get_seasons():
     try:
-        with get_sqlite_conn() as conn:
-            # Must use text() wrapper for raw SQL
-            result = conn.execute("SELECT DISTINCT season FROM cards WHERE season IS NOT NULL")
-            seasons = [row[0] for row in result]
-            return jsonify(sorted(seasons)), 200
+        # Query the PostgreSQL Season table
+        seasons = Season.query.all()
+        # Return the season data with uuid and name
+        season_data = [season.present() for season in seasons]
+        return jsonify(season_data), 200
     except Exception as e:
         logging.error(f"Database error: {str(e)}")
         return jsonify({'error': 'Failed to fetch seasons'}), 500

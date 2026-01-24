@@ -1,5 +1,5 @@
 import { createStore } from 'vuex'
-import { fetchSeasons, checkAuth } from '@/api'
+import { fetchSeasons, checkAuth, updateSeason } from '@/api'
 
 export default createStore({
   state: {
@@ -60,10 +60,8 @@ export default createStore({
       try {
         const response = await fetch('/api/seasons');
         if (!response.ok) throw new Error('Не удалось получить список сезонов');
-        const seasonIds = await response.json();
-        const seasonPromises = seasonIds.map(id => fetch(`/api/season_info/${id}`).then(res => res.json()));
-        const orderedSeasonsData = await Promise.all(seasonPromises);
-        commit('SET_SEASONS', orderedSeasonsData);
+        const seasons = await response.json();
+        commit('SET_SEASONS', seasons);
       } catch (error) {
         commit('SET_ERROR', error)
         console.error('Ошибка получения сезонов:', error)
