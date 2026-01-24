@@ -37,7 +37,7 @@
             
             <div class="product-content">
               <h3 class="product-name">{{ product.name }}</h3>
-              <p class="product-description">{{ product.description }}</p>
+              <p class="product-description"></p>
               
               <div class="product-footer">
                 <div class="product-price">
