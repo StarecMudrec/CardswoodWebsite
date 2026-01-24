@@ -92,7 +92,7 @@
           <span>{{ error }}</span>
         </div>
 
-        <section class="features glass-effect" aria-label="Преимущества">
+        <!-- <section class="features glass-effect" aria-label="Преимущества">
           <div class="feature-item">
             <div class="feature-icon">🚚</div>
             <h3 class="feature-title">Мгновенная доставка</h3>
@@ -108,7 +108,7 @@
             <h3 class="feature-title">Улучшите игру</h3>
             <p class="feature-text">Эксклюзивный контент для лучшего опыта</p>
           </div>
-        </section>
+        </section> -->
 
       </main>
 
