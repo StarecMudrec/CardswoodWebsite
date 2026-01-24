@@ -548,6 +548,7 @@ export default {
   align-items: center;
   padding: 12px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 20px;
 }
 
 .cart-item-info {
@@ -565,6 +566,7 @@ export default {
 .cart-item-price {
   color: #ffb947;
   font-weight: 600;
+  font-size: 22px;
 }
 
 .remove-btn {
@@ -586,14 +588,13 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 16px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 18px;
+  font-size: 25px;
   font-weight: 600;
   color: #fff;
 }
 
 .total-amount {
-  font-size: 24px;
+  font-size: 25px;
   color: #ffb947;
 }
 
