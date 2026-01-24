@@ -30,9 +30,9 @@
                 class="product-image"
                 @error="handleImageError"
               >
-              <div v-if="product.tag" class="product-tag">
+              <!-- <div v-if="product.tag" class="product-tag">
                 {{ product.tag }}
-              </div>
+              </div> -->
             </div>
             
             <div class="product-content">
@@ -41,8 +41,8 @@
               
               <div class="product-footer">
                 <div class="product-price">
-                  <span class="price-value">{{ product.price.toLocaleString('ru-RU') }}</span>
-                  <span class="currency">₽</span>
+                  <span class="price-value">{{ product.price.toLocaleString('ru-RU') }}₽</span>
+                  <!-- <span class="currency">₽</span> -->
                 </div>
                 
                 <button 
@@ -439,7 +439,8 @@ export default {
 .product-name {
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: 0;
+  margin-top: 0;
   color: #fff;
   line-height: 1.3;
 }
@@ -465,7 +466,7 @@ export default {
 }
 
 .price-value {
-  font-size: 24px;
+  font-size: 35px;
   font-weight: 800;
   background: linear-gradient(135deg, #ffb947 0%, #ff7a3c 100%);
   -webkit-background-clip: text;
@@ -475,7 +476,7 @@ export default {
 }
 
 .currency {
-  font-size: 18px;
+  font-size: 35px;
   font-weight: 600;
   color: #ffb947;
   margin-left: 4px;
@@ -490,7 +491,7 @@ export default {
   color: #000;
   border: none;
   border-radius: 16px;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -508,8 +509,8 @@ export default {
 }
 
 .cart-icon {
-  width: 18px;
-  height: 18px;
+    width: 22px;
+    height: 22px;
 }
 
 .spinner {
