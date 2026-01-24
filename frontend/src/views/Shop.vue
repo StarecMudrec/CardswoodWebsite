@@ -268,7 +268,7 @@ export default {
   top: 120px;
   left: 50%;
   transform: translate(-50%, 0);
-  width: 20vh;
+  width: 30vh;
   aspect-ratio: 1;
   z-index: 2;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
