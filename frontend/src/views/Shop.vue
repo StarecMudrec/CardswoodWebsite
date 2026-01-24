@@ -9,7 +9,7 @@
       <main class="shop-section" aria-labelledby="shop-title">
         <header class="shop-header">
           <div class="header-icon">
-            <img src="/shopping-cart.svg" class="header-cart-icon" alt="" />
+            <span class="header-cart-icon" aria-hidden="true"></span>
           </div>
           <h1 id="shop-title" class="title">Магазин Cardswood</h1>
           <p class="subtitle">
@@ -334,6 +334,10 @@ export default {
 .header-cart-icon {
   width: 48px;
   height: 48px;
+  display: inline-block;
+  background: linear-gradient(135deg, #ffb947 0%, #ff7a3c 100%);
+  -webkit-mask: url('/shopping-cart.svg') no-repeat center / contain;
+  mask: url('/shopping-cart.svg') no-repeat center / contain;
 }
 
 @keyframes pulse {
