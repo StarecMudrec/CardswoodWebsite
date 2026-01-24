@@ -8,13 +8,13 @@
     <div class="content-wrapper">
       <main class="shop-section" aria-labelledby="shop-title">
         <header class="shop-header">
-          <div class="header-icon">
+          <!-- <div class="header-icon">
             <span class="header-cart-icon" aria-hidden="true"></span>
-          </div>
+          </div> -->
           <h1 id="shop-title" class="title">Магазин Cardswood</h1>
-          <p class="subtitle">
+          <!-- <p class="subtitle">
             Приобретайте эксклюзивные подписки, наборы карт и редкие карты для улучшения вашего игрового опыта
-          </p>
+          </p> -->
         </header>
 
         <section class="products-grid" aria-label="Каталог товаров">
@@ -277,7 +277,7 @@ export default {
   top: 120px;
   left: 50%;
   transform: translate(-50%, 0);
-  width: 16%;
+  width: 20%;
   aspect-ratio: 1;
   z-index: 2;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
@@ -449,7 +449,7 @@ export default {
   font-size: 14px;
   color: rgba(255, 255, 255, 0.7);
   line-height: 1.5;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   flex: 1;
 }
 
