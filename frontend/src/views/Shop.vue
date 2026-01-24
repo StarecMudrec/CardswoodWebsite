@@ -3,7 +3,6 @@
     <div class="background-container" aria-hidden="true"></div>
     <img src="/logo_noph.png" alt="Логотип" class="background-logo">
     <div class="background-overlay" aria-hidden="true"></div>
-    <div class="separator-line" aria-hidden="true"></div>
 
     <div class="content-wrapper">
       <main class="shop-section" aria-labelledby="shop-title">
@@ -269,7 +268,7 @@ export default {
   top: 120px;
   left: 50%;
   transform: translate(-50%, 0);
-  width: 20%;
+  width: 20vh;
   aspect-ratio: 1;
   z-index: 2;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
