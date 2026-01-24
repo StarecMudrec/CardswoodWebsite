@@ -16,6 +16,7 @@
             Приобретайте эксклюзивные подписки, наборы карт и редкие карты для улучшения вашего игрового опыта
           </p> -->
         </header>
+        <div class="separator-line" aria-hidden="true"></div>
 
         <section class="products-grid" aria-label="Каталог товаров">
           <div 
@@ -291,7 +292,7 @@ export default {
 
 .separator-line {
   position: relative;
-  margin-top: 45vh;
+  /* margin-top: 45vh; */
   height: 2px;
   background: linear-gradient(90deg, transparent, rgba(255, 185, 71, 0.5), transparent);
   border: none;
@@ -318,6 +319,7 @@ export default {
   padding: 48px 16px 60px;
   width: min(1200px, 100%);
   margin: 0 auto;
+  margin-top: 45vh;
   color: #fff;
 }
 
@@ -529,7 +531,6 @@ export default {
 
 .cart-section {
   padding: 24px;
-  margin-bottom: 40px;
 }
 
 .cart-title {
