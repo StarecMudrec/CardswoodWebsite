@@ -491,10 +491,11 @@ export default {
   color: #000;
   border: none;
   border-radius: 16px;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-shadow: 0 2px 6px #00000073;
 }
 
 .buy-btn:hover:enabled {
@@ -606,11 +607,12 @@ export default {
   color: #000;
   border: none;
   border-radius: 16px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 16px;
+  text-shadow: 0 2px 6px #00000073;
 }
 
 .checkout-btn:hover {
