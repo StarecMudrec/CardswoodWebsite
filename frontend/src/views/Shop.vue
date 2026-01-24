@@ -8,15 +8,9 @@
     <div class="content-wrapper">
       <main class="shop-section" aria-labelledby="shop-title">
         <header class="shop-header">
-          <!-- <div class="header-icon">
-            <span class="header-cart-icon" aria-hidden="true"></span>
-          </div> -->
           <h1 id="shop-title" class="title">Магазин Cardswood</h1>
-          <!-- <p class="subtitle">
-            Приобретайте эксклюзивные подписки, наборы карт и редкие карты для улучшения вашего игрового опыта
-          </p> -->
+          <div class="separator-line" aria-hidden="true"></div>
         </header>
-        <div class="separator-line" aria-hidden="true"></div>
 
         <section class="products-grid" aria-label="Каталог товаров">
           <div 
@@ -31,9 +25,6 @@
                 class="product-image"
                 @error="handleImageError"
               >
-              <!-- <div v-if="product.tag" class="product-tag">
-                {{ product.tag }}
-              </div> -->
             </div>
             
             <div class="product-content">
