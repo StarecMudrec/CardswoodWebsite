@@ -92,7 +92,7 @@
           <div class="feature-item">
             <div class="feature-icon">🔒</div>
             <h3 class="feature-title">Безопасная оплата</h3>
-            <p class="feature-text">Защищённые платежи через PayAnyWay</p>
+            <p class="feature-text">Защищённые платежи</p>
           </div>
           <div class="feature-item">
             <div class="feature-icon">🎮</div>
@@ -222,9 +222,8 @@ export default {
       }
       
       try {
-        // In a real app, you would create an order and redirect to payment
-        // For now, we'll simulate and redirect to donation page
-        this.$router.push('/donation')
+        // TODO: Implement new payment system
+        this.error = 'Система оплаты в разработке'
       } catch (err) {
         this.error = 'Ошибка при оформлении заказа'
         console.error(err)

@@ -17,17 +17,6 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.getenv("SECRET_KEY")
 
-    # PayAnyWay / MONETA payment configuration
-    # All secrets must be stored in the project-root .env file and injected as env vars.
-    PAYANYWAY_MNT_ID = os.getenv("PAYANYWAY_MNT_ID")  # merchant account id
-    PAYANYWAY_MNT_INTEGRITY_CODE = os.getenv("PAYANYWAY_MNT_INTEGRITY_CODE")  # integrity code
-    # Test mode flag (\"1\" or \"0\" as strings for PayAnyWay)
-    PAYANYWAY_TEST_MODE = os.getenv("PAYANYWAY_TEST_MODE", "1")
-    # Optional parameters – configure if you use non-default values
-    PAYANYWAY_MNT_INLINE_FORM = os.getenv("PAYANYWAY_MNT_INLINE_FORM")  # \"1\" to use inline form
-    PAYANYWAY_MNT_UNIT_ID = os.getenv("PAYANYWAY_MNT_UNIT_ID")  # specific payment method id
-    PAYANYWAY_MNT_SUBSCRIBER_ID = os.getenv("PAYANYWAY_MNT_SUBSCRIBER_ID")  # subscriber id (optional)
-    PAYANYWAY_MNT_CMS = os.getenv("PAYANYWAY_MNT_CMS", "TaskListCMS")
 
     # For SQLite over TCP proxy
     SQLITE_DB_PATH = "/app/db/offcardswood.db"  # Mounted path in container

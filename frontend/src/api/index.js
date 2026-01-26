@@ -18,31 +18,6 @@ export const fetchSeasons = async () => {
   return seasons
 }
 
-// Create a donation and receive PayAnyWay payment URL
-export const createDonation = async (amount, description = 'Donation') => {
-  const response = await fetch('/api/donations/create', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ amount, description })
-  })
-
-  if (!response.ok) {
-    let message = 'Не удалось создать платёж'
-    try {
-      const errorBody = await response.json()
-      if (errorBody && errorBody.error) {
-        message = errorBody.error
-      }
-    } catch (e) {
-      // ignore JSON parsing errors
-    }
-    throw new Error(message)
-  }
-
-  return response.json()
-}
 
 // Fetch cards for a specific season
 export async function fetchCardsForSeason(seasonId, sortField = 'id', sortDirection = 'asc') {
