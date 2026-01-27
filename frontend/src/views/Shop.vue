@@ -11,11 +11,12 @@
           <div class="separator-line" aria-hidden="true"></div>
         </header>
 
-        <section class="products-grid" aria-label="Каталог товаров">
+        <section ref="productsGrid" class="products-grid" aria-label="Каталог товаров">
           <div 
             v-for="product in products" 
             :key="product.id"
             class="product-card glass-effect"
+            :data-product-id="product.id"
           >
             <div class="product-image-container">
               <img 
@@ -38,7 +39,7 @@
                   class="read-more-btn"
                   @click="toggleDescription(product.id)"
                 >
-                  {{ expandedDescriptions[product.id] ? 'Свернуть' : 'Читать далее' }}
+                  {{ expandedDescriptions[product.id] ? 'Свернуть' : 'Развернуть' }}
                 </button>
               </div>
               
@@ -198,7 +199,37 @@ export default {
       event.target.src = '/logo_noph.png'
     },
     toggleDescription(productId) {
-      this.expandedDescriptions[productId] = !this.expandedDescriptions[productId]
+      const newState = !this.expandedDescriptions[productId]
+      
+      // Find all products in the same row
+      this.$nextTick(() => {
+        const grid = this.$refs.productsGrid
+        if (!grid) return
+        
+        const clickedCard = grid.querySelector(`[data-product-id="${productId}"]`)
+        if (!clickedCard) return
+        
+        // Get the clicked card's position
+        const clickedRect = clickedCard.getBoundingClientRect()
+        const clickedTop = clickedRect.top
+        
+        // Find all cards in the same row (same top position, with some tolerance)
+        const allCards = grid.querySelectorAll('.product-card')
+        const rowTolerance = 10 // pixels tolerance for same row detection
+        
+        allCards.forEach(card => {
+          const cardRect = card.getBoundingClientRect()
+          const cardTop = cardRect.top
+          
+          // Check if card is in the same row
+          if (Math.abs(cardTop - clickedTop) < rowTolerance) {
+            const cardProductId = parseInt(card.getAttribute('data-product-id'))
+            if (cardProductId) {
+              this.expandedDescriptions[cardProductId] = newState
+            }
+          }
+        })
+      })
     },
     needsExpansion(productId) {
       // Check if description is long enough to need expansion
