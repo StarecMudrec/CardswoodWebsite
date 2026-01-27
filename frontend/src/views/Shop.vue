@@ -198,7 +198,7 @@ export default {
       event.target.src = '/logo_noph.png'
     },
     toggleDescription(productId) {
-      this.$set(this.expandedDescriptions, productId, !this.expandedDescriptions[productId])
+      this.expandedDescriptions[productId] = !this.expandedDescriptions[productId]
     },
     needsExpansion(productId) {
       // Check if description is long enough to need expansion
