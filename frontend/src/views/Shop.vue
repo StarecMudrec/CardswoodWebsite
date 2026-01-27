@@ -28,7 +28,19 @@
             
             <div class="product-content">
               <h3 class="product-name">{{ product.name }}</h3>
-              <p class="product-description">{{ product.description }}</p>
+              <div class="product-description-wrapper">
+                <p 
+                  class="product-description" 
+                  :class="{ 'expanded': expandedDescriptions[product.id] }"
+                >{{ product.description }}</p>
+                <button 
+                  v-if="needsExpansion(product.id)"
+                  class="read-more-btn"
+                  @click="toggleDescription(product.id)"
+                >
+                  {{ expandedDescriptions[product.id] ? 'Свернуть' : 'Читать далее' }}
+                </button>
+              </div>
               
               <div class="product-footer">
                 <div class="product-price">
@@ -172,7 +184,8 @@ export default {
       ],
       cart: [],
       loading: false,
-      error: null
+      error: null,
+      expandedDescriptions: {}
     }
   },
   computed: {
@@ -183,6 +196,16 @@ export default {
   methods: {
     handleImageError(event) {
       event.target.src = '/logo_noph.png'
+    },
+    toggleDescription(productId) {
+      this.$set(this.expandedDescriptions, productId, !this.expandedDescriptions[productId])
+    },
+    needsExpansion(productId) {
+      // Check if description is long enough to need expansion
+      const product = this.products.find(p => p.id === productId)
+      if (!product) return false
+      // Approximate check: if description has more than ~150 characters, it likely needs expansion
+      return product.description.length > 150
     },
     addToCart(product) {
       this.loading = true
@@ -444,13 +467,50 @@ export default {
   line-height: 1.3;
 }
 
+.product-description-wrapper {
+  flex: 1;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 .product-description {
   font-size: 14px;
   color: rgba(255, 255, 255, 0.7);
   line-height: 1.5;
-  margin-bottom: 10px;
-  flex: 1;
+  margin: 0;
   white-space: pre-line;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.3s ease;
+}
+
+.product-description.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  overflow: visible;
+}
+
+.read-more-btn {
+  background: transparent;
+  border: none;
+  color: var(--gradient-color);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-top: 4px;
+  text-decoration: underline;
+  transition: opacity 0.3s ease;
+  font-family: "Tinos", serif;
+}
+
+.read-more-btn:hover {
+  opacity: 0.8;
 }
 
 .product-footer {
