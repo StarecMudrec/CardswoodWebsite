@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import BigInteger
+from sqlalchemy import BigInteger, Numeric, DateTime, JSON
 from datetime import datetime
 
 db = SQLAlchemy()
@@ -69,4 +69,21 @@ class Comment(db.Model):
                 "text": self.text, 
                 "card_id": self.card_id}
 
+
+# Order model for shop / PayAnyWay
+class Order(db.Model):
+    __tablename__ = "orders"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    order_number = db.Column(db.String(64), unique=True, nullable=False, index=True)
+    user_id = db.Column(BigInteger, nullable=True)
+    amount = db.Column(Numeric(12, 2), nullable=False)
+    currency = db.Column(db.String(3), default="RUB")
+    status = db.Column(db.String(20), nullable=False, default="pending")  # pending, paid, failed
+    items = db.Column(JSON, nullable=True)  # [{ "id", "name", "price", "quantity" }]
+    payanyway_payment_id = db.Column(db.String(128), nullable=True)
+    created_at = db.Column(DateTime, default=datetime.utcnow)
+    updated_at = db.Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<Order {self.order_number} status={self.status}>"
 

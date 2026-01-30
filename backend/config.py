@@ -21,3 +21,15 @@ class Config:
     # For SQLite over TCP proxy
     SQLITE_DB_PATH = "/app/db/offcardswood.db"  # Mounted path in container
     # SQLALCHEMY_BINDS = f"sqlite:///{SQLITE_DB_PATH}?mode=ro"  # Read-only mode
+
+    # PayAnyWay payment integration (from env; optional for local dev)
+    PAYANYWAY_MNT_ID = os.getenv("PAYANYWAY_MNT_ID", "")
+    PAYANYWAY_SIGNATURE_KEY = os.getenv("PAYANYWAY_SIGNATURE_KEY", "")
+    PAYANYWAY_PAYMENT_URL = os.getenv(
+        "PAYANYWAY_PAYMENT_URL",
+        "https://payanyway.ru/assistant.htm"
+    )
+    FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "https://cardswood.ru")
+    _base = os.getenv("FRONTEND_BASE_URL", "https://cardswood.ru")
+    PAYANYWAY_SUCCESS_URL = os.getenv("PAYANYWAY_SUCCESS_URL", f"{_base}/shop/success")
+    PAYANYWAY_FAIL_URL = os.getenv("PAYANYWAY_FAIL_URL", f"{_base}/shop/fail")

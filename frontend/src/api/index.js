@@ -136,3 +136,24 @@ export const deleteSeason = async (seasonUuid) => {
   });
   if (!response.ok) throw new Error('Не удалось удалить сезон');
 };
+
+// Create order and get PayAnyWay payment URL
+export const createOrder = async (cartItems) => {
+  const items = cartItems.map((item) => ({
+    id: item.id,
+    name: item.name,
+    price: item.price,
+    quantity: 1
+  }));
+  const response = await fetch('/api/orders', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items }),
+    credentials: 'include'
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error || 'Не удалось создать заказ');
+  }
+  return response.json();
+};

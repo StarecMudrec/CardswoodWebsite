@@ -1,7 +1,10 @@
 import os
 import hmac
-from hashlib import sha256
+from hashlib import sha256, md5
 import uuid  # For generating unique tokens
+from decimal import Decimal
+from datetime import datetime
+from urllib.parse import urlencode
 
 from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify, send_from_directory, session
 from flask_migrate import Migrate
@@ -10,7 +13,7 @@ import requests  # Import the requests library
 from joserfc.errors import JoseError
 import logging
 from flask_sqlalchemy import SQLAlchemy  # Database integration
-from models import db, AuthToken, Card, Season, Comment, AllowedUser
+from models import db, AuthToken, Card, Season, Comment, AllowedUser, Order
 from config import Config
 from sqlalchemy import create_engine, select, and_, text
 from sqlalchemy.orm import Session, sessionmaker
@@ -652,6 +655,141 @@ def get_user_info():
         }
         return jsonify(user_data), 200
     return jsonify({'error': 'User not authenticated'}), 401
+
+
+# --- PayAnyWay payment ---
+def _payanyway_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_code, key):
+    """Build MNT_SIGNATURE: MD5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + key)."""
+    raw = f"{mnt_id}{mnt_transaction_id}{mnt_amount}{mnt_currency_code}{key}"
+    return md5(raw.encode("utf-8")).hexdigest()
+
+
+@app.route("/api/orders", methods=["POST"])
+def create_order():
+    """Create order and return payment_url (and form fields) for PayAnyWay redirect."""
+    data = request.get_json()
+    if not data or "items" not in data:
+        return jsonify({"error": "Missing items"}), 400
+    items = data["items"]
+    if not items:
+        return jsonify({"error": "Cart is empty"}), 400
+
+    mnt_id = Config.PAYANYWAY_MNT_ID
+    key = Config.PAYANYWAY_SIGNATURE_KEY
+    if not mnt_id or not key:
+        logging.warning("PayAnyWay not configured: PAYANYWAY_MNT_ID or PAYANYWAY_SIGNATURE_KEY missing")
+        return jsonify({"error": "Payment system is not configured"}), 503
+
+    total = sum(Decimal(str(it["price"])) * int(it.get("quantity", 1)) for it in items)
+    order_number = str(uuid.uuid4()).replace("-", "")[:32]
+    amount_str = f"{total:.2f}"
+    currency = "RUB"
+    description = "Cardswood shop" if len(items) == 0 else items[0].get("name", "Order") + (" + ..." if len(items) > 1 else "")
+
+    try:
+        order = Order(
+            order_number=order_number,
+            user_id=session.get("user_id"),
+            amount=total,
+            currency=currency,
+            status="pending",
+            items=items,
+        )
+        db.session.add(order)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        logging.exception(f"Create order error: {e}")
+        return jsonify({"error": "Failed to create order"}), 500
+
+    signature = _payanyway_signature(mnt_id, order_number, amount_str, currency, key)
+    payment_url = Config.PAYANYWAY_PAYMENT_URL
+    params = {
+        "MNT_ID": mnt_id,
+        "MNT_TRANSACTION_ID": order_number,
+        "MNT_AMOUNT": amount_str,
+        "MNT_CURRENCY_CODE": currency,
+        "MNT_DESCRIPTION": description[:255],
+        "MNT_SIGNATURE": signature,
+        "MNT_SUCCESS_URL": Config.PAYANYWAY_SUCCESS_URL,
+        "MNT_FAIL_URL": Config.PAYANYWAY_FAIL_URL,
+    }
+    payment_url_with_params = f"{payment_url}?{urlencode(params)}"
+    return jsonify({
+        "order_id": order.id,
+        "order_number": order_number,
+        "payment_url": payment_url_with_params,
+        "form_fields": params,
+    }), 201
+
+
+def _payanyway_callback_signature(mnt_transaction_id, mnt_amount, mnt_currency_code, mnt_status, key):
+    """Callback signature: MD5(MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_STATUS + key)."""
+    raw = f"{mnt_transaction_id}{mnt_amount}{mnt_currency_code}{mnt_status}{key}"
+    return md5(raw.encode("utf-8")).hexdigest()
+
+
+def _fulfill_order(order):
+    """Fulfill paid order: grant subscription/packs etc. Stub: only mark as fulfilled in DB."""
+    # TODO: grant subscription (write to DB with end date), grant packs/cards per items
+    logging.info(f"Order {order.order_number} fulfilled (items: {order.items})")
+
+
+@app.route("/api/payment/payanyway/callback", methods=["POST", "GET"])
+def payanyway_callback():
+    """Pay URL: receive payment result from PayAnyWay. Verify signature, update order, fulfill."""
+    key = Config.PAYANYWAY_SIGNATURE_KEY
+    if not key:
+        logging.warning("PayAnyWay callback: PAYANYWAY_SIGNATURE_KEY not set")
+        return "CONFIG_ERROR", 500
+
+    data = request.form if request.form else request.args
+    mnt_transaction_id = data.get("MNT_TRANSACTION_ID")
+    mnt_amount = data.get("MNT_AMOUNT")
+    mnt_currency_code = data.get("MNT_CURRENCY_CODE", "RUB")
+    mnt_status = data.get("MNT_STATUS", "")
+    mnt_signature = data.get("MNT_SIGNATURE")
+
+    if not mnt_transaction_id or not mnt_signature:
+        logging.warning("PayAnyWay callback: missing MNT_TRANSACTION_ID or MNT_SIGNATURE")
+        return "MISSING_PARAMS", 400
+
+    expected_sig = _payanyway_callback_signature(
+        mnt_transaction_id, mnt_amount or "", mnt_currency_code, mnt_status, key
+    )
+    if not hmac.compare_digest(expected_sig.lower(), (mnt_signature or "").lower()):
+        logging.warning("PayAnyWay callback: invalid signature")
+        return "INVALID_SIGNATURE", 400
+
+    order = Order.query.filter_by(order_number=mnt_transaction_id).first()
+    if not order:
+        logging.warning(f"PayAnyWay callback: order not found {mnt_transaction_id}")
+        return "ORDER_NOT_FOUND", 404
+
+    if order.status == "paid":
+        return "OK", 200
+
+    if str(mnt_status) in ("1", "success", "SUCCESS"):
+        try:
+            order.status = "paid"
+            order.payanyway_payment_id = data.get("MNT_OPERATION_ID") or data.get("MNT_ID")
+            order.updated_at = datetime.utcnow()
+            db.session.commit()
+            _fulfill_order(order)
+        except Exception as e:
+            db.session.rollback()
+            logging.exception(f"PayAnyWay callback commit error: {e}")
+            return "INTERNAL_ERROR", 500
+        return "OK", 200
+    else:
+        order.status = "failed"
+        order.updated_at = datetime.utcnow()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            logging.exception(f"PayAnyWay callback failed status commit: {e}")
+        return "OK", 200
 
 
 if __name__ == "__main__":

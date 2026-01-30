@@ -84,8 +84,9 @@
             <span>Итого:</span>
             <span class="total-amount">{{ totalAmount.toLocaleString('ru-RU') }} ₽</span>
           </div>
-          <button class="checkout-btn" @click="proceedToCheckout">
-            Перейти к оплате
+          <button class="checkout-btn" @click="proceedToCheckout" :disabled="loading">
+            <span v-if="loading" class="spinner"></span>
+            <template v-else>Перейти к оплате</template>
           </button>
         </aside>
 
@@ -125,6 +126,7 @@
 
 <script>
 import Footer from '@/components/Footer.vue'
+import { createOrder } from '@/api'
 
 export default {
   name: 'ShopView',
@@ -274,13 +276,20 @@ export default {
         this.error = 'Корзина пуста'
         return
       }
-      
+      this.error = null
+      this.loading = true
       try {
-        // TODO: Implement new payment system
-        this.error = 'Система оплаты в разработке'
+        const data = await createOrder(this.cart)
+        if (data.payment_url) {
+          window.location.href = data.payment_url
+          return
+        }
+        this.error = 'Не получена ссылка на оплату'
       } catch (err) {
-        this.error = 'Ошибка при оформлении заказа'
+        this.error = err.message || 'Ошибка при оформлении заказа'
         console.error(err)
+      } finally {
+        this.loading = false
       }
     }
   }
