@@ -658,17 +658,19 @@ def get_user_info():
 
 
 # --- PayAnyWay payment ---
-# Подпись для ИНИЦИАЛИЗАЦИИ ФОРМЫ (редирект на assistant.moneta.ru).
-# По документации PayAnyWay: MD5(MNT_ID + MNT_TRANSACTION_ID + КОД_ПРОВЕРКИ) — без MNT_AMOUNT.
-# Если не примут: попробовать MD5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + КОД_ПРОВЕРКИ) (раскомментировать в коде).
-def _payanyway_form_signature(mnt_id, mnt_transaction_id, mnt_amount, key):
-    """Подпись для платёжной формы (редирект). По док. — только MNT_ID + MNT_TRANSACTION_ID + key."""
-    raw = f"{mnt_id}{mnt_transaction_id}{key}"  # по документации (без суммы)
+# Подпись для запроса на оплату (редирект на форму) — по официальной документации PayAnyWay:
+# MNT_SIGNATURE = MD5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + ТЕСТОВЫЙ_РЕЖИМ + КОД_ПРОВЕРКИ)
+# • MNT_AMOUNT — с двумя десятичными знаками, точка (например "123.00")
+# • MNT_SUBSCRIBER_ID при отсутствии — пустая строка
+# • ТЕСТОВЫЙ РЕЖИМ: "1" если тест, иначе "0"
+def _payanyway_form_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_code, key, mnt_subscriber_id="", test_mode=None):
+    if test_mode is None:
+        test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else "0"
     try:
         amt = f"{float(mnt_amount):.2f}"
     except (ValueError, TypeError):
         amt = str(mnt_amount) if mnt_amount else ""
-    # raw = f"{mnt_id}{mnt_transaction_id}{amt}{key}"  # вариант с суммой (часто требуется)
+    raw = f"{mnt_id}{mnt_transaction_id}{amt}{mnt_currency_code}{mnt_subscriber_id or ''}{test_mode}{key}"
     return md5(raw.encode("utf-8")).hexdigest()
 
 
@@ -726,9 +728,11 @@ def create_order():
         logging.exception(f"Create order error: {e}")
         return jsonify({"error": "Failed to create order"}), 500
 
-    mnt_test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else ""
-    # Подпись для редиректа на платёжную форму (отдельная от callback)
-    signature = _payanyway_form_signature(mnt_id, order_number, amount_str, key)
+    mnt_test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else "0"
+    signature = _payanyway_form_signature(
+        mnt_id, order_number, amount_str, currency, key,
+        mnt_subscriber_id="", test_mode=mnt_test_mode
+    )
     payment_url = Config.PAYANYWAY_PAYMENT_URL
     params = {
         "MNT_ID": mnt_id,
@@ -740,7 +744,7 @@ def create_order():
         "MNT_SUCCESS_URL": Config.PAYANYWAY_SUCCESS_URL,
         "MNT_FAIL_URL": Config.PAYANYWAY_FAIL_URL,
     }
-    if mnt_test_mode:
+    if mnt_test_mode == "1":
         params["MNT_TEST_MODE"] = mnt_test_mode
     payment_url_with_params = f"{payment_url}?{urlencode(params)}"
     return jsonify({
