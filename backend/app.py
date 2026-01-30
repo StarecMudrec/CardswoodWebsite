@@ -658,26 +658,20 @@ def get_user_info():
 
 
 # --- PayAnyWay payment ---
-def _payanyway_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_code, key):
-    """Build MNT_SIGNATURE. PayAnyWay/MONETA Assistant — порядок полей по MONETA.Assistant.ru.pdf (v1: ID+TRANSACTION_ID+AMOUNT+CURRENCY+key)."""
-    version = getattr(Config, "PAYANYWAY_SIGNATURE_VERSION", "v1")
-    amt = mnt_amount
-    if version == "v3":
+# Официальная формула (Check URL / запрос на оплату): MNT_SIGNATURE = MD5(MNT_COMMAND + MNT_ID + MNT_TRANSACTION_ID + MNT_OPERATION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + MNT_TEST_MODE + КОД_ПРОВЕРКИ). Отсутствующие параметры — пустая строка.
+def _payanyway_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_code, key, mnt_command="", mnt_operation_id="", mnt_subscriber_id="", mnt_test_mode=None):
+    """Подпись по формуле MONETA.Assistant: порядок полей фиксирован, отсутствующие = ''."""
+    if mnt_test_mode is None:
+        mnt_test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else ""
+    # MNT_AMOUNT — с двумя десятичными знаками, точка (например 123.00)
+    if mnt_amount:
         try:
-            amt = str(int(float(mnt_amount)))
+            amt = f"{float(mnt_amount):.2f}"
         except (ValueError, TypeError):
-            amt = mnt_amount
-    if version == "v1":
-        raw = f"{mnt_id}{mnt_transaction_id}{amt}{mnt_currency_code}{key}"
-    elif version == "v2":
-        raw = f"{mnt_id}{amt}{mnt_transaction_id}{key}"
-    elif version == "v3":
-        raw = f"{mnt_id}{amt}{mnt_transaction_id}{key}"
-    elif version == "v4":
-        # v4: MNT_ID + MNT_TRANSACTION_ID + key (без суммы и валюты) — по описанию assistant
-        raw = f"{mnt_id}{mnt_transaction_id}{key}"
+            amt = str(mnt_amount)
     else:
-        raw = f"{mnt_id}{amt}{mnt_transaction_id}{key}"
+        amt = ""
+    raw = f"{mnt_command or ''}{mnt_id}{mnt_transaction_id}{mnt_operation_id or ''}{amt}{mnt_currency_code}{mnt_subscriber_id or ''}{mnt_test_mode}{key}"
     return md5(raw.encode("utf-8")).hexdigest()
 
 
@@ -719,7 +713,11 @@ def create_order():
         logging.exception(f"Create order error: {e}")
         return jsonify({"error": "Failed to create order"}), 500
 
-    signature = _payanyway_signature(mnt_id, order_number, amount_str, currency, key)
+    mnt_test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else ""
+    signature = _payanyway_signature(
+        mnt_id, order_number, amount_str, currency, key,
+        mnt_command="", mnt_operation_id="", mnt_subscriber_id="", mnt_test_mode=mnt_test_mode
+    )
     payment_url = Config.PAYANYWAY_PAYMENT_URL
     params = {
         "MNT_ID": mnt_id,
@@ -731,8 +729,8 @@ def create_order():
         "MNT_SUCCESS_URL": Config.PAYANYWAY_SUCCESS_URL,
         "MNT_FAIL_URL": Config.PAYANYWAY_FAIL_URL,
     }
-    if getattr(Config, "PAYANYWAY_TEST_MODE", False):
-        params["MNT_TEST_MODE"] = "1"
+    if mnt_test_mode:
+        params["MNT_TEST_MODE"] = mnt_test_mode
     payment_url_with_params = f"{payment_url}?{urlencode(params)}"
     return jsonify({
         "order_id": order.id,
@@ -742,10 +740,24 @@ def create_order():
     }), 201
 
 
-def _payanyway_callback_signature(mnt_transaction_id, mnt_amount, mnt_currency_code, mnt_status, key):
-    """Callback signature: MD5(MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_STATUS + key)."""
-    raw = f"{mnt_transaction_id}{mnt_amount}{mnt_currency_code}{mnt_status}{key}"
-    return md5(raw.encode("utf-8")).hexdigest()
+def _payanyway_callback_verify(data, key):
+    """Проверка подписи callback по официальной формуле: MD5(MNT_COMMAND + MNT_ID + MNT_TRANSACTION_ID + MNT_OPERATION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + MNT_TEST_MODE + key). Отсутствующие параметры — пустая строка."""
+    def get(k, default=""):
+        v = data.get(k)
+        return (v or "").strip() if v is not None else default
+    mnt_command = get("MNT_COMMAND")
+    mnt_id = get("MNT_ID")
+    mnt_transaction_id = get("MNT_TRANSACTION_ID")
+    mnt_operation_id = get("MNT_OPERATION_ID")
+    mnt_amount = get("MNT_AMOUNT")
+    mnt_currency_code = get("MNT_CURRENCY_CODE")
+    mnt_subscriber_id = get("MNT_SUBSCRIBER_ID")
+    mnt_test_mode = get("MNT_TEST_MODE")
+    return _payanyway_signature(
+        mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_code, key,
+        mnt_command=mnt_command, mnt_operation_id=mnt_operation_id,
+        mnt_subscriber_id=mnt_subscriber_id, mnt_test_mode=mnt_test_mode
+    )
 
 
 def _fulfill_order(order):
@@ -763,20 +775,16 @@ def payanyway_callback():
         return "CONFIG_ERROR", 500
 
     data = request.form if request.form else request.args
-    mnt_transaction_id = data.get("MNT_TRANSACTION_ID")
-    mnt_amount = data.get("MNT_AMOUNT")
-    mnt_currency_code = data.get("MNT_CURRENCY_CODE", "RUB")
+    mnt_transaction_id = (data.get("MNT_TRANSACTION_ID") or "").strip()
+    mnt_signature = (data.get("MNT_SIGNATURE") or "").strip()
     mnt_status = data.get("MNT_STATUS", "")
-    mnt_signature = data.get("MNT_SIGNATURE")
 
     if not mnt_transaction_id or not mnt_signature:
         logging.warning("PayAnyWay callback: missing MNT_TRANSACTION_ID or MNT_SIGNATURE")
         return "MISSING_PARAMS", 400
 
-    expected_sig = _payanyway_callback_signature(
-        mnt_transaction_id, mnt_amount or "", mnt_currency_code, mnt_status, key
-    )
-    if not hmac.compare_digest(expected_sig.lower(), (mnt_signature or "").lower()):
+    expected_sig = _payanyway_callback_verify(data, key)
+    if not hmac.compare_digest(expected_sig.lower(), mnt_signature.lower()):
         logging.warning("PayAnyWay callback: invalid signature")
         return "INVALID_SIGNATURE", 400
 

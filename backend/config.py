@@ -31,8 +31,6 @@ class Config:
     # Код проверки целостности данных — из ЛК PayAnyWay (подпись формы и callback)
     PAYANYWAY_SIGNATURE_KEY = os.getenv("PAYANYWAY_MNT_INTEGRITY_CODE") or os.getenv("PAYANYWAY_SIGNATURE_KEY", "")
     PAYANYWAY_TEST_MODE = os.getenv("PAYANYWAY_TEST_MODE", "").strip().lower() in ("1", "true", "yes")
-    # Формула подписи (MONETA.Assistant.ru.pdf, cmsspecification): v1=ID+TRANSACTION_ID+AMOUNT+CURRENCY+key; v2=ID+AMOUNT+TRANSACTION_ID+key; v3=как v2, сумма целым; v4=ID+TRANSACTION_ID+key (без суммы). Для assistant.htm обычно v1 или v2.
-    PAYANYWAY_SIGNATURE_VERSION = os.getenv("PAYANYWAY_SIGNATURE_VERSION", "v1").strip().lower()
     PAYANYWAY_PAYMENT_URL = os.getenv(
         "PAYANYWAY_PAYMENT_URL",
         "https://payanyway.ru/assistant.htm"
