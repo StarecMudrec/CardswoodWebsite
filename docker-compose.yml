@@ -7,7 +7,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: cards  # Главная база данных
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d cards"]
@@ -49,7 +49,8 @@ services:
       PAYANYWAY_MNT_ID: ${PAYANYWAY_MNT_ID}
       PAYANYWAY_MNT_INTEGRITY_CODE: ${PAYANYWAY_MNT_INTEGRITY_CODE}
       PAYANYWAY_TEST_MODE: ${PAYANYWAY_TEST_MODE}
-      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:postgres@db:5432/cards
+      # Пароль БД должен совпадать с POSTGRES_PASSWORD у сервиса db
+      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/cards
       FLASK_APP: wsgi:app
     command: >      
       sh -c "gunicorn --bind 0.0.0.0:8000 --worker-class gevent --timeout 120 wsgi:app"

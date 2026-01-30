@@ -659,8 +659,23 @@ def get_user_info():
 
 # --- PayAnyWay payment ---
 def _payanyway_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_code, key):
-    """Build MNT_SIGNATURE: MD5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + key)."""
-    raw = f"{mnt_id}{mnt_transaction_id}{mnt_amount}{mnt_currency_code}{key}"
+    """Build MNT_SIGNATURE. PayAnyWay в разных версиях формы использует разный порядок полей."""
+    version = getattr(Config, "PAYANYWAY_SIGNATURE_VERSION", "v2")
+    amt = mnt_amount
+    if version == "v3":
+        # Сумма целым числом (без десятичной части)
+        try:
+            amt = str(int(float(mnt_amount)))
+        except (ValueError, TypeError):
+            amt = mnt_amount
+    if version == "v1":
+        # v1: MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + key
+        raw = f"{mnt_id}{mnt_transaction_id}{amt}{mnt_currency_code}{key}"
+    elif version == "v3":
+        raw = f"{mnt_id}{amt}{mnt_transaction_id}{key}"
+    else:
+        # v2 (по умолчанию): MNT_ID + MNT_AMOUNT + MNT_TRANSACTION_ID + key (без MNT_CURRENCY_CODE)
+        raw = f"{mnt_id}{amt}{mnt_transaction_id}{key}"
     return md5(raw.encode("utf-8")).hexdigest()
 
 

@@ -13,7 +13,11 @@ class Config:
     
     BOT_TOKEN_HASH = sha256(BOT_TOKEN.encode())
 
-    SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres:postgres@db:5432/cards"  # SQLite database
+    # PostgreSQL: задаётся через env (на сервере должен совпадать пароль с контейнером db)
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        "SQLALCHEMY_DATABASE_URI",
+        "postgresql+psycopg2://postgres:postgres@db:5432/cards"
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.getenv("SECRET_KEY")
 
@@ -27,6 +31,8 @@ class Config:
     # Код проверки целостности данных — из ЛК PayAnyWay (подпись формы и callback)
     PAYANYWAY_SIGNATURE_KEY = os.getenv("PAYANYWAY_MNT_INTEGRITY_CODE") or os.getenv("PAYANYWAY_SIGNATURE_KEY", "")
     PAYANYWAY_TEST_MODE = os.getenv("PAYANYWAY_TEST_MODE", "").strip().lower() in ("1", "true", "yes")
+    # Формула подписи формы: v1 = MNT_ID+TRANSACTION_ID+AMOUNT+CURRENCY+key; v2 = MNT_ID+AMOUNT+TRANSACTION_ID+key; v3 = как v2, сумма целым числом (без .00)
+    PAYANYWAY_SIGNATURE_VERSION = os.getenv("PAYANYWAY_SIGNATURE_VERSION", "v2").strip().lower()
     PAYANYWAY_PAYMENT_URL = os.getenv(
         "PAYANYWAY_PAYMENT_URL",
         "https://payanyway.ru/assistant.htm"
