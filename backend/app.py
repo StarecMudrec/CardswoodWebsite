@@ -661,13 +661,12 @@ def get_user_info():
 # Формирование подписи в запросе на оплату (документация PayAnyWay, служба сопровождения):
 # MNT_SIGNATURE = MD5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + ТЕСТОВЫЙ_РЕЖИМ + КОД_ПРОВЕРКИ_ЦЕЛОСТНОСТИ_ДАННЫХ)
 # Важно: MNT_AMOUNT — с двумя десятичными знаками, точка («1.23», «123.00»); MNT_SUBSCRIBER_ID при отсутствии — пустая строка; ТЕСТОВЫЙ РЕЖИМ — «1» или «0».
-# В подпись подставляем то же значение, что шлюз возьмёт из запроса: если MNT_TEST_MODE в форме не передаём — в подпись идёт "" (иначе «Неправильная подпись формы оплаты»).
+# Всегда передаём MNT_TEST_MODE в форме («1»/«0») и используем то же значение в подписи (пример поддержки: ...RUB012345 — перед ключом «0»).
 def _payanyway_form_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_code, key, mnt_subscriber_id="", test_mode=None):
     key = (key or "").strip()
     if test_mode is None:
-        test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else ""
-    # В подписи: "1" только если в форме передаём MNT_TEST_MODE=1; иначе "" (шлюз при отсутствии параметра использует "")
-    test_mode = "1" if test_mode in (True, "1", 1) else ""
+        test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else "0"
+    test_mode = "1" if test_mode in (True, "1", 1) else "0"
     try:
         amt = f"{float(mnt_amount):.2f}"
     except (ValueError, TypeError):
@@ -736,8 +735,8 @@ def create_order():
         logging.exception(f"Create order error: {e}")
         return jsonify({"error": "Failed to create order"}), 500
 
-    # Значение для подписи должно совпадать с тем, что уйдёт в форме: при тесте — "1", иначе "" (MNT_TEST_MODE в форме не передаём)
-    mnt_test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else ""
+    # ТЕСТОВЫЙ РЕЖИМ: «1» или «0»; всегда передаём MNT_TEST_MODE в форме и то же значение в подписи
+    mnt_test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else "0"
     signature = _payanyway_form_signature(
         mnt_id, order_number, amount_str, currency, key,
         mnt_subscriber_id="", test_mode=mnt_test_mode
@@ -752,9 +751,8 @@ def create_order():
         "MNT_SIGNATURE": signature,
         "MNT_SUCCESS_URL": Config.PAYANYWAY_SUCCESS_URL,
         "MNT_FAIL_URL": Config.PAYANYWAY_FAIL_URL,
+        "MNT_TEST_MODE": mnt_test_mode,
     }
-    if mnt_test_mode == "1":
-        params["MNT_TEST_MODE"] = mnt_test_mode
     if getattr(Config, "PAYANYWAY_CHECK_URL", None):
         params["MNT_CHECK_URL"] = Config.PAYANYWAY_CHECK_URL
     payment_url_with_params = f"{payment_url}?{urlencode(params)}"
