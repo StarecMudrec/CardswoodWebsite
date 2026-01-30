@@ -662,6 +662,7 @@ def get_user_info():
 # MNT_SIGNATURE = MD5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + ТЕСТОВЫЙ_РЕЖИМ + КОД_ПРОВЕРКИ_ЦЕЛОСТНОСТИ_ДАННЫХ)
 # Важно: MNT_AMOUNT — с двумя десятичными знаками, точка («1.23», «123.00»); MNT_SUBSCRIBER_ID при отсутствии — пустая строка; ТЕСТОВЫЙ РЕЖИМ — «1» или «0».
 # Всегда передаём MNT_TEST_MODE в форме («1»/«0») и используем то же значение в подписи (пример поддержки: ...RUB012345 — перед ключом «0»).
+# Включить лог: PAYANYWAY_DEBUG_SIGNATURE=1 (в env или docker-compose).
 def _payanyway_form_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_code, key, mnt_subscriber_id="", test_mode=None):
     key = (key or "").strip()
     if test_mode is None:
@@ -676,9 +677,15 @@ def _payanyway_form_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_curren
     mnt_currency_code = (mnt_currency_code or "").strip()
     mnt_subscriber_id = (mnt_subscriber_id or "").strip()
     raw = f"{mnt_id}{mnt_transaction_id}{amt}{mnt_currency_code}{mnt_subscriber_id}{test_mode}{key}"
+    signature = md5(raw.encode("utf-8")).hexdigest()
     if os.environ.get("PAYANYWAY_DEBUG_SIGNATURE"):
-        logging.info("PayAnyWay form signature input (key redacted): %s<KEY>", raw[: -len(key)] if key else raw)
-    return md5(raw.encode("utf-8")).hexdigest()
+        logging.info(
+            "PayAnyWay form signature debug: MNT_ID=%r MNT_TRANSACTION_ID=%r MNT_AMOUNT=%r MNT_CURRENCY_CODE=%r "
+            "MNT_SUBSCRIBER_ID=%r MNT_TEST_MODE=%r key_len=%d | строка_без_ключа=%r | MNT_SIGNATURE=%s",
+            mnt_id, mnt_transaction_id, amt, mnt_currency_code,
+            mnt_subscriber_id, test_mode, len(key), raw[: -len(key)] if key else raw, signature,
+        )
+    return signature
 
 
 # Официальная формула (Check URL / callback): MNT_SIGNATURE = MD5(MNT_COMMAND + MNT_ID + MNT_TRANSACTION_ID + MNT_OPERATION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + MNT_TEST_MODE + КОД_ПРОВЕРКИ). Отсутствующие параметры — пустая строка.
