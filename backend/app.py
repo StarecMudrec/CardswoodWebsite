@@ -658,12 +658,25 @@ def get_user_info():
 
 
 # --- PayAnyWay payment ---
-# Официальная формула (Check URL / запрос на оплату): MNT_SIGNATURE = MD5(MNT_COMMAND + MNT_ID + MNT_TRANSACTION_ID + MNT_OPERATION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + MNT_TEST_MODE + КОД_ПРОВЕРКИ). Отсутствующие параметры — пустая строка.
+# Подпись для ИНИЦИАЛИЗАЦИИ ФОРМЫ (редирект на assistant.moneta.ru).
+# По документации PayAnyWay: MD5(MNT_ID + MNT_TRANSACTION_ID + КОД_ПРОВЕРКИ) — без MNT_AMOUNT.
+# Если не примут: попробовать MD5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + КОД_ПРОВЕРКИ) (раскомментировать в коде).
+def _payanyway_form_signature(mnt_id, mnt_transaction_id, mnt_amount, key):
+    """Подпись для платёжной формы (редирект). По док. — только MNT_ID + MNT_TRANSACTION_ID + key."""
+    # raw = f"{mnt_id}{mnt_transaction_id}{key}"  # по документации (без суммы)
+    try:
+        amt = f"{float(mnt_amount):.2f}"
+    except (ValueError, TypeError):
+        amt = str(mnt_amount) if mnt_amount else ""
+    raw = f"{mnt_id}{mnt_transaction_id}{amt}{key}"  # вариант с суммой (часто требуется)
+    return md5(raw.encode("utf-8")).hexdigest()
+
+
+# Официальная формула (Check URL / callback): MNT_SIGNATURE = MD5(MNT_COMMAND + MNT_ID + MNT_TRANSACTION_ID + MNT_OPERATION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + MNT_TEST_MODE + КОД_ПРОВЕРКИ). Отсутствующие параметры — пустая строка.
 def _payanyway_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_code, key, mnt_command="", mnt_operation_id="", mnt_subscriber_id="", mnt_test_mode=None):
-    """Подпись по формуле MONETA.Assistant: порядок полей фиксирован, отсутствующие = ''."""
+    """Подпись для callback (Check URL): порядок полей фиксирован, отсутствующие = ''."""
     if mnt_test_mode is None:
         mnt_test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else ""
-    # MNT_AMOUNT — с двумя десятичными знаками, точка (например 123.00)
     if mnt_amount:
         try:
             amt = f"{float(mnt_amount):.2f}"
@@ -714,10 +727,8 @@ def create_order():
         return jsonify({"error": "Failed to create order"}), 500
 
     mnt_test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else ""
-    signature = _payanyway_signature(
-        mnt_id, order_number, amount_str, currency, key,
-        mnt_command="", mnt_operation_id="", mnt_subscriber_id="", mnt_test_mode=mnt_test_mode
-    )
+    # Подпись для редиректа на платёжную форму (отдельная от callback)
+    signature = _payanyway_form_signature(mnt_id, order_number, amount_str, key)
     payment_url = Config.PAYANYWAY_PAYMENT_URL
     params = {
         "MNT_ID": mnt_id,
