@@ -662,15 +662,24 @@ def get_user_info():
 # MNT_SIGNATURE = MD5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + ТЕСТОВЫЙ_РЕЖИМ + КОД_ПРОВЕРКИ)
 # • MNT_AMOUNT — с двумя десятичными знаками, точка (например "123.00")
 # • MNT_SUBSCRIBER_ID при отсутствии — пустая строка
-# • ТЕСТОВЫЙ РЕЖИМ: "1" если тест, иначе "0"
+# • ТЕСТОВЫЙ РЕЖИМ: "1" если тест, иначе "0" (в боевом без MNT_TEST_MODE в URL — пробуем "" если "0" не принимают)
 def _payanyway_form_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_code, key, mnt_subscriber_id="", test_mode=None):
+    key = (key or "").strip()
     if test_mode is None:
         test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else "0"
+    # В подпись: "1" в тесте, "0" в боевом (по ответу поддержки)
+    test_mode = "1" if test_mode in (True, "1", 1) else "0"
     try:
         amt = f"{float(mnt_amount):.2f}"
     except (ValueError, TypeError):
         amt = str(mnt_amount) if mnt_amount else ""
-    raw = f"{mnt_id}{mnt_transaction_id}{amt}{mnt_currency_code}{mnt_subscriber_id or ''}{test_mode}{key}"
+    mnt_id = str(mnt_id).strip()
+    mnt_transaction_id = str(mnt_transaction_id).strip()
+    mnt_currency_code = (mnt_currency_code or "").strip()
+    mnt_subscriber_id = (mnt_subscriber_id or "").strip()
+    raw = f"{mnt_id}{mnt_transaction_id}{amt}{mnt_currency_code}{mnt_subscriber_id}{test_mode}{key}"
+    if os.environ.get("PAYANYWAY_DEBUG_SIGNATURE"):
+        logging.info("PayAnyWay form signature input (key redacted): %s<KEY>", raw[: -len(key)] if key else raw)
     return md5(raw.encode("utf-8")).hexdigest()
 
 
@@ -700,8 +709,8 @@ def create_order():
     if not items:
         return jsonify({"error": "Cart is empty"}), 400
 
-    mnt_id = Config.PAYANYWAY_MNT_ID
-    key = Config.PAYANYWAY_SIGNATURE_KEY
+    mnt_id = (Config.PAYANYWAY_MNT_ID or "").strip()
+    key = (Config.PAYANYWAY_SIGNATURE_KEY or "").strip()
     if not mnt_id or not key:
         logging.warning("PayAnyWay not configured: PAYANYWAY_MNT_ID or PAYANYWAY_MNT_INTEGRITY_CODE missing")
         return jsonify({"error": "Payment system is not configured"}), 503
