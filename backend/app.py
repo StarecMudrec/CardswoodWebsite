@@ -659,8 +659,8 @@ def get_user_info():
 
 # --- PayAnyWay payment ---
 def _payanyway_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_code, key):
-    """Build MNT_SIGNATURE. PayAnyWay в разных версиях формы использует разный порядок полей."""
-    version = getattr(Config, "PAYANYWAY_SIGNATURE_VERSION", "v4")
+    """Build MNT_SIGNATURE. PayAnyWay/MONETA Assistant — порядок полей по MONETA.Assistant.ru.pdf (v1: ID+TRANSACTION_ID+AMOUNT+CURRENCY+key)."""
+    version = getattr(Config, "PAYANYWAY_SIGNATURE_VERSION", "v1")
     amt = mnt_amount
     if version == "v3":
         try:
