@@ -44,6 +44,7 @@ services:
       db:
         condition: service_healthy
     environment:
+      PAYANYWAY_DEBUG_SIGNATURE: "1"
       BOT_TOKEN: ${BOT_TOKEN}
       SECRET_KEY: ${SECRET_KEY}
       PAYANYWAY_MNT_ID: ${PAYANYWAY_MNT_ID}
