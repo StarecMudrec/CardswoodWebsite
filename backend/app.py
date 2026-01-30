@@ -658,18 +658,16 @@ def get_user_info():
 
 
 # --- PayAnyWay (MONETA.Assistant) payment ---
-# Implementation follows PayAnyWay / MONETA.Assistant docs (cmsspecification, MONETA.Assistant.ru.pdf).
-# Form signature (redirect to payment form):
-# MNT_SIGNATURE = MD5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + MNT_TEST_MODE + КОД_ПРОВЕРКИ)
-# • MNT_AMOUNT — с двумя десятичными знаками, точка (например "123.00")
-# • MNT_SUBSCRIBER_ID при отсутствии — пустая строка
-# • ТЕСТОВЫЙ РЕЖИМ: "1" если тест, иначе "0" (в боевом без MNT_TEST_MODE в URL — пробуем "" если "0" не принимают)
+# Формирование подписи в запросе на оплату (документация PayAnyWay, служба сопровождения):
+# MNT_SIGNATURE = MD5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + ТЕСТОВЫЙ_РЕЖИМ + КОД_ПРОВЕРКИ_ЦЕЛОСТНОСТИ_ДАННЫХ)
+# Важно: MNT_AMOUNT — с двумя десятичными знаками, точка («1.23», «123.00»); MNT_SUBSCRIBER_ID при отсутствии — пустая строка; ТЕСТОВЫЙ РЕЖИМ — «1» или «0».
+# В подпись подставляем то же значение, что шлюз возьмёт из запроса: если MNT_TEST_MODE в форме не передаём — в подпись идёт "" (иначе «Неправильная подпись формы оплаты»).
 def _payanyway_form_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_code, key, mnt_subscriber_id="", test_mode=None):
     key = (key or "").strip()
     if test_mode is None:
-        test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else "0"
-    # В подпись: "1" в тесте, "0" в боевом (по ответу поддержки)
-    test_mode = "1" if test_mode in (True, "1", 1) else "0"
+        test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else ""
+    # В подписи: "1" только если в форме передаём MNT_TEST_MODE=1; иначе "" (шлюз при отсутствии параметра использует "")
+    test_mode = "1" if test_mode in (True, "1", 1) else ""
     try:
         amt = f"{float(mnt_amount):.2f}"
     except (ValueError, TypeError):
@@ -738,7 +736,8 @@ def create_order():
         logging.exception(f"Create order error: {e}")
         return jsonify({"error": "Failed to create order"}), 500
 
-    mnt_test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else "0"
+    # Значение для подписи должно совпадать с тем, что уйдёт в форме: при тесте — "1", иначе "" (MNT_TEST_MODE в форме не передаём)
+    mnt_test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else ""
     signature = _payanyway_form_signature(
         mnt_id, order_number, amount_str, currency, key,
         mnt_subscriber_id="", test_mode=mnt_test_mode
