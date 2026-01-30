@@ -663,12 +663,12 @@ def get_user_info():
 # Если не примут: попробовать MD5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + КОД_ПРОВЕРКИ) (раскомментировать в коде).
 def _payanyway_form_signature(mnt_id, mnt_transaction_id, mnt_amount, key):
     """Подпись для платёжной формы (редирект). По док. — только MNT_ID + MNT_TRANSACTION_ID + key."""
-    # raw = f"{mnt_id}{mnt_transaction_id}{key}"  # по документации (без суммы)
+    raw = f"{mnt_id}{mnt_transaction_id}{key}"  # по документации (без суммы)
     try:
         amt = f"{float(mnt_amount):.2f}"
     except (ValueError, TypeError):
         amt = str(mnt_amount) if mnt_amount else ""
-    raw = f"{mnt_id}{mnt_transaction_id}{amt}{key}"  # вариант с суммой (часто требуется)
+    # raw = f"{mnt_id}{mnt_transaction_id}{amt}{key}"  # вариант с суммой (часто требуется)
     return md5(raw.encode("utf-8")).hexdigest()
 
 
