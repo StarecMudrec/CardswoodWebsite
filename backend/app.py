@@ -663,8 +663,11 @@ def get_user_info():
 # Важно: MNT_AMOUNT — с двумя десятичными знаками, точка («1.23», «123.00»); MNT_SUBSCRIBER_ID при отсутствии — пустая строка; ТЕСТОВЫЙ РЕЖИМ — «1» или «0».
 # Всегда передаём MNT_TEST_MODE в форме («1»/«0») и используем то же значение в подписи (пример поддержки: ...RUB012345 — перед ключом «0»).
 # Включить лог: PAYANYWAY_DEBUG_SIGNATURE=1 (в env или docker-compose).
+#
+# Если «Неправильная подпись» остаётся при верной формуле — проверить: (1) код проверки в ЛК = PAYANYWAY_MNT_INTEGRITY_CODE без кавычек/пробелов/BOM;
+# (2) ключ только ASCII; (3) PAYANYWAY_PAYMENT_URL — тот же домен, что в ЛК (payanyway.ru vs assistant.moneta.ru); (4) в ЛК магазин привязан к тому же MNT_ID.
 def _payanyway_form_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_code, key, mnt_subscriber_id="", test_mode=None):
-    key = (key or "").strip()
+    key = (key or "").strip().strip("\"'").strip("\ufeff")
     if test_mode is None:
         test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else "0"
     test_mode = "1" if test_mode in (True, "1", 1) else "0"
@@ -679,6 +682,10 @@ def _payanyway_form_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_curren
     raw = f"{mnt_id}{mnt_transaction_id}{amt}{mnt_currency_code}{mnt_subscriber_id}{test_mode}{key}"
     signature = md5(raw.encode("utf-8")).hexdigest()
     if os.environ.get("PAYANYWAY_DEBUG_SIGNATURE"):
+        try:
+            key.encode("ascii")
+        except UnicodeEncodeError:
+            logging.warning("PayAnyWay: ключ содержит не-ASCII символы — возможна ошибка кодировки (ЛК vs UTF-8)")
         logging.info(
             "PayAnyWay form signature debug: MNT_ID=%r MNT_TRANSACTION_ID=%r MNT_AMOUNT=%r MNT_CURRENCY_CODE=%r "
             "MNT_SUBSCRIBER_ID=%r MNT_TEST_MODE=%r key_len=%d | строка_без_ключа=%r | MNT_SIGNATURE=%s",
@@ -714,8 +721,8 @@ def create_order():
     if not items:
         return jsonify({"error": "Cart is empty"}), 400
 
-    mnt_id = (Config.PAYANYWAY_MNT_ID or "").strip()
-    key = (Config.PAYANYWAY_SIGNATURE_KEY or "").strip()
+    mnt_id = (Config.PAYANYWAY_MNT_ID or "").strip().strip("\ufeff")
+    key = (Config.PAYANYWAY_SIGNATURE_KEY or "").strip().strip("\"'").strip("\ufeff")
     if not mnt_id or not key:
         logging.warning("PayAnyWay not configured: PAYANYWAY_MNT_ID or PAYANYWAY_MNT_INTEGRITY_CODE missing")
         return jsonify({"error": "Payment system is not configured"}), 503
@@ -800,7 +807,7 @@ def _fulfill_order(order):
 @app.route("/api/payment/payanyway/callback", methods=["POST", "GET"])
 def payanyway_callback():
     """Check URL: receive payment result from PayAnyWay. Verify signature, update order, fulfill. Response: OK (MONETA.Assistant accepts this)."""
-    key = (Config.PAYANYWAY_SIGNATURE_KEY or "").strip()
+    key = (Config.PAYANYWAY_SIGNATURE_KEY or "").strip().strip("\"'").strip("\ufeff")
     if not key:
         logging.warning("PayAnyWay callback: PAYANYWAY_MNT_INTEGRITY_CODE not set")
         return "CONFIG_ERROR", 500
