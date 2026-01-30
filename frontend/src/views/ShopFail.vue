@@ -5,9 +5,16 @@
     <div class="background-overlay" aria-hidden="true"></div>
     <div class="content-wrapper">
       <main class="result-section">
-        <h1 class="result-title">Ошибка оплаты</h1>
-        <p class="result-text">Платёж не был завершён. Вы можете попробовать снова или вернуться в магазин.</p>
-        <router-link to="/shop" class="back-link">Вернуться в магазин</router-link>
+        <div class="result-card glass-effect">
+          <div class="result-icon error-icon" aria-hidden="true">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z" fill="currentColor"/>
+            </svg>
+          </div>
+          <h1 class="result-title">Ошибка оплаты</h1>
+          <p class="result-text">Платёж не был завершён. Вы можете попробовать снова или вернуться в магазин.</p>
+          <router-link to="/shop" class="back-link">Вернуться в магазин</router-link>
+        </div>
       </main>
       <footer class="page-footer">
         <Footer />
@@ -75,35 +82,85 @@ export default {
   flex: 1;
   z-index: 3;
 }
+
+.glass-effect {
+  background: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
 .result-section {
   padding: 48px 16px 60px;
-  width: min(600px, 100%);
+  width: min(480px, 100%);
   margin: 0 auto;
-  margin-top: 40vh;
+  margin-top: max(42vh, calc(120px + 30vh + 24px));
   text-align: center;
   color: #fff;
 }
+
+.result-card {
+  padding: 40px 32px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.result-icon {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.result-icon.error-icon {
+  color: #e57373;
+  background: rgba(229, 115, 115, 0.2);
+  border: 2px solid rgba(229, 115, 115, 0.5);
+}
+
 .result-title {
   font-size: 1.75rem;
-  margin-bottom: 16px;
+  margin: 0;
   color: #e57373;
+  letter-spacing: 0.02em;
 }
+
 .result-text {
-  margin-bottom: 24px;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
   opacity: 0.9;
+  color: rgba(255, 255, 255, 0.9);
 }
+
 .back-link {
   display: inline-block;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, rgba(255, 185, 71, 0.3), rgba(255, 185, 71, 0.15));
+  margin-top: 8px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, rgba(255, 185, 71, 0.35), rgba(255, 185, 71, 0.2));
   color: #ffb947;
   text-decoration: none;
-  border-radius: 8px;
-  transition: opacity 0.2s;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 185, 71, 0.4);
+  font-size: 1rem;
+  font-weight: 600;
+  transition: opacity 0.2s, transform 0.15s ease;
 }
+
 .back-link:hover {
-  opacity: 0.9;
+  opacity: 0.95;
+  transform: translateY(-1px);
 }
+
 .page-footer {
   position: relative;
   z-index: 3;

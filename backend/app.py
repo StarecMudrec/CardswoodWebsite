@@ -798,10 +798,37 @@ def _payanyway_callback_verify(data, key):
     )
 
 
+def _notify_bot_purchase(order):
+    """Send a local signal to the bot with purchased items. Bot API is not required to be up; failures are logged only."""
+    url = getattr(Config, "BOT_PURCHASE_NOTIFY_URL", None)
+    if not url:
+        return
+    payload = {
+        "event": "purchase_complete",
+        "order_id": order.id,
+        "order_number": order.order_number,
+        "user_id": order.user_id,
+        "items": [
+            {"id": it.get("id"), "name": it.get("name"), "price": float(it.get("price", 0)), "quantity": int(it.get("quantity", 1))}
+            for it in (order.items or [])
+        ],
+        "total_amount": str(order.amount),
+        "currency": order.currency or "RUB",
+        "completed_at": datetime.utcnow().isoformat() + "Z",
+    }
+    try:
+        r = requests.post(url, json=payload, timeout=5)
+        if r.status_code >= 400:
+            logging.warning(f"Bot purchase notify returned {r.status_code}: {r.text[:200]}")
+    except requests.RequestException as e:
+        logging.warning(f"Bot purchase notify failed: {e}")
+
+
 def _fulfill_order(order):
     """Fulfill paid order: grant subscription/packs etc. Stub: only mark as fulfilled in DB."""
     # TODO: grant subscription (write to DB with end date), grant packs/cards per items
     logging.info(f"Order {order.order_number} fulfilled (items: {order.items})")
+    _notify_bot_purchase(order)
 
 
 @app.route("/api/payment/payanyway/callback", methods=["POST", "GET"])
