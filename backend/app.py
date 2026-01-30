@@ -657,9 +657,10 @@ def get_user_info():
     return jsonify({'error': 'User not authenticated'}), 401
 
 
-# --- PayAnyWay payment ---
-# Подпись для запроса на оплату (редирект на форму) — по официальной документации PayAnyWay:
-# MNT_SIGNATURE = MD5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + ТЕСТОВЫЙ_РЕЖИМ + КОД_ПРОВЕРКИ)
+# --- PayAnyWay (MONETA.Assistant) payment ---
+# Implementation follows PayAnyWay / MONETA.Assistant docs (cmsspecification, MONETA.Assistant.ru.pdf).
+# Form signature (redirect to payment form):
+# MNT_SIGNATURE = MD5(MNT_ID + MNT_TRANSACTION_ID + MNT_AMOUNT + MNT_CURRENCY_CODE + MNT_SUBSCRIBER_ID + MNT_TEST_MODE + КОД_ПРОВЕРКИ)
 # • MNT_AMOUNT — с двумя десятичными знаками, точка (например "123.00")
 # • MNT_SUBSCRIBER_ID при отсутствии — пустая строка
 # • ТЕСТОВЫЙ РЕЖИМ: "1" если тест, иначе "0" (в боевом без MNT_TEST_MODE в URL — пробуем "" если "0" не принимают)
@@ -755,6 +756,8 @@ def create_order():
     }
     if mnt_test_mode == "1":
         params["MNT_TEST_MODE"] = mnt_test_mode
+    if getattr(Config, "PAYANYWAY_CHECK_URL", None):
+        params["MNT_CHECK_URL"] = Config.PAYANYWAY_CHECK_URL
     payment_url_with_params = f"{payment_url}?{urlencode(params)}"
     return jsonify({
         "order_id": order.id,
@@ -792,8 +795,8 @@ def _fulfill_order(order):
 
 @app.route("/api/payment/payanyway/callback", methods=["POST", "GET"])
 def payanyway_callback():
-    """Pay URL: receive payment result from PayAnyWay. Verify signature, update order, fulfill."""
-    key = Config.PAYANYWAY_SIGNATURE_KEY
+    """Check URL: receive payment result from PayAnyWay. Verify signature, update order, fulfill. Response: OK (MONETA.Assistant accepts this)."""
+    key = (Config.PAYANYWAY_SIGNATURE_KEY or "").strip()
     if not key:
         logging.warning("PayAnyWay callback: PAYANYWAY_MNT_INTEGRITY_CODE not set")
         return "CONFIG_ERROR", 500

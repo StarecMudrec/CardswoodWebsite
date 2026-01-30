@@ -39,3 +39,5 @@ class Config:
     _base = os.getenv("FRONTEND_BASE_URL", "https://cardswood.ru")
     PAYANYWAY_SUCCESS_URL = os.getenv("PAYANYWAY_SUCCESS_URL", f"{_base}/shop/success")
     PAYANYWAY_FAIL_URL = os.getenv("PAYANYWAY_FAIL_URL", f"{_base}/shop/fail")
+    # Optional: Check URL (callback) — if set, sent in form; otherwise configure in PayAnyWay LK
+    PAYANYWAY_CHECK_URL = os.getenv("PAYANYWAY_CHECK_URL", "").strip() or None
