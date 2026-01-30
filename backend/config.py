@@ -24,7 +24,9 @@ class Config:
 
     # PayAnyWay payment integration (from env; optional for local dev)
     PAYANYWAY_MNT_ID = os.getenv("PAYANYWAY_MNT_ID", "")
-    PAYANYWAY_SIGNATURE_KEY = os.getenv("PAYANYWAY_SIGNATURE_KEY", "")
+    # Код проверки целостности данных — из ЛК PayAnyWay (подпись формы и callback)
+    PAYANYWAY_SIGNATURE_KEY = os.getenv("PAYANYWAY_MNT_INTEGRITY_CODE") or os.getenv("PAYANYWAY_SIGNATURE_KEY", "")
+    PAYANYWAY_TEST_MODE = os.getenv("PAYANYWAY_TEST_MODE", "").strip().lower() in ("1", "true", "yes")
     PAYANYWAY_PAYMENT_URL = os.getenv(
         "PAYANYWAY_PAYMENT_URL",
         "https://payanyway.ru/assistant.htm"

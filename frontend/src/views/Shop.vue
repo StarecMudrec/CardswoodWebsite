@@ -96,6 +96,12 @@
           </svg>
           <span>{{ error }}</span>
         </div>
+        <div v-if="successMessage" class="success-message glass-effect" role="status">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#4caf50"/>
+          </svg>
+          <span>{{ successMessage }}</span>
+        </div>
 
         <!-- <section class="features glass-effect" aria-label="Преимущества">
           <div class="feature-item">
@@ -188,6 +194,7 @@ export default {
       cart: [],
       loading: false,
       error: null,
+      successMessage: null,
       expandedDescriptions: {}
     }
   },
@@ -259,13 +266,9 @@ export default {
           price: product.price
         })
         this.loading = false
-        
-        // Show success message
-        this.$notify({
-          title: 'Добавлено в корзину',
-          message: `${product.name} успешно добавлен в корзину`,
-          type: 'success'
-        })
+        this.error = null
+        this.successMessage = `${product.name} добавлен в корзину`
+        setTimeout(() => { this.successMessage = null }, 3000)
       }, 300)
     },
     removeFromCart(productId) {
@@ -729,6 +732,19 @@ export default {
   border-radius: 12px;
   margin-bottom: 24px;
   animation: slideIn 0.3s ease;
+}
+
+.success-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 12px;
+  margin-bottom: 24px;
+  animation: slideIn 0.3s ease;
+  color: #81c784;
 }
 
 @keyframes slideIn {

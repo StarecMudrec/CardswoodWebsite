@@ -677,7 +677,7 @@ def create_order():
     mnt_id = Config.PAYANYWAY_MNT_ID
     key = Config.PAYANYWAY_SIGNATURE_KEY
     if not mnt_id or not key:
-        logging.warning("PayAnyWay not configured: PAYANYWAY_MNT_ID or PAYANYWAY_SIGNATURE_KEY missing")
+        logging.warning("PayAnyWay not configured: PAYANYWAY_MNT_ID or PAYANYWAY_MNT_INTEGRITY_CODE missing")
         return jsonify({"error": "Payment system is not configured"}), 503
 
     total = sum(Decimal(str(it["price"])) * int(it.get("quantity", 1)) for it in items)
@@ -714,6 +714,8 @@ def create_order():
         "MNT_SUCCESS_URL": Config.PAYANYWAY_SUCCESS_URL,
         "MNT_FAIL_URL": Config.PAYANYWAY_FAIL_URL,
     }
+    if getattr(Config, "PAYANYWAY_TEST_MODE", False):
+        params["MNT_TEST_MODE"] = "1"
     payment_url_with_params = f"{payment_url}?{urlencode(params)}"
     return jsonify({
         "order_id": order.id,
@@ -740,7 +742,7 @@ def payanyway_callback():
     """Pay URL: receive payment result from PayAnyWay. Verify signature, update order, fulfill."""
     key = Config.PAYANYWAY_SIGNATURE_KEY
     if not key:
-        logging.warning("PayAnyWay callback: PAYANYWAY_SIGNATURE_KEY not set")
+        logging.warning("PayAnyWay callback: PAYANYWAY_MNT_INTEGRITY_CODE not set")
         return "CONFIG_ERROR", 500
 
     data = request.form if request.form else request.args
