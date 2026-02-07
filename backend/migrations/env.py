@@ -1,4 +1,10 @@
 import logging
+import sys
+from pathlib import Path
+
+# Add parent dir (app root) to path so config/models are importable
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import create_engine
