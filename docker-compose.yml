@@ -55,10 +55,7 @@ services:
       # Пароль БД должен совпадать с POSTGRES_PASSWORD у сервиса db
       SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/cards
     command: >
-      sh -c "hypercorn --bind 0.0.0.0:8000 --read-timeout 120 asgi:app"
-    # flask --app wsgi db init &&
-    # flask --app wsgi db migrate  &&
-    # flask --app wsgi db upgrade &&
+      sh -c "alembic -c migrations/alembic.ini upgrade head && hypercorn --bind 0.0.0.0:8000 --read-timeout 120 asgi:app"
       
 volumes:
   postgres_data: {}
