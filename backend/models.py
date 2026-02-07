@@ -1,89 +1,90 @@
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import BigInteger, Numeric, DateTime, JSON
+from decimal import Decimal
 from datetime import datetime
-
-db = SQLAlchemy()
-
-# Token Model
-class AllowedUser(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String, nullable=False)
+from sqlalchemy import BigInteger, Numeric, DateTime, JSON, String, Integer, Text, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
-# Token Model
-class AuthToken(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    token = db.Column(db.String(255), unique=True, nullable=False)
-    user_id = db.Column(BigInteger, nullable=False)
+class Base(DeclarativeBase):
+    pass
+
+
+class AllowedUser(Base):
+    __tablename__ = "allowed_user"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    username: Mapped[str] = mapped_column(String, nullable=False)
+
+
+class AuthToken(Base):
+    __tablename__ = "auth_token"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    token: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    user_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
 
     def __repr__(self):
-        return f'<AuthToken token={self.token} user_id={self.user_id}>'
+        return f"<AuthToken token={self.token} user_id={self.user_id}>"
 
-# Card Model
-class Card(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    uuid = db.Column(db.String, nullable=False, unique=True)
-    img = db.Column(db.String)
-    category = db.Column(db.String(20))
-    name = db.Column(db.String(100))
-    description = db.Column(db.String(1000))
-    season_id = db.Column(db.Integer, db.ForeignKey('season.id', ondelete='CASCADE'), nullable=False)
 
-    season = db.relationship("Season", backref=db.backref("cards"))
-    comments = db.relationship('Comment', lazy=True, cascade='all, delete-orphan', back_populates='card')
-
-    def present(self): 
-        return {"id": self.id, 
-                "uuid": self.uuid, 
-                "season_id": self.season_id, 
-                "img": self.img, 
-                "category": self.category, 
-                "name": self.name, 
-                "description": self.description}
-
-# Season Model
-class Season(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    uuid = db.Column(db.String, nullable=False, unique=True)
-    name = db.Column(db.String(100))
+class Season(Base):
+    __tablename__ = "season"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    uuid: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=True)
 
     def present(self):
-        return {"id": self.id, 
-                "uuid": self.uuid, 
-                "name": self.name}
-
-# Comment Model
-class Comment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    uuid = db.Column(db.String, nullable=False, unique=True)
-    user_id = db.Column(db.Integer, nullable=False)
-    text = db.Column(db.Text)
-    card_id = db.Column(db.Integer, db.ForeignKey('card.id', ondelete='CASCADE'), nullable=False)
-
-    card = db.relationship("Card", back_populates='comments')
-
-    def present(self): 
-        return {"id": self.id, 
-                "uuid": self.uuid, 
-                "user_id": self.user_id, 
-                "text": self.text, 
-                "card_id": self.card_id}
+        return {"id": self.id, "uuid": self.uuid, "name": self.name}
 
 
-# Order model for shop / PayAnyWay
-class Order(db.Model):
+class Card(Base):
+    __tablename__ = "card"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    uuid: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    img: Mapped[str | None] = mapped_column(String, nullable=True)
+    category: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    name: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    description: Mapped[str | None] = mapped_column(String(1000), nullable=True)
+    season_id: Mapped[int] = mapped_column(Integer, ForeignKey("season.id", ondelete="CASCADE"), nullable=False)
+
+    season = relationship("Season", backref="cards")
+    comments = relationship("Comment", lazy="selectin", cascade="all, delete-orphan", back_populates="card")
+
+    def present(self):
+        return {
+            "id": self.id,
+            "uuid": self.uuid,
+            "season_id": self.season_id,
+            "img": self.img,
+            "category": self.category,
+            "name": self.name,
+            "description": self.description,
+        }
+
+
+class Comment(Base):
+    __tablename__ = "comment"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    uuid: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    card_id: Mapped[int] = mapped_column(Integer, ForeignKey("card.id", ondelete="CASCADE"), nullable=False)
+
+    card = relationship("Card", back_populates="comments")
+
+    def present(self):
+        return {"id": self.id, "uuid": self.uuid, "user_id": self.user_id, "text": self.text, "card_id": self.card_id}
+
+
+class Order(Base):
     __tablename__ = "orders"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    order_number = db.Column(db.String(64), unique=True, nullable=False, index=True)
-    user_id = db.Column(BigInteger, nullable=True)
-    amount = db.Column(Numeric(12, 2), nullable=False)
-    currency = db.Column(db.String(3), default="RUB")
-    status = db.Column(db.String(20), nullable=False, default="pending")  # pending, paid, failed
-    items = db.Column(JSON, nullable=True)  # [{ "id", "name", "price", "quantity" }]
-    payanyway_payment_id = db.Column(db.String(128), nullable=True)
-    created_at = db.Column(DateTime, default=datetime.utcnow)
-    updated_at = db.Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    order_number: Mapped[str] = mapped_column(String(64), unique=True, nullable=False, index=True)
+    user_id: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    amount: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), default="RUB")
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="pending")
+    items: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    payanyway_payment_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
         return f"<Order {self.order_number} status={self.status}>"
-

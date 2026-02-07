@@ -1,148 +1,110 @@
 import os
 import hmac
 from hashlib import sha256, md5
-import uuid  # For generating unique tokens
+import uuid
 from decimal import Decimal
 from datetime import datetime
 from urllib.parse import urlencode
-
-from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify, send_from_directory, session
-from flask_migrate import Migrate
-import requests  # Import the requests library
-# import jwt
-from joserfc.errors import JoseError
 import logging
-from flask_sqlalchemy import SQLAlchemy  # Database integration
-from models import db, AuthToken, Card, Season, Comment, AllowedUser, Order
+
+from quart import Quart, request, redirect, url_for, make_response, jsonify, send_from_directory, session, render_template
+from joserfc.errors import JoseError
+from sqlalchemy import select, text
+import httpx
+
 from config import Config
-from sqlalchemy import create_engine, select, and_, text
-from sqlalchemy.orm import Session, sessionmaker
-from sqlite3 import connect
+from models import AuthToken, Card, Season, Comment, AllowedUser, Order
+from async_db import get_async_session, get_sqlite_conn
 
-app = Flask(__name__)
-app.config.from_object(Config)
-
-# Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-db.init_app(app)
-
-migrate = Migrate(app, db)
-
-# Create the database tables
-with app.app_context():
-    db.create_all()
-
-
-def get_sqlite_conn():
-    return connect(Config.SQLITE_DB_PATH, uri=True)  # uri=True enables ?mode=ro
+app = Quart(__name__)
+app.config.from_object(Config)
+# Quart session (cookie-based)
+try:
+    from quart.sessions import SecureCookieSessionInterface
+    app.session_interface = SecureCookieSessionInterface()
+except Exception:
+    pass
 
 
+@app.route("/placeholder.jpg")
+async def serve_placeholder():
+    return await send_from_directory("public", "placeholder.jpg")
 
-@app.route('/placeholder.jpg')
-def serve_placeholder():
-    return send_from_directory('public', 'placeholder.jpg')
 
-# Authentication Helper Function
-def is_authenticated(request, session):
-    token = request.args.get("token") or request.cookies.get("token")
+async def is_authenticated(req, sess):
+    token = req.args.get("token") or req.cookies.get("token")
     if not token:
         logging.debug("No token found in request")
         return False, None
-
     try:
-        print(token)
-        auth_token = AuthToken.query.filter_by(token=token).first()
+        async with get_async_session() as db_session:
+            r = await db_session.execute(select(AuthToken).where(AuthToken.token == token))
+            auth_token = r.scalar_one_or_none()
         if auth_token is None:
             logging.debug("Token not found in database")
             return False, None
-
-        # Optionally store user_id in session for easier access later
-        session['user_id'] = auth_token.user_id
-
+        sess["user_id"] = auth_token.user_id
         logging.debug("Token is valid (database check)")
-        # In a real app, you might fetch more user info here
-        # For now, we just return the user_id from the token
         return True, auth_token.user_id
-
     except Exception as e:
         logging.exception(f"Authentication error: {e}")
         return False, None
 
-# Function to download avatar image
-def download_avatar(url, user_id):
+
+async def download_avatar(url, user_id):
     if not url:
         return None
-    avatar_dir = 'backend/avatars'
+    avatar_dir = "backend/avatars"
     os.makedirs(avatar_dir, exist_ok=True)
-    filename = os.path.join(avatar_dir, f"{user_id}.jpg")  # Assuming avatars are JPEGs, adjust if needed
+    filename = os.path.join(avatar_dir, f"{user_id}.jpg")
     try:
-        response = requests.get(url, stream=True)
-        response.raise_for_status()  # Raise an exception for bad status codes
-        with open(filename, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
+        async with httpx.AsyncClient() as client:
+            r = await client.get(url)
+            r.raise_for_status()
+            with open(filename, "wb") as f:
+                f.write(r.content)
         return filename
-    except requests.exceptions.RequestException as e:
+    except httpx.HTTPError as e:
         logging.error(f"Error downloading avatar from {url}: {e}")
         return None
 
 # Telegram OAuth Callback Route
 @app.route("/auth/telegram-callback")
-def telegram_callback():
+async def telegram_callback():
     user_id = request.args.get("id", type=int)
-    auth_date = request.args.get("auth_date")
     query_hash = request.args.get("hash")
-    print(query_hash)
-
-    
-    print("=== TELEGRAM CALLBACK DEBUG ===")
-    print(f"User ID: {user_id}")
-    print(f"Auth date: {auth_date}")
-    print(f"Query hash: {query_hash}")
-    print(f"All args: {dict(request.args)}")
-
     if user_id is None or query_hash is None:
-        print("Missing user_id or hash")
         return "Invalid request", 400
 
-    # Extract parameters and sort them
     params = request.args.to_dict()
-    print(f"Params before filtering: {params}")
     data_check_string = "\n".join(sorted(f"{x}={y}" for x, y in params.items() if x not in ("hash", "next")))
-    print(f"Data check string: {data_check_string}")
-
-    # Compute HMAC hash using BOT_TOKEN_HASH
     computed_hash = hmac.new(Config.BOT_TOKEN_HASH.digest(), data_check_string.encode(), sha256).hexdigest()
-
     if not hmac.compare_digest(computed_hash, query_hash):
         return "Authorization failed. Please try again", 401
 
-    # Extract user data from Telegram
     telegram_id = request.args.get("id", type=int)
     first_name = request.args.get("first_name")
     last_name = request.args.get("last_name")
     username = request.args.get("username")
     photo_url = request.args.get("photo_url")
+    session["telegram_id"] = telegram_id
+    session["telegram_first_name"] = first_name
+    session["telegram_last_name"] = last_name
+    session["telegram_username"] = username
+    session["telegram_photo_url"] = photo_url
 
-    # Store Telegram data in session
-    session.update(telegram_id=telegram_id, telegram_first_name=first_name, telegram_last_name=last_name, telegram_username=username, telegram_photo_url=photo_url)
-
-    # Generate a unique token and store it in the database
     db_token = str(uuid.uuid4())
     auth_token = AuthToken(token=db_token, user_id=user_id)
-
     try:
-        db.session.add(auth_token)
-        db.session.commit()
+        async with get_async_session() as db_session:
+            db_session.add(auth_token)
         logging.debug(f"Stored token {db_token} for user {user_id} in database")
-
     except Exception as e:
-        db.session.rollback()
         logging.exception(f"Database error saving token: {e}")
         return "Database error", 500
 
-    # Redirect to home, setting the token in a cookie
     response = make_response(redirect(url_for("home")))
     response.set_cookie("token", db_token, httponly=True, secure=True)
     response.set_data(f"""
@@ -152,509 +114,410 @@ def telegram_callback():
     """)
     return response
 
-# Logout Route (Clears the Token)
-@app.route("/auth/logout", methods=['GET', 'POST'])
-def logout():
-    token = request.cookies.get("token")
 
+@app.route("/auth/logout", methods=["GET", "POST"])
+async def logout():
+    token = request.cookies.get("token")
     if token:
         try:
-            auth_token = AuthToken.query.filter_by(token=token).first()
-            if auth_token:
-                db.session.delete(auth_token)
-                db.session.commit()
-                logging.debug(f"Deleted token {token} from database")
-
+            async with get_async_session() as db_session:
+                r = await db_session.execute(select(AuthToken).where(AuthToken.token == token))
+                auth_token = r.scalar_one_or_none()
+                if auth_token:
+                    await db_session.delete(auth_token)
+            logging.debug(f"Deleted token {token} from database")
         except Exception as e:
-            db.session.rollback()
             logging.exception(f"Database error deleting token: {e}")
             return "Database error", 500
 
-    session.clear() # Clear the user's session data
-    response = make_response(jsonify({'status': 'logged_out'}))
+    session.clear()
+    response = make_response(jsonify({"status": "logged_out"}))
     response.delete_cookie("token")
     return response
 
+
 @app.after_request
-def apply_csp(response):
-    response.headers['Content-Security-Policy'] = (
+async def apply_csp(response):
+    response.headers["Content-Security-Policy"] = (
         "frame-ancestors 'self' https://cardswood.ru; "
         "frame-src 'self' https://oauth.telegram.org;"
     )
     return response
 
-# Main Route (Checks for Authentication)
+
 @app.route("/")
-def return_home():
+async def return_home():
     return redirect(url_for("home"))
-    
-# Main Route (Checks for Authentication)
+
+
 @app.route("/login")
-def login():
-    is_auth, user_id = is_authenticated(request, session)
+async def login():
+    is_auth, user_id = await is_authenticated(request, session)
     if is_auth:
         return redirect(url_for("home"))
-    else:
-        if request.args.get('check_auth'):
-            is_auth, user_id = is_authenticated(request, session)
-            return jsonify({
-                'type': 'auth-status',
-                'isAuthenticated': is_auth,
-                'userId': user_id
-            }), 200
-
-        #return render_template("login.html")
+    if request.args.get("check_auth"):
+        is_auth, user_id = await is_authenticated(request, session)
+        return jsonify({"type": "auth-status", "isAuthenticated": is_auth, "userId": user_id}), 200
+    return jsonify({"type": "auth-status", "isAuthenticated": False, "userId": None}), 200
 
 
-# Home Route (Protected Page)
 @app.route("/home")
-def home():
-    is_auth, _ = is_authenticated(request, session)
-    return render_template("homepage.html", is_auth=is_auth)
+async def home():
+    is_auth, _ = await is_authenticated(request, session)
+    return await render_template("homepage.html", is_auth=is_auth)
 
 
 
-#API ROUTES
+# API ROUTES
 
 @app.route("/db-status")
-def db_status():
-    # PostgreSQL check
-    pg_version = db.session.execute(text("SELECT version()")).scalar()
-    
-    # SQLite check
+async def db_status():
     try:
-        with get_sqlite_conn() as conn:
-            sqlite_version = conn.execute("SELECT sqlite_version()").fetchone()[0]
-            cards_count = conn.execute("SELECT COUNT(*) FROM cards").fetchone()[0]
+        async with get_async_session() as db_session:
+            r = await db_session.execute(text("SELECT version()"))
+            pg_version = r.scalar_one()
+        async with get_sqlite_conn() as conn:
+            cur = await conn.execute("SELECT sqlite_version()")
+            row = await cur.fetchone()
+            sqlite_version = row[0]
+            cur2 = await conn.execute("SELECT COUNT(*) FROM cards")
+            row2 = await cur2.fetchone()
+            cards_count = row2[0]
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
     return jsonify({
         "postgres_version": pg_version,
         "sqlite_version": sqlite_version,
-        "cards_count": cards_count
+        "cards_count": cards_count,
     })
 
 
+@app.route("/card_imgs/<filename>")
+async def serve_card_image(filename):
+    return await send_from_directory("card_imgs", filename)
 
-@app.route('/card_imgs/<filename>')
-def serve_card_image(filename):
-    # Создаем папку если ее нет
-    # os.makedirs('card_imgs', exist_ok=True)
-    return send_from_directory('card_imgs', filename)
 
 @app.route("/api/seasons")
-def get_seasons():
+async def get_seasons():
     try:
-        with get_sqlite_conn() as conn:
-            # Must use text() wrapper for raw SQL
-            result = conn.execute("SELECT DISTINCT season FROM cards WHERE season IS NOT NULL")
-            seasons = [row[0] for row in result]
-            return jsonify(sorted(seasons)), 200
+        async with get_sqlite_conn() as conn:
+            cur = await conn.execute("SELECT DISTINCT season FROM cards WHERE season IS NOT NULL")
+            rows = await cur.fetchall()
+            seasons = [row[0] for row in rows]
+        return jsonify(sorted(seasons)), 200
     except Exception as e:
         logging.error(f"Database error: {str(e)}")
-        return jsonify({'error': 'Failed to fetch seasons'}), 500
+        return jsonify({"error": "Failed to fetch seasons"}), 500
 
 @app.route("/api/seasons", methods=["POST"])
-def add_season():
-    is_auth, user_id = is_authenticated(request, session)
+async def add_season():
+    is_auth, _ = await is_authenticated(request, session)
     if not is_auth:
-        return jsonify({'error': 'Unauthorized'}), 401
-
-    # Check if the current user is allowed to add seasons (same logic as adding cards)
-    current_user_username = session.get('telegram_username') # Assuming username is stored in session
-    logging.debug(f"Attempting to add season. User: {current_user_username}")
-    allowed_user = AllowedUser.query.filter_by(username=current_user_username).first()
-    logging.debug(f"AllowedUser query result: {allowed_user}")
-
+        return jsonify({"error": "Unauthorized"}), 401
+    current_user_username = session.get("telegram_username")
+    async with get_async_session() as db_session:
+        r = await db_session.execute(select(AllowedUser).where(AllowedUser.username == current_user_username))
+        allowed_user = r.scalar_one_or_none()
     if not current_user_username or not allowed_user:
-        return jsonify({'error': 'You are not allowed to add seasons'}), 403
-
-    # Generate a UUID for the new season
+        return jsonify({"error": "You are not allowed to add seasons"}), 403
     new_season_uuid = str(uuid.uuid4())
-
-    # Create a new Season entry with the UUID as both id and name
     new_season = Season(uuid=new_season_uuid, name="_")
-    db.session.add(new_season)
-    db.session.commit()
-    return jsonify({'message': 'Season added successfully', 'uuid': new_season.uuid, 'name': new_season.name}), 201
+    async with get_async_session() as db_session:
+        db_session.add(new_season)
+    return jsonify({"message": "Season added successfully", "uuid": new_season_uuid, "name": new_season.name}), 201
 
 @app.route("/api/seasons/<season_uuid>", methods=["PUT"])
-def update_season(season_uuid):
-    is_auth, user_id = is_authenticated(request, session)
+async def update_season(season_uuid):
+    is_auth, _ = await is_authenticated(request, session)
     if not is_auth:
-        return jsonify({'error': 'Unauthorized'}), 401
-
-    # Check if the current user is allowed to update seasons
-    current_user_username = session.get('telegram_username') # Assuming username is stored in session
-    if not current_user_username or not AllowedUser.query.filter_by(username=current_user_username).first():
-        return jsonify({'error': 'You are not allowed to update seasons'}), 403
-
-    season = Season.query.filter_by(uuid=season_uuid).first()
+        return jsonify({"error": "Unauthorized"}), 401
+    current_user_username = session.get("telegram_username")
+    async with get_async_session() as db_session:
+        r = await db_session.execute(select(AllowedUser).where(AllowedUser.username == current_user_username))
+        if not current_user_username or r.scalar_one_or_none() is None:
+            return jsonify({"error": "You are not allowed to update seasons"}), 403
+        s = await db_session.execute(select(Season).where(Season.uuid == season_uuid))
+        season = s.scalar_one_or_none()
     if not season:
-        return jsonify({'error': 'Season not found'}), 404
-
-    data = request.get_json()
+        return jsonify({"error": "Season not found"}), 404
+    data = await request.get_json()
     if not data:
-        return jsonify({'error': 'No data provided'}), 400
-
+        return jsonify({"error": "No data provided"}), 400
     try:
-        if 'name' in data:
-            season.name = data['name']
-        db.session.commit()
-        return jsonify({'message': 'Season updated successfully', 'uuid': season.uuid, 'name': season.name}), 200
+        async with get_async_session() as db_session:
+            s = await db_session.execute(select(Season).where(Season.uuid == season_uuid))
+            season = s.scalar_one()
+            if "name" in data:
+                season.name = data["name"]
+        return jsonify({"message": "Season updated successfully", "uuid": season.uuid, "name": season.name}), 200
     except Exception as e:
-        db.session.rollback()
         logging.error(f"Error updating season: {e}")
-        return jsonify({'error': 'Error updating season'}), 500
+        return jsonify({"error": "Error updating season"}), 500
 
 @app.route("/api/seasons/<season_uuid>", methods=["DELETE"])
-def delete_season(season_uuid):
-    is_auth, user_id = is_authenticated(request, session)
+async def delete_season(season_uuid):
+    is_auth, _ = await is_authenticated(request, session)
     if not is_auth:
-        return jsonify({'error': 'Unauthorized'}), 401
-
-    # Check if the current user is allowed to delete seasons
-    current_user_username = session.get('telegram_username')
-    if not current_user_username or not AllowedUser.query.filter_by(username=current_user_username).first():
-        return jsonify({'error': 'You are not allowed to delete seasons'}), 403
-
-    season = Season.query.filter_by(uuid=season_uuid).first()
-    if not season:
-        return jsonify({'error': 'Season not found'}), 404
-
-    try:
-        db.session.delete(season)
-        db.session.commit()
-        return jsonify({'message': 'Season deleted successfully'}), 200
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error deleting season: {e}")
-        return jsonify({'error': 'Error deleting season'}), 500
+        return jsonify({"error": "Unauthorized"}), 401
+    current_user_username = session.get("telegram_username")
+    async with get_async_session() as db_session:
+        r = await db_session.execute(select(AllowedUser).where(AllowedUser.username == current_user_username))
+        if not current_user_username or r.scalar_one_or_none() is None:
+            return jsonify({"error": "You are not allowed to delete seasons"}), 403
+        s = await db_session.execute(select(Season).where(Season.uuid == season_uuid))
+        season = s.scalar_one_or_none()
+        if not season:
+            return jsonify({"error": "Season not found"}), 404
+        await db_session.delete(season)
+    return jsonify({"message": "Season deleted successfully"}), 200
 
 @app.route("/api/cards/<season_id>")
-def get_cards(season_id):  
+async def get_cards(season_id):
+    RARITY_ORDER = {
+        "EPISODICAL": 1, "SECONDARY": 2, "FAMOUS": 3, "MAINCHARACTER": 4,
+        "MOVIE": 5, "SERIES": 6, "ACHIEVEMENTS": 7,
+    }
     try:
-        sort_field = request.args.get('sort', 'id')
-        sort_direction = request.args.get('direction', 'asc')
-
-        RARITY_ORDER = {
-            'EPISODICAL': 1,
-            'SECONDARY': 2,
-            'FAMOUS': 3,
-            'MAINCHARACTER': 4,
-            'MOVIE': 5,
-            'SERIES': 6,
-            'ACHIEVEMENTS': 7
-        }
-        
-        with get_sqlite_conn() as conn:
-            if sort_field == 'rarity':
-                # For rarity sorting, we need to get all cards first
-                result = conn.execute(
+        sort_field = request.args.get("sort", "id")
+        sort_direction = request.args.get("direction", "asc")
+        async with get_sqlite_conn() as conn:
+            if sort_field == "rarity":
+                cur = await conn.execute(
                     "SELECT id, photo, name, rarity, points FROM cards WHERE season = ?",
-                    (int(season_id),)
+                    (int(season_id),),
                 )
-                cards = [dict(zip(['id', 'img', 'name', 'rarity', 'points'], row)) for row in result]
-                
-                # Sort in Python using our custom order
-                cards.sort(key=lambda x: RARITY_ORDER.get(x['rarity'], 0))
-                
-                if sort_direction.lower() == 'desc':
+                rows = await cur.fetchall()
+                cards = [dict(zip(["id", "img", "name", "rarity", "points"], row)) for row in rows]
+                cards.sort(key=lambda x: RARITY_ORDER.get(x["rarity"], 0))
+                if sort_direction.lower() == "desc":
                     cards.reverse()
-                
                 return jsonify(cards), 200
-            elif sort_field == 'amount':
-                # For amount sorting, we need to join with filmstrips table
+            elif sort_field == "amount":
                 query = """
-                    SELECT c.id, c.photo, c.name, c.rarity, c.points, COUNT(f.card_id) as amount 
-                    FROM cards c
-                    LEFT JOIN filmstrips f ON c.id = f.card_id
-                    WHERE c.season = ?
-                    GROUP BY c.id, c.photo, c.name, c.rarity, c.points
+                    SELECT c.id, c.photo, c.name, c.rarity, c.points, COUNT(f.card_id) as amount
+                    FROM cards c LEFT JOIN filmstrips f ON c.id = f.card_id
+                    WHERE c.season = ? GROUP BY c.id, c.photo, c.name, c.rarity, c.points
                     ORDER BY amount {}
                 """.format(sort_direction)
-                
-                result = conn.execute(query, (int(season_id),))
-                cards = [dict(zip(['id', 'img', 'name', 'rarity', 'points', 'amount'], row)) for row in result]
+                cur = await conn.execute(query, (int(season_id),))
+                rows = await cur.fetchall()
+                cards = [dict(zip(["id", "img", "name", "rarity", "points", "amount"], row)) for row in rows]
                 return jsonify(cards), 200
             else:
-                # Make sure your query selects all required fields
                 query = """
-                    SELECT id, id as uuid, photo as img, name, rarity, points 
-                    FROM cards 
-                    WHERE season = ?
-                    ORDER BY {} {}
+                    SELECT id, id as uuid, photo as img, name, rarity, points
+                    FROM cards WHERE season = ? ORDER BY {} {}
                 """.format(sort_field, sort_direction)
-                
-                result = conn.execute(query, (int(season_id),))
-                cards = [dict(zip(['id', 'uuid', 'img', 'name', 'rarity', 'points'], row)) for row in result]
-                
+                cur = await conn.execute(query, (int(season_id),))
+                rows = await cur.fetchall()
+                cards = [dict(zip(["id", "uuid", "img", "name", "rarity", "points"], row)) for row in rows]
                 return jsonify(cards), 200
-            
     except ValueError:
-        return jsonify({'error': 'Invalid season ID'}), 400
+        return jsonify({"error": "Invalid season ID"}), 400
     except Exception as e:
         logging.error(f"Error fetching cards: {str(e)}")
-        return jsonify({'error': 'Failed to fetch cards'}), 500
+        return jsonify({"error": "Failed to fetch cards"}), 500
 
 @app.route("/api/cards", methods=["POST"])
-def add_card():
-    is_auth, user_id = is_authenticated(request, session)
+async def add_card():
+    is_auth, _ = await is_authenticated(request, session)
     if not is_auth:
-        return jsonify({'error': 'Unauthorized'}), 401
-
-    # Check if the current user is allowed to add cards
-    current_user_username = session.get('telegram_username') # Assuming username is stored in session
-    if not current_user_username or not AllowedUser.query.filter_by(username=current_user_username).first():
-        return jsonify({'error': 'You are not allowed to add cards'}), 403
-
-
-
-    uuid = request.form.get('uuid')
-    category = request.form.get('category')
-    name = request.form.get('name')
-    description = request.form.get('description')
-    season_id = request.form.get('season_id')
-    img_file = request.files.get('img')
-
+        return jsonify({"error": "Unauthorized"}), 401
+    current_user_username = session.get("telegram_username")
+    async with get_async_session() as db_session:
+        r = await db_session.execute(select(AllowedUser).where(AllowedUser.username == current_user_username))
+        if not current_user_username or r.scalar_one_or_none() is None:
+            return jsonify({"error": "You are not allowed to add cards"}), 403
+    form = await request.form
+    files = await request.files
+    card_uuid = form.get("uuid")
+    category = form.get("category")
+    name = form.get("name")
+    description = form.get("description")
+    season_id = form.get("season_id")
+    img_file = files.get("img")
     img = None
-    if img_file:
-        # Save the image file
-        # Check if the file is an allowed image type
-        allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
-        if '.' not in img_file.filename or img_file.filename.rsplit('.', 1)[1].lower() not in allowed_extensions:
-            return jsonify({'error': 'Unsupported file type'}), 400
-
-        img_filename = str(uuid) + os.path.splitext(img_file.filename)[1]  # Use card UUID as filename
-        img_path = os.path.join('card_imgs', img_filename)
-        img_file.save(img_path)
-        img = img_filename # Store just the filename in the database
-    if not all([uuid, img, category, name, description, season_id]):
-        return jsonify({'error': 'Missing required fields'}), 400
-
-    new_card = Card(uuid=uuid, img=img, category=category, name=name, description=description, season_id=season_id)
+    if img_file and getattr(img_file, "filename", None):
+        allowed_extensions = {"png", "jpg", "jpeg", "gif"}
+        if "." not in img_file.filename or img_file.filename.rsplit(".", 1)[1].lower() not in allowed_extensions:
+            return jsonify({"error": "Unsupported file type"}), 400
+        img_filename = str(card_uuid) + os.path.splitext(img_file.filename)[1]
+        img_path = os.path.join("card_imgs", img_filename)
+        body = await img_file.read()
+        with open(img_path, "wb") as f:
+            f.write(body)
+        img = img_filename
+    if not all([card_uuid, img, category, name, description, season_id]):
+        return jsonify({"error": "Missing required fields"}), 400
+    new_card = Card(uuid=card_uuid, img=img, category=category, name=name, description=description, season_id=int(season_id))
     try:
-        db.session.add(new_card)
-        db.session.commit()
-        return jsonify({'message': 'Card added successfully', 'uuid': new_card.uuid}), 201
+        async with get_async_session() as db_session:
+            db_session.add(new_card)
+        return jsonify({"message": "Card added successfully", "uuid": new_card.uuid}), 201
     except Exception as e:
-        db.session.rollback()
         logging.error(f"Error adding card: {e}")
-        return jsonify({'error': 'Error adding card'}), 500
+        return jsonify({"error": "Error adding card"}), 500
 
 @app.route("/api/cards/<card_id>", methods=["DELETE"])
-def delete_card(card_id):
-    is_auth, user_id = is_authenticated(request, session)
+async def delete_card(card_id):
+    is_auth, _ = await is_authenticated(request, session)
     if not is_auth:
-        return jsonify({'error': 'Unauthorized'}), 401
+        return jsonify({"error": "Unauthorized"}), 401
+    current_user_username = session.get("telegram_username")
+    async with get_async_session() as db_session:
+        r = await db_session.execute(select(AllowedUser).where(AllowedUser.username == current_user_username))
+        if not current_user_username or r.scalar_one_or_none() is None:
+            return jsonify({"error": "You are not allowed to delete cards"}), 403
+        c = await db_session.execute(select(Card).where(Card.uuid == card_id))
+        card = c.scalar_one_or_none()
+        if card is None:
+            return jsonify({"error": "Card not found"}), 404
+        if card.img and os.path.exists(os.path.join("card_imgs", card.img)):
+            os.remove(os.path.join("card_imgs", card.img))
+        await db_session.delete(card)
+    return jsonify({"message": "Card deleted successfully"}), 200
 
-    # Check if the current user is allowed to delete cards
-    current_user_username = session.get('telegram_username') # Assuming username is stored in session
-    if not current_user_username or not AllowedUser.query.filter_by(username=current_user_username).first():
-        return jsonify({'error': 'You are not allowed to delete cards'}), 403
-
-
-    card = Card.query.filter_by(uuid=card_id).first()
-
-    if card is None:
-        return jsonify({'error': 'Card not found'}), 404
-
-    try:
-        # Optionally delete the associated image file
-        if card.img and os.path.exists(os.path.join('card_imgs', card.img)):
-            os.remove(os.path.join('card_imgs', card.img))
-
-        db.session.delete(card)
-        db.session.commit()
-        return jsonify({'message': 'Card deleted successfully'}), 200
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error deleting card: {e}")
-        return jsonify({'error': 'Error deleting card'}), 500
-
-@app.route('/api/check_permission', methods=['GET'])
-def check_permission():
-    username = request.args.get('username')
+@app.route("/api/check_permission", methods=["GET"])
+async def check_permission():
+    username = request.args.get("username")
     if not username:
-        return jsonify({'error': 'Username not provided'}), 400
-
-    user = AllowedUser.query.filter_by(username=username).first()
-    is_allowed = user is not None
-
-    return jsonify({'is_allowed': is_allowed})
+        return jsonify({"error": "Username not provided"}), 400
+    async with get_async_session() as db_session:
+        r = await db_session.execute(select(AllowedUser).where(AllowedUser.username == username))
+        user = r.scalar_one_or_none()
+    return jsonify({"is_allowed": user is not None})
     
 @app.route("/api/card_info/<card_id>")
-def get_card_info(card_id):  
+async def get_card_info(card_id):
     try:
-        with get_sqlite_conn() as conn:
-            row = conn.execute(
-                "SELECT photo, name, rarity, points, number, [drop], event, season FROM cards WHERE id = ?", 
-                (int(card_id),)
-            ).fetchone()
-            
+        async with get_sqlite_conn() as conn:
+            cur = await conn.execute(
+                "SELECT photo, name, rarity, points, number, [drop], event, season FROM cards WHERE id = ?",
+                (int(card_id),),
+            )
+            row = await cur.fetchone()
             if not row:
-                return jsonify({'error': 'Card not found'}), 404
-                
-            card_count = conn.execute(
-                "SELECT COUNT(*) FROM filmstrips WHERE card_id = ?",
-                (card_id,)
-            ).fetchone()[0]
-
-            return jsonify({
-                'id': card_id,
-                'uuid': card_id,
-                'season_id': row[7],
-                'img': row[0],
-                'category': row[2],
-                'name': row[1],
-                'description': f"Amount: {card_count}"
-            }), 200
-            
+                return jsonify({"error": "Card not found"}), 404
+            cur2 = await conn.execute("SELECT COUNT(*) FROM filmstrips WHERE card_id = ?", (card_id,))
+            row2 = await cur2.fetchone()
+            card_count = row2[0]
+        return jsonify({
+            "id": card_id, "uuid": card_id, "season_id": row[7], "img": row[0],
+            "category": row[2], "name": row[1], "description": f"Amount: {card_count}",
+        }), 200
     except ValueError:
-        return jsonify({'error': 'Invalid card ID'}), 400
+        return jsonify({"error": "Invalid card ID"}), 400
     except Exception as e:
         logging.error(f"SQLite error: {str(e)}")
-        return jsonify({'error': 'Failed to fetch card info'}), 500
+        return jsonify({"error": "Failed to fetch card info"}), 500
 
 @app.route("/api/cards/<card_id>", methods=["PUT"])
-def update_card(card_id):
-    is_auth, user_id = is_authenticated(request, session)
+async def update_card(card_id):
+    is_auth, _ = await is_authenticated(request, session)
     if not is_auth:
-        return jsonify({'error': 'Unauthorized'}), 401
-
-    card = Card.query.filter_by(id=card_id).first()
-    if not card:
-        return jsonify({'error': 'Card not found'}), 404
-
-    data = request.get_json()
+        return jsonify({"error": "Unauthorized"}), 401
+    data = await request.get_json()
     if not data:
-        return jsonify({'error': 'No data provided'}), 400
-
-    try:
-        if 'name' in data:
-            card.name = data['name']
-        if 'description' in data:
-            card.description = data['description']
-        if 'category' in data:
-            card.category = data['category']
-        if 'season_uuid' in data:
-            season = Season.query.filter_by(uuid=data['season_uuid']).first()
+        return jsonify({"error": "No data provided"}), 400
+    async with get_async_session() as db_session:
+        r = await db_session.execute(select(Card).where(Card.id == int(card_id)))
+        card = r.scalar_one_or_none()
+        if not card:
+            return jsonify({"error": "Card not found"}), 404
+        if "name" in data:
+            card.name = data["name"]
+        if "description" in data:
+            card.description = data["description"]
+        if "category" in data:
+            card.category = data["category"]
+        if "season_uuid" in data:
+            s = await db_session.execute(select(Season).where(Season.uuid == data["season_uuid"]))
+            season = s.scalar_one_or_none()
             if not season:
-                return jsonify({'error': 'Season not found'}), 404
+                return jsonify({"error": "Season not found"}), 404
             card.season_id = season.id
-
-        db.session.commit()
-        return jsonify({'message': 'Card updated successfully'}), 200
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error updating card: {e}")
-        return jsonify({'error': 'Error updating card'}), 500
+    return jsonify({"message": "Card updated successfully"}), 200
         
 @app.route("/api/cards/<card_uuid>/image", methods=["PUT"])
-def update_card_image(card_uuid):
-    is_auth, user_id = is_authenticated(request, session)
-
-    if request.method != 'PUT':
-        return jsonify({'error': 'Method Not Allowed'}), 405
-
+async def update_card_image(card_uuid):
+    is_auth, _ = await is_authenticated(request, session)
     if not is_auth:
-        return jsonify({'error': 'Unauthorized'}), 401
-
-    # Check if the current user is allowed to update cards
-    current_user_username = session.get('telegram_username')
-    if not current_user_username or not AllowedUser.query.filter_by(username=current_user_username).first():
-        return jsonify({'error': 'You are not allowed to update card images'}), 403
-
-    card = Card.query.filter_by(uuid=card_uuid).first()
+        return jsonify({"error": "Unauthorized"}), 401
+    current_user_username = session.get("telegram_username")
+    async with get_async_session() as db_session:
+        r = await db_session.execute(select(AllowedUser).where(AllowedUser.username == current_user_username))
+        if not current_user_username or r.scalar_one_or_none() is None:
+            return jsonify({"error": "You are not allowed to update card images"}), 403
+        c = await db_session.execute(select(Card).where(Card.uuid == card_uuid))
+        card = c.scalar_one_or_none()
     if not card:
-        return jsonify({'error': 'Card not found'}), 404
-
-    if 'image' not in request.files:
-        return jsonify({'error': 'No image file provided'}), 400
-
-    img_file = request.files['image']
-
-    # Check if the file is an allowed image type
-    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
-    if '.' not in img_file.filename or img_file.filename.rsplit('.', 1)[1].lower() not in allowed_extensions:
-        return jsonify({'error': 'Unsupported file type'}), 400
-
-    # Generate a unique filename using the card UUID
+        return jsonify({"error": "Card not found"}), 404
+    files = await request.files
+    if "image" not in files:
+        return jsonify({"error": "No image file provided"}), 400
+    img_file = files["image"]
+    allowed_extensions = {"png", "jpg", "jpeg", "gif"}
+    if "." not in img_file.filename or img_file.filename.rsplit(".", 1)[1].lower() not in allowed_extensions:
+        return jsonify({"error": "Unsupported file type"}), 400
     img_filename = str(card.uuid) + os.path.splitext(img_file.filename)[1].lower()
-    img_path = os.path.join('card_imgs', img_filename)
-
+    img_path = os.path.join("card_imgs", img_filename)
     try:
-        # Delete the old image file if it exists and is not the new one
-        if card.img and os.path.exists(os.path.join('card_imgs', card.img)) and card.img != img_filename:
-            os.remove(os.path.join('card_imgs', card.img))
-            logging.debug(f"Deleted old image: {card.img}")
-
-        # Save the new image file
-        img_file.save(img_path)
-        logging.debug(f"Saved new image: {img_filename}")
-
-        # Update the card's image field in the database
-        card.img = img_filename
-        db.session.commit()
-        logging.debug(f"Updated card {card.uuid} with new image: {img_filename}")
-
-        return jsonify({'message': 'Card image updated successfully', 'img': img_filename}), 200
+        if card.img and os.path.exists(os.path.join("card_imgs", card.img)) and card.img != img_filename:
+            os.remove(os.path.join("card_imgs", card.img))
+        body = await img_file.read()
+        with open(img_path, "wb") as f:
+            f.write(body)
+        async with get_async_session() as db_session:
+            c = await db_session.execute(select(Card).where(Card.uuid == card_uuid))
+            card = c.scalar_one()
+            card.img = img_filename
+        return jsonify({"message": "Card image updated successfully", "img": img_filename}), 200
     except Exception as e:
-        db.session.rollback()
         logging.error(f"Error updating card image: {e}")
-        return jsonify({'error': 'Error updating card image'}), 500
+        return jsonify({"error": "Error updating card image"}), 500
 
 @app.route("/api/season_info/<int:season_id>")
-def get_season_info(season_id):  
+async def get_season_info(season_id):
     try:
         season_num = int(season_id)
-        
-        season_info = {
-            'id': season_num,
-            'uuid': season_num,
-            'name': "Season " + str(season_num)
-        }
-        
+        season_info = {"id": season_num, "uuid": season_num, "name": "Season " + str(season_num)}
         return jsonify(season_info), 200
-        
     except ValueError:
-        return jsonify({'error': 'Invalid season ID format'}), 400
+        return jsonify({"error": "Invalid season ID format"}), 400
     except Exception as e:
         logging.error(f"Error fetching season info: {e}")
-        return jsonify({'error': 'Failed to fetch season info'}), 500
+        return jsonify({"error": "Failed to fetch season info"}), 500
+
 
 @app.route("/api/comments/<card_id>")
-def get_comments(card_id):
-    # Get all comments for a specific card_id
-    comments = Comment.query.filter_by(card_id=card_id).order_by(Comment.id).all()
-
-    # If you want them in the presented format (as dictionaries)
-    comments_data = [comment.present() for comment in comments]
+async def get_comments(card_id):
+    async with get_async_session() as db_session:
+        stmt = select(Comment).where(Comment.card_id == int(card_id)).order_by(Comment.id)
+        r = await db_session.execute(stmt)
+        comments = r.scalars().all()
+    comments_data = [c.present() for c in comments]
     return jsonify(comments_data), 200
 
-@app.route("/api/check_auth")
-def check_auth():
-    is_auth, user_id = is_authenticated(request, session)
-    return jsonify({
-        'isAuthenticated': is_auth,
-        'userId': user_id
-    }), 200
 
-@app.route("/api/user", methods=['GET'])
-def get_user_info():
-    user_id = session.get('user_id')
+@app.route("/api/check_auth")
+async def check_auth():
+    is_auth, user_id = await is_authenticated(request, session)
+    return jsonify({"isAuthenticated": is_auth, "userId": user_id}), 200
+
+
+@app.route("/api/user", methods=["GET"])
+async def get_user_info():
+    user_id = session.get("user_id")
     if user_id:
-        # Retrieve Telegram user info directly from the session, using keys set in telegram_callback
         user_data = {
-            "id": session.get('telegram_id'),
-            "first_name": session.get('telegram_first_name'),
-            "last_name": session.get('telegram_last_name'),
-            "photo_url": session.get('telegram_photo_url'),
-            "username": session.get('telegram_username') # Add username
+            "id": session.get("telegram_id"),
+            "first_name": session.get("telegram_first_name"),
+            "last_name": session.get("telegram_last_name"),
+            "photo_url": session.get("telegram_photo_url"),
+            "username": session.get("telegram_username"),
         }
         return jsonify(user_data), 200
-    return jsonify({'error': 'User not authenticated'}), 401
+    return jsonify({"error": "User not authenticated"}), 401
 
 
 # --- PayAnyWay (MONETA.Assistant) payment ---
@@ -712,27 +575,23 @@ def _payanyway_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_co
 
 
 @app.route("/api/orders", methods=["POST"])
-def create_order():
-    """Create order and return payment_url (and form fields) for PayAnyWay redirect."""
-    data = request.get_json()
+async def create_order():
+    data = await request.get_json()
     if not data or "items" not in data:
         return jsonify({"error": "Missing items"}), 400
     items = data["items"]
     if not items:
         return jsonify({"error": "Cart is empty"}), 400
-
     mnt_id = (Config.PAYANYWAY_MNT_ID or "").strip().strip("\ufeff")
     key = (Config.PAYANYWAY_SIGNATURE_KEY or "").strip().strip("\"'").strip("\ufeff")
     if not mnt_id or not key:
-        logging.warning("PayAnyWay not configured: PAYANYWAY_MNT_ID or PAYANYWAY_MNT_INTEGRITY_CODE missing")
+        logging.warning("PayAnyWay not configured")
         return jsonify({"error": "Payment system is not configured"}), 503
-
     total = sum(Decimal(str(it["price"])) * int(it.get("quantity", 1)) for it in items)
     order_number = str(uuid.uuid4()).replace("-", "")[:32]
     amount_str = f"{total:.2f}"
     currency = "RUB"
-    description = "Cardswood shop" if len(items) == 0 else items[0].get("name", "Order") + (" + ..." if len(items) > 1 else "")
-
+    description = "Cardswood shop" if not items else items[0].get("name", "Order") + (" + ..." if len(items) > 1 else "")
     try:
         order = Order(
             order_number=order_number,
@@ -742,14 +601,13 @@ def create_order():
             status="pending",
             items=items,
         )
-        db.session.add(order)
-        db.session.commit()
+        async with get_async_session() as db_session:
+            db_session.add(order)
+            await db_session.flush()
+            order_id = order.id
     except Exception as e:
-        db.session.rollback()
         logging.exception(f"Create order error: {e}")
         return jsonify({"error": "Failed to create order"}), 500
-
-    # ТЕСТОВЫЙ РЕЖИМ: «1» или «0»; всегда передаём MNT_TEST_MODE в форме и то же значение в подписи
     mnt_test_mode = "1" if getattr(Config, "PAYANYWAY_TEST_MODE", False) else "0"
     signature = _payanyway_form_signature(
         mnt_id, order_number, amount_str, currency, key,
@@ -771,7 +629,7 @@ def create_order():
         params["MNT_CHECK_URL"] = Config.PAYANYWAY_CHECK_URL
     payment_url_with_params = f"{payment_url}?{urlencode(params)}"
     return jsonify({
-        "order_id": order.id,
+        "order_id": order_id,
         "order_number": order_number,
         "payment_url": payment_url_with_params,
         "form_fields": params,
@@ -798,8 +656,7 @@ def _payanyway_callback_verify(data, key):
     )
 
 
-def _notify_bot_purchase(order):
-    """Send a local signal to the bot with purchased items. Bot API is not required to be up; failures are logged only."""
+async def _notify_bot_purchase(order):
     url = getattr(Config, "BOT_PURCHASE_NOTIFY_URL", None)
     if not url:
         return
@@ -817,103 +674,98 @@ def _notify_bot_purchase(order):
         "completed_at": datetime.utcnow().isoformat() + "Z",
     }
     try:
-        r = requests.post(url, json=payload, timeout=5)
-        if r.status_code >= 400:
-            logging.warning(f"Bot purchase notify returned {r.status_code}: {r.text[:200]}")
-    except requests.RequestException as e:
+        async with httpx.AsyncClient() as client:
+            r = await client.post(url, json=payload, timeout=5.0)
+            if r.status_code >= 400:
+                logging.warning(f"Bot purchase notify returned {r.status_code}: {r.text[:200]}")
+    except httpx.HTTPError as e:
         logging.warning(f"Bot purchase notify failed: {e}")
 
 
-def _fulfill_order(order):
-    """Fulfill paid order: grant subscription/packs etc. Stub: only mark as fulfilled in DB."""
-    # TODO: grant subscription (write to DB with end date), grant packs/cards per items
+async def _fulfill_order(order):
     logging.info(f"Order {order.order_number} fulfilled (items: {order.items})")
-    _notify_bot_purchase(order)
+    await _notify_bot_purchase(order)
 
 
 @app.route("/api/payment/payanyway/callback", methods=["POST", "GET"])
-def payanyway_callback():
-    """Check URL: receive payment result from PayAnyWay. Verify signature, update order, fulfill. Response: OK (MONETA.Assistant accepts this)."""
+async def payanyway_callback():
     key = (Config.PAYANYWAY_SIGNATURE_KEY or "").strip().strip("\"'").strip("\ufeff")
     if not key:
         logging.warning("PayAnyWay callback: PAYANYWAY_MNT_INTEGRITY_CODE not set")
         return "CONFIG_ERROR", 500
-
-    data = request.form if request.form else request.args
+    if request.method == "POST":
+        data = await request.form
+    else:
+        data = request.args
     mnt_transaction_id = (data.get("MNT_TRANSACTION_ID") or "").strip()
     mnt_signature = (data.get("MNT_SIGNATURE") or "").strip()
     mnt_status = data.get("MNT_STATUS", "")
-
     if not mnt_transaction_id or not mnt_signature:
         logging.warning("PayAnyWay callback: missing MNT_TRANSACTION_ID or MNT_SIGNATURE")
         return "MISSING_PARAMS", 400
-
     expected_sig = _payanyway_callback_verify(data, key)
     if not hmac.compare_digest(expected_sig.lower(), mnt_signature.lower()):
         logging.warning("PayAnyWay callback: invalid signature")
         return "INVALID_SIGNATURE", 400
-
-    order = Order.query.filter_by(order_number=mnt_transaction_id).first()
+    async with get_async_session() as db_session:
+        r = await db_session.execute(select(Order).where(Order.order_number == mnt_transaction_id))
+        order = r.scalar_one_or_none()
     if not order:
         logging.warning(f"PayAnyWay callback: order not found {mnt_transaction_id}")
         return "ORDER_NOT_FOUND", 404
-
     if order.status == "paid":
         return "OK", 200
-
     if str(mnt_status) in ("1", "success", "SUCCESS"):
         try:
-            order.status = "paid"
-            order.payanyway_payment_id = data.get("MNT_OPERATION_ID") or data.get("MNT_ID")
-            order.updated_at = datetime.utcnow()
-            db.session.commit()
-            _fulfill_order(order)
+            async with get_async_session() as db_session:
+                r = await db_session.execute(select(Order).where(Order.order_number == mnt_transaction_id))
+                order = r.scalar_one()
+                order.status = "paid"
+                order.payanyway_payment_id = data.get("MNT_OPERATION_ID") or data.get("MNT_ID")
+                order.updated_at = datetime.utcnow()
+            await _fulfill_order(order)
         except Exception as e:
-            db.session.rollback()
             logging.exception(f"PayAnyWay callback commit error: {e}")
             return "INTERNAL_ERROR", 500
         return "OK", 200
     else:
-        order.status = "failed"
-        order.updated_at = datetime.utcnow()
         try:
-            db.session.commit()
+            async with get_async_session() as db_session:
+                r = await db_session.execute(select(Order).where(Order.order_number == mnt_transaction_id))
+                order = r.scalar_one()
+                order.status = "failed"
+                order.updated_at = datetime.utcnow()
         except Exception as e:
-            db.session.rollback()
             logging.exception(f"PayAnyWay callback failed status commit: {e}")
         return "OK", 200
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8000)
+    import hypercorn
+    hypercorn.run(app, bind="0.0.0.0:8000")
 
-@app.route('/avatars/<int:user_id>')
-def serve_avatar(user_id):
-    avatar_dir = 'backend/avatars'
-    filename = f"{user_id}.jpg" # Assuming JPG extension
 
+@app.route("/avatars/<int:user_id>")
+async def serve_avatar(user_id):
+    avatar_dir = "backend/avatars"
+    filename = f"{user_id}.jpg"
     try:
-        return send_from_directory(avatar_dir, filename)
+        return await send_from_directory(avatar_dir, filename)
     except FileNotFoundError:
         return "Avatar not found", 404
 
-@app.route('/proxy/avatar')
-def proxy_avatar():
-    """Proxies avatar images from a given URL."""
-    url = request.args.get('url')
+
+@app.route("/proxy/avatar")
+async def proxy_avatar():
+    url = request.args.get("url")
     logging.debug(f"Proxying avatar from URL: {url}")
     if not url:
         return "Missing image URL", 400
     try:
-        response = requests.get(url, stream=True)
-        response.raise_for_status()  # Raise an HTTPError for bad responses
-        # Return the image data with the appropriate content type
-        return response.content, response.status_code, {'Content-Type': response.headers.get('Content-Type', 'image/jpeg')}
-        response = make_response(response.content)
-        response.headers['Content-Type'] = response.headers.get('Content-Type', 'image/jpeg')
-        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-        response.headers['Pragma'] = 'no-cache'
-        return response
-    except requests.exceptions.RequestException as e:
+        async with httpx.AsyncClient() as client:
+            r = await client.get(url)
+            r.raise_for_status()
+        return r.content, r.status_code, {"Content-Type": r.headers.get("Content-Type", "image/jpeg")}
+    except httpx.HTTPError as e:
         logging.error(f"Error proxying avatar from {url}: {e}")
         return "Image not found or could not be downloaded.", 404

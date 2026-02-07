@@ -13,11 +13,13 @@ class Config:
     
     BOT_TOKEN_HASH = sha256(BOT_TOKEN.encode())
 
-    # PostgreSQL: задаётся через env (на сервере должен совпадать пароль с контейнером db)
-    SQLALCHEMY_DATABASE_URI = os.getenv(
+    # PostgreSQL: sync (migrations) и async (приложение)
+    _pg_uri = os.getenv(
         "SQLALCHEMY_DATABASE_URI",
         "postgresql+psycopg2://postgres:postgres@db:5432/cards"
     )
+    SQLALCHEMY_DATABASE_URI = _pg_uri
+    ASYNC_DATABASE_URI = _pg_uri.replace("postgresql+psycopg2://", "postgresql+asyncpg://", 1)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.getenv("SECRET_KEY")
 

@@ -54,9 +54,8 @@ services:
       PAYANYWAY_CHECK_URL: ${PAYANYWAY_CHECK_URL:-}
       # Пароль БД должен совпадать с POSTGRES_PASSWORD у сервиса db
       SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/cards
-      FLASK_APP: wsgi:app
-    command: >      
-      sh -c "gunicorn --bind 0.0.0.0:8000 --worker-class gevent --timeout 120 wsgi:app"
+    command: >
+      sh -c "hypercorn --bind 0.0.0.0:8000 --timeout 120 asgi:app"
     # flask --app wsgi db init &&
     # flask --app wsgi db migrate  &&
     # flask --app wsgi db upgrade &&

@@ -11,8 +11,6 @@ WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install gunicorn
-RUN pip install gunicorn gevent
 
 COPY . .
 
@@ -20,4 +18,4 @@ RUN mkdir -p /app/card_imgs
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "wsgi:app"]
+CMD ["hypercorn", "--bind", "0.0.0.0:8000", "asgi:app"]
