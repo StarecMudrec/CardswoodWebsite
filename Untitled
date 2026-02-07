@@ -1,0 +1,24 @@
+cw_web@cardswoodserver:~/CardswoodWebsite$ docker-compose  logs web
+Attaching to cardswoodwebsite_web_1
+web_1       | usage: hypercorn [-h] [--access-log ACCESS_LOG]
+web_1       |                  [--access-logfile ACCESS_LOGFILE]
+web_1       |                  [--access-logformat ACCESS_LOGFORMAT] [--backlog BACKLOG]
+web_1       |                  [-b BINDS] [--ca-certs CA_CERTS] [--certfile CERTFILE]
+web_1       |                  [--cert-reqs CERT_REQS] [--ciphers CIPHERS] [-c CONFIG]
+web_1       |                  [--debug] [--error-log ERROR_LOG]
+web_1       |                  [--error-logfile ERROR_LOGFILE]
+web_1       |                  [--graceful-timeout GRACEFUL_TIMEOUT]
+web_1       |                  [--read-timeout READ_TIMEOUT] [--max-requests MAX_REQUESTS]
+web_1       |                  [--max-requests-jitter MAX_REQUESTS_JITTER] [-g GROUP]
+web_1       |                  [-k WORKER_CLASS] [--keep-alive KEEP_ALIVE]
+web_1       |                  [--keyfile KEYFILE] [--keyfile-password KEYFILE_PASSWORD]
+web_1       |                  [--insecure-bind INSECURE_BINDS] [--log-config LOG_CONFIG]
+web_1       |                  [--log-level LOG_LEVEL] [-p PID] [--quic-bind QUIC_BINDS]
+web_1       |                  [--reload] [--root-path ROOT_PATH]
+web_1       |                  [--server-name SERVER_NAMES] [--statsd-host STATSD_HOST]
+web_1       |                  [--statsd-prefix STATSD_PREFIX] [-m UMASK] [-u USER]
+web_1       |                  [--verify-mode VERIFY_MODE]
+web_1       |                  [--websocket-ping-interval WEBSOCKET_PING_INTERVAL]
+web_1       |                  [-w WORKERS]
+web_1       |                  application
+web_1       | hypercorn: error: unrecognized arguments: --timeout asgi:app
