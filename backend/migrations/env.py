@@ -29,7 +29,7 @@ def run_migrations_online():
     connectable = create_engine(url)
 
     def process_revision_directives(context, revision, directives):
-        if getattr(config.cmd_opts, "autogenerate", False):
+        if getattr(getattr(config, "cmd_opts", None), "autogenerate", False):
             script = directives[0]
             if script.upgrade_ops.is_empty():
                 directives[:] = []
