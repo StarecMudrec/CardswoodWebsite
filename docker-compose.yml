@@ -54,8 +54,7 @@ services:
       PAYANYWAY_CHECK_URL: ${PAYANYWAY_CHECK_URL:-}
       # Пароль БД должен совпадать с POSTGRES_PASSWORD у сервиса db
       SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/cards
-    command: >
-      sh -c "alembic -c migrations/alembic.ini upgrade head && hypercorn --bind 0.0.0.0:8000 --read-timeout 120 asgi:app"
+    command: ["sh", "/app/entrypoint.sh"]
       
 volumes:
   postgres_data: {}
