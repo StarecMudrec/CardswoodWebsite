@@ -105,7 +105,7 @@ async def telegram_callback():
         logging.exception(f"Database error saving token: {e}")
         return "Database error", 500
 
-    response = await make_response(await redirect(url_for("home")))
+    response = await make_response(redirect(url_for("home")))
     response.set_cookie("token", db_token, httponly=True, secure=True)
     response.set_data(f"""
       <script>
@@ -147,14 +147,14 @@ async def apply_csp(response):
 
 @app.route("/")
 async def return_home():
-    return await redirect(url_for("home"))
+    return redirect(url_for("home"))
 
 
 @app.route("/login")
 async def login():
     is_auth, user_id = await is_authenticated(request, session)
     if is_auth:
-        return await redirect(url_for("home"))
+        return redirect(url_for("home"))
     if request.args.get("check_auth"):
         is_auth, user_id = await is_authenticated(request, session)
         return jsonify({"type": "auth-status", "isAuthenticated": is_auth, "userId": user_id}), 200
