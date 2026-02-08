@@ -11,6 +11,11 @@
           <div class="separator-line" aria-hidden="true"></div>
         </header>
 
+        <div v-if="!isAuthenticated" class="login-prompt glass-effect" role="alert">
+          <span>Войдите в аккаунт Telegram, чтобы совершить покупку.</span>
+          <router-link to="/login" class="login-link">Войти</router-link>
+        </div>
+
         <section ref="productsGrid" class="products-grid" aria-label="Каталог товаров">
           <div 
             v-for="product in products" 
@@ -133,6 +138,7 @@
 <script>
 import Footer from '@/components/Footer.vue'
 import { createOrder } from '@/api'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ShopView',
@@ -207,6 +213,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['isAuthenticated']),
     totalAmount() {
       return this.cart.reduce((sum, item) => sum + item.price, 0)
     }
@@ -256,6 +263,11 @@ export default {
       return product.description.length > 150
     },
     addToCart(product) {
+      if (!this.isAuthenticated) {
+        this.error = 'Войдите в аккаунт, чтобы добавить товар в корзину'
+        this.$router.push('/login')
+        return
+      }
       this.loading = true
       this.error = null
       
@@ -283,6 +295,11 @@ export default {
       this.cart = this.cart.filter(item => item.id !== productId)
     },
     async proceedToCheckout() {
+      if (!this.isAuthenticated) {
+        this.error = 'Войдите в аккаунт, чтобы оформить заказ'
+        this.$router.push('/login')
+        return
+      }
       if (this.cart.length === 0) {
         this.error = 'Корзина пуста'
         return
@@ -436,6 +453,28 @@ export default {
   max-width: 600px;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.85);
+}
+
+.login-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 24px;
+  margin-bottom: 24px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+}
+
+.login-link {
+  color: var(--gradient-color);
+  font-weight: 600;
+  text-decoration: underline;
+  transition: opacity 0.3s ease;
+}
+
+.login-link:hover {
+  opacity: 0.9;
 }
 
 .products-grid {

@@ -576,6 +576,9 @@ def _payanyway_signature(mnt_id, mnt_transaction_id, mnt_amount, mnt_currency_co
 
 @app.route("/api/orders", methods=["POST"])
 async def create_order():
+    is_auth, user_id = await is_authenticated(request, session)
+    if not is_auth:
+        return jsonify({"error": "Войдите в аккаунт, чтобы совершить покупку"}), 401
     data = await request.get_json()
     if not data or "items" not in data:
         return jsonify({"error": "Missing items"}), 400
@@ -595,7 +598,7 @@ async def create_order():
     try:
         order = Order(
             order_number=order_number,
-            user_id=session.get("user_id"),
+            user_id=user_id,
             amount=total,
             currency=currency,
             status="pending",
@@ -673,9 +676,12 @@ async def _notify_bot_purchase(order):
         "currency": order.currency or "RUB",
         "completed_at": datetime.utcnow().isoformat() + "Z",
     }
+    headers = {}
+    if getattr(Config, "BOT_PURCHASE_WEBHOOK_SECRET", None):
+        headers["Authorization"] = f"Bearer {Config.BOT_PURCHASE_WEBHOOK_SECRET}"
     try:
         async with httpx.AsyncClient() as client:
-            r = await client.post(url, json=payload, timeout=5.0)
+            r = await client.post(url, json=payload, headers=headers, timeout=10.0)
             if r.status_code >= 400:
                 logging.warning(f"Bot purchase notify returned {r.status_code}: {r.text[:200]}")
     except httpx.HTTPError as e:

@@ -45,3 +45,8 @@ class Config:
     PAYANYWAY_FAIL_URL = os.getenv("PAYANYWAY_FAIL_URL", f"{_base}/shop/fail")
     # Optional: Check URL (callback) — if set, sent in form; otherwise configure in PayAnyWay LK
     PAYANYWAY_CHECK_URL = os.getenv("PAYANYWAY_CHECK_URL", "").strip() or None
+
+    # URL for notifying the game bot when a purchase is completed (for granting items)
+    BOT_PURCHASE_NOTIFY_URL = os.getenv("BOT_PURCHASE_NOTIFY_URL", "").strip() or None
+    # Optional: secret for authenticating purchase webhook (set Authorization: Bearer <secret>)
+    BOT_PURCHASE_WEBHOOK_SECRET = os.getenv("BOT_PURCHASE_WEBHOOK_SECRET", "").strip() or None
