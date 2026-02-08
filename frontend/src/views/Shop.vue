@@ -189,6 +189,14 @@ export default {
           price: 99,
           image: '/ha.jpg',
           tag: 'Легендарная'
+        },
+        {
+          id: 7,
+          name: 'ТЕСТОВЫЙ ТОВАР',
+          description: 'Тестовый товар для проверки функционала. Стоимость: 0₽.',
+          price: 0,
+          image: '/placeholder.jpg',
+          tag: 'Тестовый'
         }
       ],
       cart: [],
