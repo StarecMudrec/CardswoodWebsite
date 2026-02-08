@@ -1,7 +1,7 @@
-"""Add orders table
+"""Add orders, auth_token and allowed_user tables
 
 Revision ID: 001
-Revises: 
+Revises:
 Create Date: 2026-02-07
 
 """
@@ -33,7 +33,26 @@ def upgrade():
     )
     op.create_index(op.f("ix_orders_order_number"), "orders", ["order_number"], unique=True)
 
+    op.create_table(
+        "auth_token",
+        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column("token", sa.String(255), nullable=False),
+        sa.Column("user_id", sa.BigInteger(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_index(op.f("ix_auth_token_token"), "auth_token", ["token"], unique=True)
+
+    op.create_table(
+        "allowed_user",
+        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column("username", sa.String(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+    )
+
 
 def downgrade():
+    op.drop_table("allowed_user")
+    op.drop_index(op.f("ix_auth_token_token"), table_name="auth_token")
+    op.drop_table("auth_token")
     op.drop_index(op.f("ix_orders_order_number"), table_name="orders")
     op.drop_table("orders")
