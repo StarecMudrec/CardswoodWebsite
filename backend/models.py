@@ -84,6 +84,8 @@ class Order(Base):
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="pending")
     items: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     payanyway_payment_id: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    notification_status: Mapped[Optional[str]] = mapped_column(String(20), nullable=True, default="pending")
+    notification_error: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

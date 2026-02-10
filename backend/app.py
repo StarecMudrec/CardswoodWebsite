@@ -659,10 +659,17 @@ def _payanyway_callback_verify(data, key):
     )
 
 
-async def _notify_bot_purchase(order):
+async def _notify_bot_purchase(order, max_retries=3):
+    """
+    Notify purchase_notify service about completed order.
+    Retries up to max_retries times with exponential backoff.
+    Returns (notification_status, notification_error) for persistence.
+    """
     url = getattr(Config, "BOT_PURCHASE_NOTIFY_URL", None)
     if not url:
-        return
+        logging.info(f"Order {order.order_number}: BOT_PURCHASE_NOTIFY_URL not set, skipping notification")
+        return "skipped", None
+
     payload = {
         "event": "purchase_complete",
         "order_id": order.id,
@@ -679,18 +686,55 @@ async def _notify_bot_purchase(order):
     headers = {}
     if getattr(Config, "BOT_PURCHASE_WEBHOOK_SECRET", None):
         headers["Authorization"] = f"Bearer {Config.BOT_PURCHASE_WEBHOOK_SECRET}"
-    try:
-        async with httpx.AsyncClient() as client:
-            r = await client.post(url, json=payload, headers=headers, timeout=10.0)
-            if r.status_code >= 400:
-                logging.warning(f"Bot purchase notify returned {r.status_code}: {r.text[:200]}")
-    except httpx.HTTPError as e:
-        logging.warning(f"Bot purchase notify failed: {e}")
+    
+    import asyncio
+    last_error = None
+    
+    for attempt in range(1, max_retries + 1):
+        try:
+            async with httpx.AsyncClient() as client:
+                r = await client.post(url, json=payload, headers=headers, timeout=10.0)
+                if r.status_code < 400:
+                    logging.info(f"Order {order.order_number}: Notification sent successfully (attempt {attempt})")
+                    return "sent", None
+                else:
+                    last_error = f"HTTP {r.status_code}: {r.text[:200]}"
+                    logging.warning(f"Order {order.order_number}: Notification failed (attempt {attempt}/{max_retries}): {last_error}")
+        except httpx.HTTPError as e:
+            last_error = str(e)
+            logging.warning(f"Order {order.order_number}: Notification failed (attempt {attempt}/{max_retries}): {last_error}")
+        except Exception as e:
+            last_error = str(e)
+            logging.exception(f"Order {order.order_number}: Unexpected error during notification (attempt {attempt}/{max_retries}): {e}")
+        
+        if attempt < max_retries:
+            wait_time = 2 ** attempt  # Exponential backoff: 2s, 4s, 8s
+            logging.info(f"Order {order.order_number}: Retrying notification in {wait_time}s...")
+            await asyncio.sleep(wait_time)
+    
+    # All retries failed
+    error_msg = (last_error or "unknown")[:512]
+    logging.error(
+        f"Order {order.order_number} (user_id={order.user_id}, amount={order.amount} {order.currency}): "
+        f"Failed to send notification after {max_retries} attempts. Last error: {last_error}. "
+        f"Order is marked as PAID but user may not have received Telegram notification. "
+        f"Manual intervention may be required to grant items or notify user."
+    )
+    return "failed", error_msg
 
 
 async def _fulfill_order(order):
     logging.info(f"Order {order.order_number} fulfilled (items: {order.items})")
-    await _notify_bot_purchase(order)
+    status, err = await _notify_bot_purchase(order)
+    try:
+        async with get_async_session() as db_session:
+            r = await db_session.execute(select(Order).where(Order.id == order.id))
+            o = r.scalar_one_or_none()
+            if o:
+                o.notification_status = status
+                o.notification_error = err
+    except Exception as e:
+        logging.warning(f"Order {order.order_number}: Could not save notification_status: {e}")
 
 
 @app.route("/api/payment/payanyway/callback", methods=["POST", "GET"])
@@ -729,6 +773,9 @@ async def payanyway_callback():
                 order.status = "paid"
                 order.payanyway_payment_id = data.get("MNT_OPERATION_ID") or data.get("MNT_ID")
                 order.updated_at = datetime.utcnow()
+            # NOTE: Order is marked "paid" BEFORE notification. If notification fails,
+            # the order remains paid (money already processed by PayAnyWay).
+            # No automatic refunds - monitor logs for notification failures and handle manually.
             await _fulfill_order(order)
         except Exception as e:
             logging.exception(f"PayAnyWay callback commit error: {e}")

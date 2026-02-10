@@ -53,11 +53,21 @@ services:
       PAYANYWAY_SIGNATURE_VERSION: ${PAYANYWAY_SIGNATURE_VERSION:-v1}
       PAYANYWAY_TEST_MODE: ${PAYANYWAY_TEST_MODE}
       PAYANYWAY_CHECK_URL: ${PAYANYWAY_CHECK_URL:-}
-      BOT_PURCHASE_NOTIFY_URL: ${BOT_PURCHASE_NOTIFY_URL:-}
+      BOT_PURCHASE_NOTIFY_URL: ${BOT_PURCHASE_NOTIFY_URL:-http://purchase_notify:8081/webhook/purchase}
+      BOT_PURCHASE_WEBHOOK_SECRET: ${BOT_PURCHASE_WEBHOOK_SECRET:-}
       # Пароль БД должен совпадать с POSTGRES_PASSWORD у сервиса db
       SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/cards
     command: ["sh", "/app/entrypoint.sh"]
-      
+
+  purchase_notify:
+    build: ./purchase_notify
+    ports:
+      - "8081:8081"
+    environment:
+      PURCHASE_NOTIFY_BOT_TOKEN: ${CW_BOT_TOKEN}
+      PURCHASE_WEBHOOK_SECRET: ${BOT_PURCHASE_WEBHOOK_SECRET:-}
+    restart: unless-stopped
+
 volumes:
   postgres_data: {}
   frontend_node_modules: {}
