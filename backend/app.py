@@ -1017,8 +1017,11 @@ async def dev_test_grant():
 
     # Эмулируем заказ с одним товаром
     dummy_order = SimpleNamespace(
+        id=0,  # фейковый id заказа
         user_id=user_id,
         order_number=f"TEST-{uuid.uuid4().hex[:12]}",
+        amount=Decimal("0.00"),
+        currency="RUB",
         items=[{"id": product_id, "name": f"TEST_PRODUCT_{product_id}", "price": 0}],
     )
 
