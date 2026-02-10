@@ -6,7 +6,11 @@ from decimal import Decimal
 from datetime import datetime
 from urllib.parse import urlencode
 import logging
+import time
+import random
+from types import SimpleNamespace
 
+import aiosqlite
 from quart import Quart, request, redirect, url_for, make_response, jsonify, send_from_directory, session, render_template
 from joserfc.errors import JoseError
 from sqlalchemy import select, text
@@ -14,7 +18,7 @@ import httpx
 
 from config import Config
 from models import AuthToken, Card, Season, Comment, AllowedUser, Order
-from async_db import get_async_session, get_sqlite_conn
+from async_db import get_async_session, get_sqlite_conn, SQLITE_DB_PATH
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -723,8 +727,332 @@ async def _notify_bot_purchase(order, max_retries=3):
     return "failed", error_msg
 
 
+async def _grant_test_item(conn: "aiosqlite.Connection", tg_id: int):
+    """Тестовый товар: просто выдаёт карту с id=1."""
+    try:
+        await conn.execute(
+            "INSERT INTO filmstrips (tg_id, card_id) VALUES (?, ?)",
+            (tg_id, 1),
+        )
+        logging.info("Grant: test item -> card_id=1 to tg_id=%s", tg_id)
+    except Exception as e:
+        logging.exception("Grant: failed to give test card to tg_id=%s: %s", tg_id, e)
+
+
+async def _grant_subscription(conn: "aiosqlite.Connection", tg_id: int, premium: bool = False):
+    """
+    Выдача подписки:
+    - устанавливаем subs=True и days=текущее время (как делает rq.changesubs в боте).
+    - для премиум-подписки дополнительно начисляем немного очков магазина.
+    """
+    now_ts = int(time.time())
+    try:
+        cur = await conn.execute("SELECT subs, days, shoppoints FROM users WHERE tg_id = ?", (tg_id,))
+        row = await cur.fetchone()
+        if not row:
+            logging.warning("Grant: subscription — user tg_id=%s not found in users table", tg_id)
+            return
+        subs, days, shoppoints = row[0], row[1], row[2]
+        # Если подписка уже есть, просто обновим отсчёт 30 дней с текущего момента
+        new_subs = 1
+        new_days = now_ts
+        new_shops = shoppoints
+        if premium:
+            # Премиум даёт дополнительный буст очков магазина
+            bonus = 50000
+            new_shops = (shoppoints or 0) + bonus
+            logging.info("Grant: premium subscription -> +%s shoppoints to tg_id=%s", bonus, tg_id)
+        await conn.execute(
+            "UPDATE users SET subs = ?, days = ?, shoppoints = ? WHERE tg_id = ?",
+            (new_subs, new_days, new_shops, tg_id),
+        )
+        logging.info(
+            "Grant: %s subscription set for tg_id=%s (subs=%s, days=%s, shoppoints=%s)",
+            "premium" if premium else "basic",
+            tg_id,
+            new_subs,
+            new_days,
+            new_shops,
+        )
+    except Exception as e:
+        logging.exception("Grant: failed to set subscription for tg_id=%s: %s", tg_id, e)
+
+
+async def _get_random_card_ids_by_rarity(conn: "aiosqlite.Connection", rarities, count: int):
+    """Возвращает список случайных card_id указанной редкости/редкостей."""
+    if not rarities or count <= 0:
+        return []
+    placeholders = ",".join("?" for _ in rarities)
+    try:
+        cur = await conn.execute(f"SELECT id FROM cards WHERE rarity IN ({placeholders})", tuple(rarities))
+        rows = await cur.fetchall()
+        ids = [r[0] for r in rows]
+        if not ids:
+            logging.warning("Grant: no cards found for rarities=%r", rarities)
+            return []
+        return [random.choice(ids) for _ in range(count)]
+    except Exception as e:
+        logging.exception("Grant: failed to select cards by rarity %r: %s", rarities, e)
+        return []
+
+
+async def _get_random_card_ids_any(conn: "aiosqlite.Connection", count: int):
+    """Случайные карты любой редкости."""
+    if count <= 0:
+        return []
+    try:
+        cur = await conn.execute("SELECT id FROM cards")
+        rows = await cur.fetchall()
+        ids = [r[0] for r in rows]
+        if not ids:
+            logging.warning("Grant: no cards found in cards table")
+            return []
+        return [random.choice(ids) for _ in range(count)]
+    except Exception as e:
+        logging.exception("Grant: failed to select random cards: %s", e)
+        return []
+
+
+async def _insert_cards_for_user(conn: "aiosqlite.Connection", tg_id: int, card_ids):
+    """Добавляет пользователю указанные карты в таблицу filmstrips."""
+    if not card_ids:
+        return
+    try:
+        await conn.executemany(
+            "INSERT INTO filmstrips (tg_id, card_id) VALUES (?, ?)",
+            [(tg_id, cid) for cid in card_ids],
+        )
+        logging.info("Grant: added cards %r to tg_id=%s", card_ids, tg_id)
+    except Exception as e:
+        logging.exception("Grant: failed to insert cards %r for tg_id=%s: %s", card_ids, tg_id, e)
+
+
+async def _grant_pack(conn: "aiosqlite.Connection", tg_id: int, pack_type: str):
+    """
+    Выдаёт награду за покупку пака:
+    - regular: 3 карты EPISODICAL/SECONDARY/FAMOUS, 1 любая карта, 1 MOVIE/SERIES
+    - rare:    4 любых карты, 1 MOVIE/SERIES
+    - epic:    2 любых карты, 3 MOVIE/SERIES
+    """
+    try:
+        if pack_type == "regular":
+            ids_main = await _get_random_card_ids_by_rarity(conn, ["EPISODICAL", "SECONDARY", "FAMOUS"], 3)
+            ids_any = await _get_random_card_ids_any(conn, 1)
+            ids_movie = await _get_random_card_ids_by_rarity(conn, ["MOVIE", "SERIES"], 1)
+            await _insert_cards_for_user(conn, tg_id, ids_main + ids_any + ids_movie)
+        elif pack_type == "rare":
+            ids_any = await _get_random_card_ids_any(conn, 4)
+            ids_movie = await _get_random_card_ids_by_rarity(conn, ["MOVIE", "SERIES"], 1)
+            await _insert_cards_for_user(conn, tg_id, ids_any + ids_movie)
+        elif pack_type == "epic":
+            ids_any = await _get_random_card_ids_any(conn, 2)
+            ids_movie = await _get_random_card_ids_by_rarity(conn, ["MOVIE", "SERIES"], 3)
+            await _insert_cards_for_user(conn, tg_id, ids_any + ids_movie)
+        else:
+            logging.warning("Grant: unknown pack_type=%r for tg_id=%s", pack_type, tg_id)
+    except Exception as e:
+        logging.exception("Grant: failed to grant pack %r for tg_id=%s: %s", pack_type, tg_id, e)
+
+
+async def _grant_movie_home_alone(conn: "aiosqlite.Connection", tg_id: int):
+    """
+    Выдаёт пользователю карту фильма HOME ALONE.
+    Если такой карты нет в таблице cards — выдаём карту id=1.
+    """
+    card_id = None
+    try:
+        cur = await conn.execute(
+            "SELECT id FROM cards WHERE name LIKE ? LIMIT 1",
+            ("%HOME ALONE%",),
+        )
+        row = await cur.fetchone()
+        if row:
+            card_id = row[0]
+        else:
+            logging.warning("Grant: HOME ALONE card not found, fallback to card_id=1")
+            card_id = 1
+    except Exception as e:
+        logging.exception("Grant: failed to find HOME ALONE card: %s", e)
+        card_id = 1
+
+    try:
+        await conn.execute(
+            "INSERT INTO filmstrips (tg_id, card_id) VALUES (?, ?)",
+            (tg_id, card_id),
+        )
+        logging.info("Grant: HOME ALONE card_id=%s granted to tg_id=%s", card_id, tg_id)
+    except Exception as e:
+        logging.exception("Grant: failed to insert HOME ALONE card for tg_id=%s: %s", tg_id, e)
+
+
+async def _grant_career_level(conn: "aiosqlite.Connection", tg_id: int, level: str):
+    """
+    Уровни карьеры (учёба/бизнес) пока не интегрированы в бота напрямую,
+    поэтому реализуем их как заметный бонус очков магазина.
+    """
+    bonus = 0
+    if level == "study":
+        bonus = 100000
+    elif level == "business":
+        bonus = 200000
+    else:
+        logging.warning("Grant: unknown career level %r", level)
+        return
+
+    try:
+        cur = await conn.execute("SELECT shoppoints FROM users WHERE tg_id = ?", (tg_id,))
+        row = await cur.fetchone()
+        if not row:
+            logging.warning("Grant: career %s — user tg_id=%s not found", level, tg_id)
+            return
+        shoppoints = row[0] or 0
+        new_shops = shoppoints + bonus
+        await conn.execute(
+            "UPDATE users SET shoppoints = ? WHERE tg_id = ?",
+            (new_shops, tg_id),
+        )
+        logging.info(
+            "Grant: career %s -> +%s shoppoints to tg_id=%s (total=%s)",
+            level,
+            bonus,
+            tg_id,
+            new_shops,
+        )
+    except Exception as e:
+        logging.exception("Grant: failed to grant career %s for tg_id=%s: %s", level, tg_id, e)
+
+
+async def _grant_items_for_order(order):
+    """
+    Выдаёт внутриигровые награды за оплаченный заказ.
+    Привязка по order.user_id (tg_id из бота) и item.id из Shop.vue.
+    """
+    tg_id = order.user_id
+    if not tg_id:
+        logging.warning("Grant: order %s has no user_id, skipping", order.order_number)
+        return
+
+    items = order.items or []
+    if not items:
+        logging.info("Grant: order %s has no items, nothing to grant", order.order_number)
+        return
+
+    logging.info("Grant: starting grant for order %s, tg_id=%s, items=%r", order.order_number, tg_id, items)
+
+    # Открываем отдельно R/W соединение к той же БД, что использует бот
+    conn = await aiosqlite.connect(SQLITE_DB_PATH)
+    try:
+        for it in items:
+            pid = it.get("id")
+            if pid is None:
+                continue
+            try:
+                pid_int = int(pid)
+            except (TypeError, ValueError):
+                logging.warning("Grant: invalid product id %r in order %s", pid, order.order_number)
+                continue
+
+            if pid_int == 7:
+                await _grant_test_item(conn, tg_id)
+            elif pid_int == 1:
+                await _grant_subscription(conn, tg_id, premium=False)
+            elif pid_int == 2:
+                await _grant_subscription(conn, tg_id, premium=True)
+            elif pid_int == 3:
+                await _grant_pack(conn, tg_id, "regular")
+            elif pid_int == 4:
+                await _grant_pack(conn, tg_id, "rare")
+            elif pid_int == 6:
+                await _grant_pack(conn, tg_id, "epic")
+            elif pid_int == 5:
+                await _grant_movie_home_alone(conn, tg_id)
+            elif pid_int == 8:
+                await _grant_career_level(conn, tg_id, "study")
+            elif pid_int == 9:
+                await _grant_career_level(conn, tg_id, "business")
+            else:
+                logging.info("Grant: unknown product id %s in order %s, skipping", pid_int, order.order_number)
+
+        await conn.commit()
+    except Exception as e:
+        logging.exception("Grant: unexpected error while processing order %s: %s", order.order_number, e)
+        try:
+            await conn.rollback()
+        except Exception:
+            pass
+    finally:
+        await conn.close()
+
+
+@app.route("/api/dev/test-grant", methods=["POST"])
+async def dev_test_grant():
+    """
+    Тестовый эндпоинт для локальной выдачи товаров БЕЗ оплаты.
+    Работает только в режиме PAYANYWAY_TEST_MODE (см. .env).
+
+    Запрос: POST /api/dev/test-grant
+    {
+      "product_id": 7
+    }
+    """
+    # Защита: только в тестовом режиме
+    if not getattr(Config, "PAYANYWAY_TEST_MODE", False):
+        return jsonify({"error": "Test grant disabled in non-test mode"}), 403
+
+    is_auth, user_id = await is_authenticated(request, session)
+    if not is_auth or not user_id:
+        return jsonify({"error": "Войдите в аккаунт, чтобы тестировать выдачу"}), 401
+
+    try:
+        data = await request.get_json()
+    except Exception:
+        data = None
+    if not data or "product_id" not in data:
+        return jsonify({"error": "Missing product_id"}), 400
+
+    try:
+        product_id = int(data["product_id"])
+    except (TypeError, ValueError):
+        return jsonify({"error": "Invalid product_id"}), 400
+
+    # Эмулируем заказ с одним товаром
+    dummy_order = SimpleNamespace(
+        user_id=user_id,
+        order_number=f"TEST-{uuid.uuid4().hex[:12]}",
+        items=[{"id": product_id, "name": f"TEST_PRODUCT_{product_id}", "price": 0}],
+    )
+
+    logging.info(
+        "DEV TEST GRANT: user_id=%s product_id=%s order_number=%s",
+        user_id,
+        product_id,
+        dummy_order.order_number,
+    )
+
+    try:
+        await _grant_items_for_order(dummy_order)
+    except Exception as e:
+        logging.exception("DEV TEST GRANT: error while granting items: %s", e)
+        return jsonify({"error": "Grant failed"}), 500
+
+    return jsonify({
+        "status": "ok",
+        "message": "Test grant executed",
+        "user_id": user_id,
+        "product_id": product_id,
+    }), 200
+
+
 async def _fulfill_order(order):
     logging.info(f"Order {order.order_number} fulfilled (items: {order.items})")
+
+    # 1. Выдаём внутриигровые награды
+    try:
+        await _grant_items_for_order(order)
+    except Exception as e:
+        logging.exception("Order %s: error while granting items: %s", order.order_number, e)
+
+    # 2. Уведомляем purchase_notify сервис / бота (Telegram-уведомление пользователю)
     status, err = await _notify_bot_purchase(order)
     try:
         async with get_async_session() as db_session:
