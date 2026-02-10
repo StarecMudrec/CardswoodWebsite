@@ -804,6 +804,17 @@ async def payanyway_callback():
         logging.info("PayAnyWay callback: order %s already paid, returning OK", order.order_number)
         return "OK", 200
 
+    # Если статус не передан вообще (пустая строка) — это не финальное уведомление.
+    # Ничего не меняем, просто подтверждаем получение, чтобы не ломать заказ.
+    if not str(mnt_status).strip():
+        logging.info(
+            "PayAnyWay callback: empty MNT_STATUS for order %r, keeping status=%s",
+            mnt_transaction_id,
+            order.status,
+        )
+        return "OK", 200
+
+    # Успешный платёж
     if str(mnt_status) in ("1", "success", "SUCCESS"):
         logging.info("PayAnyWay callback: status indicates success, marking order %s as paid", mnt_transaction_id)
         try:
@@ -826,21 +837,22 @@ async def payanyway_callback():
             logging.exception("PayAnyWay callback commit error for order %r: %s", mnt_transaction_id, e)
             return "INTERNAL_ERROR", 500
         return "OK", 200
-    else:
-        logging.info(
-            "PayAnyWay callback: status is not success for order %r, mnt_status=%r — marking as failed",
-            mnt_transaction_id,
-            mnt_status,
-        )
-        try:
-            async with get_async_session() as db_session:
-                r = await db_session.execute(select(Order).where(Order.order_number == mnt_transaction_id))
-                order = r.scalar_one()
-                order.status = "failed"
-                order.updated_at = datetime.utcnow()
-        except Exception as e:
-            logging.exception("PayAnyWay callback failed status commit for order %r: %s", mnt_transaction_id, e)
-        return "OK", 200
+
+    # Любой другой непустой статус считаем неуспешным и помечаем заказ как failed
+    logging.info(
+        "PayAnyWay callback: non-success MNT_STATUS for order %r, mnt_status=%r — marking as failed",
+        mnt_transaction_id,
+        mnt_status,
+    )
+    try:
+        async with get_async_session() as db_session:
+            r = await db_session.execute(select(Order).where(Order.order_number == mnt_transaction_id))
+            order = r.scalar_one()
+            order.status = "failed"
+            order.updated_at = datetime.utcnow()
+    except Exception as e:
+        logging.exception("PayAnyWay callback failed status commit for order %r: %s", mnt_transaction_id, e)
+    return "OK", 200
 
 
 if __name__ == "__main__":
