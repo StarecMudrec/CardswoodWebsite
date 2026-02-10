@@ -1030,7 +1030,16 @@ async def dev_test_grant():
     )
 
     try:
+        # Выдаём предметы так же, как при реальной оплате
         await _grant_items_for_order(dummy_order)
+        # И шлём уведомление в purchase_notify / бота
+        status, err = await _notify_bot_purchase(dummy_order)
+        logging.info(
+            "DEV TEST GRANT: notification status=%s err=%r for order %s",
+            status,
+            err,
+            dummy_order.order_number,
+        )
     except Exception as e:
         logging.exception("DEV TEST GRANT: error while granting items: %s", e)
         return jsonify({"error": "Grant failed"}), 500
