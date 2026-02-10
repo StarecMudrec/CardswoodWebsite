@@ -789,7 +789,8 @@ async def payanyway_callback():
 
     if not order:
         logging.warning("PayAnyWay callback: order not found %r", mnt_transaction_id)
-        return "ORDER_NOT_FOUND", 404
+        # Сообщаем MONETA.Assistant об ошибке, чтобы он мог повторить уведомление
+        return "FAIL", 200
 
     logging.info(
         "PayAnyWay callback: loaded order id=%s number=%s status=%s amount=%s currency=%s",
@@ -801,58 +802,38 @@ async def payanyway_callback():
     )
 
     if order.status == "paid":
-        logging.info("PayAnyWay callback: order %s already paid, returning OK", order.order_number)
-        return "OK", 200
+        # Повторное уведомление о уже оплаченном заказе — просто подтверждаем SUCCESS,
+        # чтобы MONETA.Assistant прекратил ретраи.
+        logging.info("PayAnyWay callback: order %s already paid, returning SUCCESS", order.order_number)
+        return "SUCCESS", 200
 
-    # Если статус не передан вообще (пустая строка) — это не финальное уведомление.
-    # Ничего не меняем, просто подтверждаем получение, чтобы не ломать заказ.
-    if not str(mnt_status).strip():
-        logging.info(
-            "PayAnyWay callback: empty MNT_STATUS for order %r, keeping status=%s",
-            mnt_transaction_id,
-            order.status,
-        )
-        return "OK", 200
-
-    # Успешный платёж
-    if str(mnt_status) in ("1", "success", "SUCCESS"):
-        logging.info("PayAnyWay callback: status indicates success, marking order %s as paid", mnt_transaction_id)
-        try:
-            async with get_async_session() as db_session:
-                r = await db_session.execute(select(Order).where(Order.order_number == mnt_transaction_id))
-                order = r.scalar_one()
-                order.status = "paid"
-                order.payanyway_payment_id = data.get("MNT_OPERATION_ID") or data.get("MNT_ID")
-                order.updated_at = datetime.utcnow()
-            logging.info(
-                "PayAnyWay callback: order %s marked as paid (payanyway_payment_id=%r)",
-                order.order_number,
-                order.payanyway_payment_id,
-            )
-            # NOTE: Order is marked "paid" BEFORE notification. If notification fails,
-            # the order remains paid (money already processed by PayAnyWay).
-            # No automatic refunds - monitor logs for notification failures and handle manually.
-            await _fulfill_order(order)
-        except Exception as e:
-            logging.exception("PayAnyWay callback commit error for order %r: %s", mnt_transaction_id, e)
-            return "INTERNAL_ERROR", 500
-        return "OK", 200
-
-    # Любой другой непустой статус считаем неуспешным и помечаем заказ как failed
-    logging.info(
-        "PayAnyWay callback: non-success MNT_STATUS for order %r, mnt_status=%r — marking as failed",
-        mnt_transaction_id,
-        mnt_status,
-    )
+    # Документация MONETA.Assistant: Pay URL получает отчёт о УЖЕ обработанном платеже,
+    # без поля MNT_STATUS. Сам факт прихода отчёта с валидной подписью означает успешный платёж.
+    logging.info("PayAnyWay callback: treating processed payment report as successful for order %s", mnt_transaction_id)
     try:
         async with get_async_session() as db_session:
             r = await db_session.execute(select(Order).where(Order.order_number == mnt_transaction_id))
             order = r.scalar_one()
-            order.status = "failed"
+            order.status = "paid"
+            order.payanyway_payment_id = data.get("MNT_OPERATION_ID") or data.get("MNT_ID")
             order.updated_at = datetime.utcnow()
+        logging.info(
+            "PayAnyWay callback: order %s marked as paid (payanyway_payment_id=%r)",
+            order.order_number,
+            order.payanyway_payment_id,
+        )
+        # NOTE: Order is marked "paid" BEFORE notification. If notification fails,
+        # the order remains paid (money already processed by PayAnyWay).
+        # No automatic refunds - monitor logs for notification failures and handle manually.
+        await _fulfill_order(order)
     except Exception as e:
-        logging.exception("PayAnyWay callback failed status commit for order %r: %s", mnt_transaction_id, e)
-    return "OK", 200
+        logging.exception("PayAnyWay callback commit error for order %r: %s", mnt_transaction_id, e)
+        # В случае внутренней ошибки просим MONETA повторить уведомление.
+        return "FAIL", 200
+
+    # Важно: для Pay URL текстовым ответом должен быть SUCCESS или FAIL.
+    # SUCCESS говорит MONETA.Assistant, что отчёт получен и деньги можно окончательно зачислить.
+    return "SUCCESS", 200
 
 
 if __name__ == "__main__":
