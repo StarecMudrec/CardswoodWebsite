@@ -739,33 +739,73 @@ async def _fulfill_order(order):
 
 @app.route("/api/payment/payanyway/callback", methods=["POST", "GET"])
 async def payanyway_callback():
+    # Максимально подробное логирование входящего callback
+    logging.info("PayAnyWay callback: incoming request method=%s path=%s", request.method, request.path)
+    try:
+        safe_headers = {k: v for k, v in request.headers.items() if k.lower() not in ("cookie", "authorization")}
+        logging.info("PayAnyWay callback: headers=%r", safe_headers)
+    except Exception as e:
+        logging.warning("PayAnyWay callback: failed to log headers: %s", e)
+
     key = (Config.PAYANYWAY_SIGNATURE_KEY or "").strip().strip("\"'").strip("\ufeff")
     if not key:
         logging.warning("PayAnyWay callback: PAYANYWAY_MNT_INTEGRITY_CODE not set")
         return "CONFIG_ERROR", 500
+
     if request.method == "POST":
         data = await request.form
     else:
         data = request.args
+
+    try:
+        logged_data = {k: v for k, v in data.items()}
+        logging.info("PayAnyWay callback: raw data=%r", logged_data)
+    except Exception as e:
+        logging.warning("PayAnyWay callback: failed to log data: %s", e)
+
     mnt_transaction_id = (data.get("MNT_TRANSACTION_ID") or "").strip()
     mnt_signature = (data.get("MNT_SIGNATURE") or "").strip()
     mnt_status = data.get("MNT_STATUS", "")
+    logging.info(
+        "PayAnyWay callback: MNT_TRANSACTION_ID=%r MNT_STATUS=%r received_signature=%r",
+        mnt_transaction_id,
+        mnt_status,
+        mnt_signature,
+    )
     if not mnt_transaction_id or not mnt_signature:
         logging.warning("PayAnyWay callback: missing MNT_TRANSACTION_ID or MNT_SIGNATURE")
         return "MISSING_PARAMS", 400
+
     expected_sig = _payanyway_callback_verify(data, key)
+    logging.info("PayAnyWay callback: expected_signature=%r", expected_sig)
+
     if not hmac.compare_digest(expected_sig.lower(), mnt_signature.lower()):
-        logging.warning("PayAnyWay callback: invalid signature")
+        logging.warning("PayAnyWay callback: invalid signature (expected=%s, got=%s)", expected_sig, mnt_signature)
         return "INVALID_SIGNATURE", 400
+
     async with get_async_session() as db_session:
         r = await db_session.execute(select(Order).where(Order.order_number == mnt_transaction_id))
         order = r.scalar_one_or_none()
+
     if not order:
-        logging.warning(f"PayAnyWay callback: order not found {mnt_transaction_id}")
+        logging.warning("PayAnyWay callback: order not found %r", mnt_transaction_id)
         return "ORDER_NOT_FOUND", 404
+
+    logging.info(
+        "PayAnyWay callback: loaded order id=%s number=%s status=%s amount=%s currency=%s",
+        order.id,
+        order.order_number,
+        order.status,
+        getattr(order, "amount", None),
+        getattr(order, "currency", None),
+    )
+
     if order.status == "paid":
+        logging.info("PayAnyWay callback: order %s already paid, returning OK", order.order_number)
         return "OK", 200
+
     if str(mnt_status) in ("1", "success", "SUCCESS"):
+        logging.info("PayAnyWay callback: status indicates success, marking order %s as paid", mnt_transaction_id)
         try:
             async with get_async_session() as db_session:
                 r = await db_session.execute(select(Order).where(Order.order_number == mnt_transaction_id))
@@ -773,15 +813,25 @@ async def payanyway_callback():
                 order.status = "paid"
                 order.payanyway_payment_id = data.get("MNT_OPERATION_ID") or data.get("MNT_ID")
                 order.updated_at = datetime.utcnow()
+            logging.info(
+                "PayAnyWay callback: order %s marked as paid (payanyway_payment_id=%r)",
+                order.order_number,
+                order.payanyway_payment_id,
+            )
             # NOTE: Order is marked "paid" BEFORE notification. If notification fails,
             # the order remains paid (money already processed by PayAnyWay).
             # No automatic refunds - monitor logs for notification failures and handle manually.
             await _fulfill_order(order)
         except Exception as e:
-            logging.exception(f"PayAnyWay callback commit error: {e}")
+            logging.exception("PayAnyWay callback commit error for order %r: %s", mnt_transaction_id, e)
             return "INTERNAL_ERROR", 500
         return "OK", 200
     else:
+        logging.info(
+            "PayAnyWay callback: status is not success for order %r, mnt_status=%r — marking as failed",
+            mnt_transaction_id,
+            mnt_status,
+        )
         try:
             async with get_async_session() as db_session:
                 r = await db_session.execute(select(Order).where(Order.order_number == mnt_transaction_id))
@@ -789,7 +839,7 @@ async def payanyway_callback():
                 order.status = "failed"
                 order.updated_at = datetime.utcnow()
         except Exception as e:
-            logging.exception(f"PayAnyWay callback failed status commit: {e}")
+            logging.exception("PayAnyWay callback failed status commit for order %r: %s", mnt_transaction_id, e)
         return "OK", 200
 
 
